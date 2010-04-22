@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml"
+          layout="vertical"
+          width="200"
+          height="100"
+          title="请输入窗口名称"
+          fontSize="12"
+          headerHeight="20"
+          verticalGap="10"
+          paddingTop="1">
+    <mx:Script>
+        <![CDATA[
+            import com.yspay.YsPod;
+            import mx.controls.Alert;
+            import mx.managers.PopUpManager;
+            import com.yspay.util.FunctionDelegate;
+            import mx.utils.StringUtil;
+            public var parentYsPod:YsPod;
+
+            private function submitHandler(event:MouseEvent):void
+            {
+                if (StringUtil.trim(txtName.text) == '')
+                {
+                    Alert.show('无效名字');
+                    return;
+                }
+                parentYsPod.OnNewWindowNameReady.call(null, txtName.text);
+                PopUpManager.removePopUp(this);
+                parentYsPod = null;
+                submit.removeEventListener(MouseEvent.CLICK, submitHandler);
+            }
+
+            private function closeHandler(event:Event):void
+            {
+                PopUpManager.removePopUp(this);
+                parentYsPod = null;
+                cancel.removeEventListener(MouseEvent.CLICK, closeHandler);
+            }
+        ]]>
+    </mx:Script>
+    <mx:TextInput width="100%"
+                  id="txtName"
+                  height="50%"/>
+    <mx:HBox>
+        <mx:Button label="确定"
+                   id="submit"
+                   fontWeight="normal"
+                   click="submitHandler(event)"/>
+        <mx:Button label="取消"
+                   fontWeight="normal"
+                   id="cancel"
+                   click="closeHandler(event)"/>
+    </mx:HBox>
+</mx:Panel>

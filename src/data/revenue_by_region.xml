@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items>
+	<item region="North America" value="148" />
+	<item region="South America" value="75" />
+	<item region="EMEA" value="115" />
+	<item region="APAC" value="85" />
+</items>

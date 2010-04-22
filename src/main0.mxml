@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml"
+                verticalAlign="middle"
+                horizontalAlign="center"
+                minWidth="600"
+                minHeight="600"
+                width="100%"
+                height="100%"
+                backgroundSize="100%"
+                backgroundColor="#ffffff"
+                paddingLeft="45"
+                paddingRight="45"
+                paddingBottom="35"
+                paddingTop="34"
+                xmlns:flexlib="http://code.google.com/p/flexlib/">
+    <mx:Style source="/assets/styles.css"/>
+    <mx:Script>
+        <![CDATA[
+            import mx.containers.Canvas;
+            import mx.controls.Alert;
+            import mx.controls.ComboBox;
+            import mx.events.FlexEvent;
+            import mx.events.IndexChangedEvent;
+            import mx.events.ItemClickEvent;
+            import mx.rpc.events.FaultEvent;
+            import mx.rpc.events.ResultEvent;
+            import mx.rpc.http.HTTPService;
+            import mx.collections.ArrayCollection;
+            import mx.core.UIComponent;
+            import mx.managers.CursorManager;
+            import flexlib.events.SuperTabEvent;
+            import com.esria.samples.dashboard.view.MemoryBusContent;
+            import com.esria.samples.dashboard.view.NewService;
+            import com.esria.samples.dashboard.view.ServiceContent;
+            import com.esria.samples.dashboard.view.WindowContent;
+            import com.esria.samples.dashboard.view.DeployedWindow;
+            import com.esria.samples.dashboard.view.NewWindow;
+            import com.esria.samples.dashboard.view.DictContent;
+            import com.esria.samples.dashboard.view.SetupContent;
+            import com.yspay.util.FunctionDelegate;
+            import com.esria.samples.dashboard.events.*;
+            import com.esria.samples.dashboard.managers.PodLayoutManager;
+            import com.esria.samples.dashboard.view.Pod;
+            import com.esria.samples.dashboard.view.PodContentBase;
+            import com.yspay.pool.*;
+            import com.yspay.YsPodLayoutManager;
+            import com.yspay.events.EventNewPod;
+            import com.yspay.util.EncryptUtil;
+            import com.yspay.UserBus;
+
+            // Array of PodLayoutManagers
+            private var podLayoutManagers:Array = new Array();
+            public var _pool:Pool;
+
+            private function onEnterState():void
+            {
+                // Load pods.xml, which contains the pod layout.
+                var httpService:HTTPService = new HTTPService();
+                httpService.url = "data/pods.xml";
+                httpService.resultFormat = "e4x";
+                httpService.addEventListener(FaultEvent.FAULT, onFaultHttpService);
+                httpService.addEventListener(ResultEvent.RESULT, onResultHttpService);
+                httpService.send();
+                initPool();
+            }
+
+            public function initPool():void
+            {
+                var ip:String = ipChoose.selectedItem.ip;
+                var port:String = ipChoose.selectedItem.port;
+                var info_table_name:String = 'info';
+                var info_select_name:String = 'YSDBSTB_DTSINFOSelect';
+                var info_select_arg:String = 'YSDICT_DB_TB_DTSINFO';
+                var dts_table_name:String = 'dts';
+                var dts_select_name:String = 'YSDBSDTSObjectSelect';
+                var dts_select_arg:String = '__DICT_XML';
+
+                var dts_insert_name:String = 'YSDBSDTSObjectConfigInsert';
+                var dts_insert_arg:String = '__DICT_XML';
+
+                _pool = new Pool;
+                _pool.Add(info_table_name, DBTable,
+                          info_select_name, info_select_arg,
+                          '', '',
+                          ip, port);
+                _pool.Add(dts_table_name, DBTable,
+                          dts_select_name, dts_select_arg,
+                          dts_insert_name, dts_insert_arg,
+                          ip, port);
+                var info_query_dict:String = 'DICT';
+                var info_query_cond:String = "type='DICT' and appname='MapServer'";
+                var info_query_windows:String = 'WINDOWS';
+                var info_query_windows_cond:String = "type='WINDOWS' and appname='MapServer'";
+                var info_query_button:String = 'BUTTON';
+                var info_query_button_cond:String = "type='BUTTON' and appname='MapServer'";
+                var info_query_service:String = 'SERVICES';
+                var info_query_service_cond:String = "type='SERVICES' and appname='MapServer'";
+                var info:DBTable = _pool.info as DBTable;
+                this.addEventListener(info.select_event_name, InfoQueryComplete);
+                CursorManager.setBusyCursor();
+                info.AddQuery(info_query_dict, QueryWithIndex, info_query_cond, this);
+                info.DoQuery(info_query_dict, 'NAME', 'VER');
+
+                info.AddQuery(info_query_windows, QueryWithIndex, info_query_windows_cond, this);
+                info.DoQuery(info_query_windows, 'NAME', 'VER');
+
+                info.AddQuery(info_query_button, QueryWithIndex, info_query_button_cond, this);
+                info.DoQuery(info_query_button, 'NAME', 'VER');
+
+                info.AddQuery(info_query_service, QueryWithIndex, info_query_service_cond, this);
+                info.DoQuery(info_query_service, 'NAME', 'VER');
+
+                _pool.Add('MAIN_BUS', UserBus);
+            }
+
+            private function InfoQueryComplete(event:DBTableQueryEvent):void
+            {
+                // ;
+                CursorManager.removeBusyCursor();
+                trace("--------------------pool-----------------------")
+                trace(event.user_bus);
+            }
+
+            private function onFaultHttpService(e:FaultEvent):void
+            {
+                Alert.show("Unable to load data/pods.xml.");
+            }
+
+            private function onResultHttpService(e:ResultEvent):void
+            {
+                var viewXMLList:XMLList = e.result.view;
+                var len:Number = viewXMLList.length();
+                for (var i:Number = 0; i < len; i++)
+                { // Create a canvas for each view node.
+                    var canvas:Canvas = new Canvas();
+                    // PodLayoutManager handles resize and should prevent the need for
+                    // scroll bars so turn them off so they aren't visible during resizes.
+                    canvas.horizontalScrollPolicy = "off";
+                    canvas.verticalScrollPolicy = "off";
+                    canvas.label = viewXMLList[i].@id;
+                    canvas.percentWidth = 100;
+                    canvas.percentHeight = 100;
+                    viewStack.addChild(canvas);
+                    // Create a manager for each view.
+                    var manager:YsPodLayoutManager = new YsPodLayoutManager(this._pool);
+                    manager.container = canvas;
+                    manager.id = viewXMLList[i].@id;
+                    podLayoutManagers.push(manager);
+                }
+                tabBar.selectedIndex = 0;
+            }
+
+            private function tabCloseHandler(event:SuperTabEvent):void
+            {
+                podLayoutManagers.splice(event.tabIndex, 1);
+            }
+        ]]>
+    </mx:Script>
+    <mx:states>
+        <mx:State name="index"
+                  enterState="onEnterState()">
+            <!--移除“登录框”-->
+            <mx:RemoveChild target="{panel1}"/>
+            <mx:AddChild>
+                <mx:ApplicationControlBar dock="true"
+                                          fontSize="12">
+                    <mx:Label text="交易码"/>
+                    <mx:TextInput id="action"
+                                  width="300"
+                                  enter="podLayoutManagers[tabBar.selectedIndex].dispatchEvent(new EventNewPod(action.text))"
+                                  toolTip="点击Enter发送"/>
+                    <mx:ComboBox dataProvider="{comboboxDP}"
+                                 labelField="name"
+                                 close="comboboxClickHandler(event)"/>
+                </mx:ApplicationControlBar>
+            </mx:AddChild>
+            <!--添加新的组件-->
+            <mx:AddChild position="lastChild">
+                <flexlib:SuperTabBar id="tabBar"
+                                     dragEnabled="false"
+                                     height="35"
+                                     dataProvider="viewStack"
+                                     tabClose="tabCloseHandler(event)">
+                </flexlib:SuperTabBar>
+            </mx:AddChild>
+            <mx:AddChild>
+                <mx:ViewStack id="viewStack"
+                              paddingTop="15"
+                              width="100%"
+                              height="100%"/>
+            </mx:AddChild>
+        </mx:State>
+    </mx:states>
+    <mx:Script>
+        <![CDATA[
+            //longin handler 
+            [Bindable]
+            private var comboboxDP:ArrayCollection = new ArrayCollection([{name: "请选择"}, {name: "show memory bus"}, {name: "show dict"}, {name: "show window"}, {name: "show service"}, {name: "new window"},
+                                                                          {name: "new service"}, {name: "new tran"}]);
+            [Bindable]
+            private var ipDP:ArrayCollection = new ArrayCollection([{ip: "192.168.0.77", port: "16920"}, {ip: "192.168.0.216", port: "16920"}, {ip: "124.207.197.178", port: "6802"}]);
+
+            private function comboboxClickHandler(event:Event):void
+            {
+                if ((event.currentTarget as ComboBox).selectedItem.name == "请选择")
+                {
+                    return;
+                }
+                action.text = (event.currentTarget as ComboBox).selectedItem.name;
+                // addPod(podLayoutManagers[tabBar.selectedIndex], new Pod);
+                var podMgn:YsPodLayoutManager = podLayoutManagers[tabBar.selectedIndex] as YsPodLayoutManager;
+                podMgn.dispatchEvent(new EventNewPod(action.text));
+            }
+
+            private function loginHandle():void
+            {
+                if (txtUsername.text == "" || txtPassword.text == "")
+                {
+                    Alert.show("请输入完整数据!");
+                }
+//                else if (txtCheckCode.text.toLocaleLowerCase() != lblCheckCode.text.toLowerCase())
+//                {
+//                    Alert.show("验证码错误");
+//                }
+                else
+                {
+                    if (txtUsername.text == "admin" && EncryptUtil.encryptHandler(txtPassword.text) == EncryptUtil.encryptHandler("1"))
+                    {
+                        if (rember.selected)
+                        {
+                            var so:SharedObject = SharedObject.getLocal('info');
+                            so.data.username = txtUsername.text;
+                            so.data.password = txtPassword.text;
+                            so.flush();
+                        }
+                        else
+                        {
+                            txtUsername.text = "";
+                            txtPassword.text = "";
+                            txtCheckCode.text = "";
+                            var share:SharedObject = SharedObject.getLocal('info');
+                            share.clear();
+                        }
+                        this.styleName = '';
+                        this.setStyle("horizontalAlign", "left");
+                        this.setStyle("verticalAlign", "top");
+                        currentState = "index";
+                    }
+                    else
+                    {
+                        Alert.show("用户名或密码错误!");
+                    }
+                }
+            }
+
+            public function GetServiceIp(service_name:String):String
+            {
+                var ip_table:Object = {'TestService': '192.168.0.77'};
+
+                if (!ip_table.hasOwnProperty(service_name))
+                {
+                    return this.s_ipChoose.selectedItem.ip;
+                }
+                else
+                {
+                    return ip_table[service_name];
+                }
+            }
+
+            public function GetServicePort(service_name:String):String
+            {
+                var port_table:Object = {'TestService': '16100'};
+
+                if (!port_table.hasOwnProperty(service_name))
+                {
+                    return this.s_ipChoose.selectedItem.port;
+                }
+                else
+                {
+                    return port_table[service_name];
+                }
+            }
+
+            private function resetHandle():void
+            {
+                txtUsername.text = "";
+                txtPassword.text = "";
+                txtCheckCode.text = "";
+            }
+
+            private function GenerateCheckCode():String
+            {
+                var ran:Number;
+                var number:Number;
+                var code:String;
+                var checkCode:String = "";
+                for (var i:int = 0; i < 4; i++)
+                {
+                    ran = Math.random();
+                    number = Math.round(ran * 10000);
+                    if (number % 2 == 0)
+                        code = String.fromCharCode(48 + (number % 10));
+                    else
+                        code = String.fromCharCode(65 + (number % 26));
+                    checkCode += code;
+                }
+                return checkCode;
+            }
+        ]]>
+    </mx:Script>
+    <mx:Panel verticalAlign="middle"
+              verticalCenter="0.5"
+              width="349"
+              height="367"
+              layout="absolute"
+              title="用户登录"
+              fontFamily="Georgia"
+              fontSize="12"
+              id="panel1">
+        <!-- "用户名"标签 -->
+        <mx:Label x="41.5"
+                  y="33"
+                  text="用户名"/>
+        <!-- "密码"标签 -->
+        <mx:Label x="42.5"
+                  y="81"
+                  text="密码"/>
+        <!-- "用户名"输入框 -->
+        <mx:TextInput x="94.5"
+                      y="33"
+                      id="txtUsername"
+                      width="184"
+                      text="admin"/>
+        <!-- "密码"输入框 -->
+        <mx:TextInput x="95.5"
+                      y="81"
+                      id="txtPassword"
+                      displayAsPassword="true"
+                      width="183"
+                      text="1"/>
+        <!-- "登录"按钮 -->
+        <mx:Button x="177.5"
+                   y="242"
+                   label="登录"
+                   id="btnLogin"
+                   click="loginHandle()"
+                   fontWeight="bold"/>
+        <!-- "重置"按钮 -->
+        <mx:Button x="237.5"
+                   y="242"
+                   label="重置"
+                   id="btnReset"
+                   click="resetHandle()"/>
+        <!-- "校验码"标签 -->
+        <mx:Label x="165.5"
+                  y="125"
+                  id="lblCheckCode"
+                  width="42.5"
+                  color="#377CD0"/>
+        <mx:LinkButton x="216"
+                       y="123"
+                       label="看不清楚?"
+                       id="linkbtnReGenerate"
+                       click="lblCheckCode.text=GenerateCheckCode();"
+                       fontFamily="Georgia"
+                       fontSize="11"/>
+        <mx:Label x="39.5"
+                  y="123"
+                  text="校验码"/>
+        <!-- "校验码"输入框 -->
+        <mx:TextInput x="96.5"
+                      y="121"
+                      id="txtCheckCode"
+                      width="61"
+                      maxChars="4"/>
+        <mx:CheckBox x="96.5"
+                     y="242"
+                     label="记住密码"
+                     id="rember"/>
+        <mx:ComboBox x="96.5"
+                     y="154"
+                     width="182"
+                     id="ipChoose"
+                     dataProvider="{ipDP}"
+                     labelField="ip">
+        </mx:ComboBox>
+        <mx:Label x="39.5"
+                  y="157"
+                  text="IP地址"
+                  width="43.5"/>
+        <mx:ComboBox x="96.5"
+                     y="186"
+                     width="182"
+                     id="s_ipChoose"
+                     dataProvider="{ipDP}"
+                     labelField="ip">
+        </mx:ComboBox>
+        <mx:Label x="37"
+                  y="189"
+                  text="scall_ip"
+                  width="43.5"/>
+    </mx:Panel>
+</mx:Application>

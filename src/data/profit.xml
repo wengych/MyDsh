@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items>
+	<item month="Jan" value="1.2" />
+	<item month="Feb" value="3" />
+	<item month="Mar" value=".7" />
+	<item month="Apr" value="5" />
+	<item month="May" value="2.3" />
+	<item month="June" value="4.5" />
+	<item month="July" value="6.6" />
+	<item month="Aug" value="2" />
+	<item month="Sept" value="3.1" />
+	<item month="Oct" value="4" />
+	<item month="Nov" value="6" />
+	<item month="Dec" value="5.5" />
+</items>

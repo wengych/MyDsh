@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<L KEY="config" KEYNAME="字段定义1" VALUE="field">
+  <L KEY="DTS" KEYNAME="20091028122808(帐户明细_文本输入)" VALUE="01200910281228085864">
+    <L KEY="config" KEYNAME="帐户明细_文本输入" VALUE="inqaccount">
+      <A KEY="version" KEYNAME="version" VALUE="1.0"/>
+      <A KEY="Trancode" KEYNAME="交易码" VALUE="0002"/>
+      <L KEY="windows" KEYNAME="windows IN" VALUE="windows IN">
+        <A KEY="version" KEYNAME="version" VALUE="1.0"/>
+        <L KEY="dict" KEYNAME="账号" VALUE="">
+          <L KEY="LABEL" KEYNAME="LABEL" VALUE="">
+            <A KEY="text" KEYNAME="文本" VALUE="账号"/>
+          </L>
+          <L KEY="TEXTINPUT" KEYNAME="TEXTINPUT" VALUE="">
+            <A KEY="length" KEYNAME="长度" VALUE="21"/>
+            <A KEY="displayAsPassword" KEYNAME="是否密码" VALUE="0"/>
+            <A KEY="host_Dict_name" KEYNAME="数据字典名字" VALUE="ACCOUNT"/>
+          </L>
+        </L>
+        <L KEY="dict" KEYNAME="起始日期" VALUE="">
+          <L KEY="LABEL" KEYNAME="LABEL" VALUE="">
+            <A KEY="text" KEYNAME="文本" VALUE="起始日期"/>
+          </L>
+          <L KEY="DATEINPUT" KEYNAME="DATEINPUT" VALUE="">
+            <A KEY="length" KEYNAME="长度" VALUE="8"/>
+            <A KEY="displayAsPassword" KEYNAME="是否密码" VALUE="0"/>
+            <A KEY="host_Dict_name" KEYNAME="数据字典名字" VALUE="BEGIN_DATE"/>
+          </L>
+        </L>
+        <L KEY="dict" KEYNAME="结束日期" VALUE="">
+          <L KEY="LABEL" KEYNAME="LABEL" VALUE="">
+            <A KEY="text" KEYNAME="文本" VALUE="结束日期"/>
+          </L>
+          <L KEY="DATEINPUT" KEYNAME="DATEINPUT" VALUE="">
+            <A KEY="length" KEYNAME="长度" VALUE="8"/>
+            <A KEY="displayAsPassword" KEYNAME="是否密码" VALUE="0"/>
+            <A KEY="host_Dict_name" KEYNAME="数据字典名字" VALUE="END_DATE"/>
+          </L>
+        </L>
+        <L KEY="doproc" KEYNAME="提交按钮" VALUE="">
+          <L KEY="button" KEYNAME="BUTTON" VALUE="">
+            <A KEY="label" KEYNAME="按钮内容" VALUE="提交主机"/>
+            <A KEY="version" KEYNAME="version" VALUE="1.0"/>
+            <A KEY="type" KEYNAME="type" VALUE="request"/>
+            <A KEY="reqflag" KEYNAME="reqflag" VALUE="true"/>
+            <A KEY="reqtype" KEYNAME="reqtype" VALUE="json2userbus"/>
+            <A KEY="respflag" KEYNAME="respflag" VALUE="true"/>
+            <A KEY="resptype" KEYNAME="resptype" VALUE="json"/>
+            <A KEY="active" KEYNAME="active" VALUE="YSAccountMX"/>
+          </L>
+        </L>
+      </L>
+      <L KEY="windows" KEYNAME="windows OUT" VALUE="windows OUT">
+        <A KEY="version" KEYNAME="version" VALUE="1.0"/>
+        <L KEY="dict" KEYNAME="数据列表" VALUE="">
+          <L KEY="DATAGRID" KEYNAME="DATAGRID" VALUE="">
+            <L KEY="DataGridColumn" KEYNAME="交易日期" VALUE="">
+              <A KEY="headerText" KEYNAME="headerText" VALUE="交易日期"/>
+              <A KEY="dataField" KEYNAME="dataField" VALUE="DATE"/>
+              <A KEY="width" KEYNAME="width" VALUE="80"/>
+            </L>
+            <L KEY="DataGridColumn" KEYNAME="交易时间" VALUE="">
+              <A KEY="headerText" KEYNAME="headerText" VALUE="交易时间"/>
+              <A KEY="dataField" KEYNAME="dataField" VALUE="TIME"/>
+              <A KEY="width" KEYNAME="width" VALUE="80"/>
+            </L>
+            <L KEY="DataGridColumn" KEYNAME="交易金额" VALUE="">
+              <A KEY="headerText" KEYNAME="headerText" VALUE="交易金额"/>
+              <A KEY="dataField" KEYNAME="dataField" VALUE="AMOUNT"/>
+              <A KEY="width" KEYNAME="width" VALUE="80"/>
+            </L>
+            <L KEY="DataGridColumn" KEYNAME="交易类型" VALUE="">
+              <A KEY="headerText" KEYNAME="headerText" VALUE="交易类型"/>
+              <A KEY="dataField" KEYNAME="dataField" VALUE="TRANSNAME"/>
+              <A KEY="width" KEYNAME="width" VALUE="80"/>
+            </L>
+          </L>
+        </L>
+        <L KEY="doproc" KEYNAME="关闭按钮" VALUE="">
+          <L KEY="button" KEYNAME="BUTTON" VALUE="">
+            <A KEY="label" KEYNAME="按钮内容" VALUE="关闭"/>
+            <A KEY="active" KEYNAME="active" VALUE="Close"/>
+          </L>
+        </L>
+      </L>
+    </L>
+  </L>
+</L>

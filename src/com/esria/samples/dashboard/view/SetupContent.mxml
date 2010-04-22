@@ -1,0 +1,417 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Box xmlns:mx="http://www.adobe.com/2006/mxml"
+        dragEnter="dragEnterHandlerForRemove(event)"
+        dragDrop="dragDropHandlerForRemove(event)"
+        creationComplete="init_dict()"
+        width="100%"
+        height="100%"
+        fontSize="12">
+    <mx:Script>
+        <![CDATA[
+            import componment.MyImage;
+
+            import flash.events.Event;
+            import flash.net.SharedObject;
+
+            import mx.containers.Form;
+            import mx.containers.FormItem;
+            import mx.containers.HBox;
+            import mx.containers.TitleWindow;
+            import mx.controls.*;
+            import mx.core.Application;
+            import mx.core.UIComponent;
+            import mx.events.*;
+            import mx.managers.DragManager;
+            import mx.rpc.events.ResultEvent;
+            import mx.rpc.http.mxml.HTTPService;
+            import mx.states.State;
+            import mx.utils.StringUtil;
+            import com.yspay.*;
+            import util.FunctionDelegate;
+            private const IP:String = '192.168.0.77';
+            private const PORT:String = '16920';
+
+            protected function init_dict():void
+            {
+                var service_call:ServiceCall = new ServiceCall;
+                var bus:UserBus = new UserBus;
+                bus.Add(ServiceCall.SCALL_NAME, 'YSDBSTB_DTSINFOSelect');
+                bus.Add('YSDICT_DB_TB_STARTPOS', 0);
+                bus.Add('YSDICT_DB_TB_ENDPOS', 10000);
+                bus.Add('__DICT_IN', "type='DICT' and appname='MapServer'");
+                service_call.Send(bus, this.IP, this.PORT, onInit_dict);
+
+            }
+
+            private function onInit_dict(head:Object, bus:UserBus):void
+            {
+                if (-1 == head['callrtn'])
+                {
+                    Alert.show("Service Call FAILED!");
+                    return;
+                }
+                if ('YSDBSTB_DTSINFOSelect' != head['active'] || bus == null)
+                {
+                    Alert.show('error');
+                    return;
+                }
+                var tbs_info_arr:Array = bus.GetVarArray('YSDICT_DB_TB_DTSINFO');
+                for each (var tbs_info:YsVarStruct in tbs_info_arr)
+                {
+                    var tbs_info_obj:Object = tbs_info.getValue();
+                    var myimage:MyImage = new MyImage;
+                    var num:String = (Math.round(Math.random() * (26 - 1)) + 1).toString();
+                    myimage.source = "assets/" + num + ".png";
+                    myimage.ip = this.IP;
+                    myimage.port = this.PORT;
+                    myimage.desc = (tbs_info_obj['MEMO'].getValue());
+                    myimage.word = (tbs_info_obj['NAME'].getValue());
+                    myimage.dts = (tbs_info_obj['DTS'].getValue());
+                    myimage.addEventListener("sendDesc", function(e:Event):void
+                        {
+
+                        });
+                    myimage.addEventListener("completeDesc", function(e:Event):void
+                        {
+
+                        });
+                    dictBox.addChild(myimage);
+                }
+            }
+
+            protected function init_window():void
+            {
+                var hs:HTTPService = new HTTPService;
+                hs.url = "data/window.xml";
+                hs.resultFormat = "e4x";
+                hs.addEventListener(ResultEvent.RESULT, onInit_window);
+                hs.send();
+
+            }
+
+            protected function onInit_window(event:ResultEvent):void
+            {
+                var xml:XML = event.result as XML;
+                ta.text = xml.toString();
+                var myimage:MyImage = new MyImage;
+                var num:String = (Math.round(Math.random() * (26 - 1)) + 1).toString();
+                myimage.source = "assets/" + num + ".png";
+                myimage.word = xml.L.L.@KEYNAME;
+                myimage.dts = xml.L.@VALUE;
+                windowBox.addChild(myimage);
+            }
+
+            //若还有其它可获焦点组件？
+            protected function enterHandler(event:FlexEvent):void
+            {
+                var length:uint = form.getChildren().length;
+                var childindex:uint = form.getChildIndex((event.currentTarget as TextInput).parent);
+                if (childindex >= length - 1)
+                    childindex = 0;
+                else
+                {
+                    childindex++;
+                }
+                var formitem:FormItem = form.getChildAt(childindex) as FormItem;
+                for (var i:int = 0; i < formitem.getChildren().length; i++)
+                {
+                    if (formitem.getChildAt(i) is TextInput)
+                    {
+                        (formitem.getChildAt(i) as TextInput).setFocus();
+                        break;
+                    }
+                }
+            }
+
+            protected function submitHandler():void
+
+            {
+                ta.text = "";
+                var nameOfWindow:String = StringUtil.trim(formname.text);
+                if (nameOfWindow == "")
+                {
+                    Alert.show("请输入表单名!", "提示");
+                    return;
+                }
+                tpanel.title = formname.text;
+                var length:int = form.getChildren().length;
+                var resultOfWindow:XML = <L KEY="windows" KEYNAME="windows IN" VALUE="windows IN">
+                        <A KEY="TITLE" KEYNAME="Title" />
+                    </L>;
+                resultOfWindow.A.(@KEY == "TITLE").@VALUE = nameOfWindow;
+                for (var i:int = 0; i < length; i++)
+                {
+                    var temp:XML = (form.getChildAt(i) as MyFormItem).descXml;
+                    var inserted:XML = <L/>;
+                    inserted.@KEY = temp.localName();
+                    inserted.@KEYNAME = (form.getChildAt(i) as MyFormItem).label;
+                    inserted.@VALUE = temp.localName() + "://" + temp.services.@NAME;
+                    resultOfWindow.appendChild(inserted);
+                }
+                ta.text += resultOfWindow.toXMLString();
+
+            }
+
+            protected function dragEnterHandlerForRemove(event:DragEvent):void
+            {
+                if (event.dragSource.hasFormat("self"))
+                    DragManager.acceptDragDrop(UIComponent(event.currentTarget));
+            }
+
+            protected function dragDropHandlerForRemove(event:DragEvent):void
+            {
+                form.removeChild(event.dragInitiator as UIComponent);
+            }
+
+            protected function dragEnterHandler(event:DragEvent):void
+            {
+                if (form == event.currentTarget)
+                    DragManager.acceptDragDrop(form);
+            }
+
+            protected function dragDropSelf(event:DragEvent):void
+            {
+                var moveYSelf:Number = event.localY;
+                var length:int = form.getChildren().length;
+                var position:int = form.getChildIndex(event.dragInitiator as UIComponent);
+                if (length <= 1)
+                    return;
+
+                for (var i:int = 0; i < length; i++)
+                {
+                    if (form.getChildAt(i).y >= moveYSelf)
+                        break;
+                }
+                form.removeChild(event.dragInitiator as UIComponent);
+
+                if (i >= length)
+                {
+                    form.addChild(event.dragInitiator as UIComponent);
+                }
+                else if (i >= 1)
+                {
+                    if (i >= position)
+                        form.addChildAt(event.dragInitiator as UIComponent, i - 1);
+                    else
+                        form.addChildAt(event.dragInitiator as UIComponent, i);
+                }
+                else
+                    form.addChildAt(event.dragInitiator as UIComponent, i);
+            }
+
+            protected function dragDropNew(event:DragEvent):void
+            {
+                var sourceImage:Object = {};
+                sourceImage.image = (event.dragSource.dataForFormat("first") as MyImage);
+                sourceImage.postion = event.localY;
+                var contentXml:XML = (sourceImage.image as MyImage).content;
+                if (contentXml == null)
+                {
+                    var bus:UserBus = new UserBus;
+                    var sc:ServiceCall = new ServiceCall;
+                    bus.Add(ServiceCall.SCALL_NAME, "YSDBSDTSObjectSelect");
+                    bus.Add("__DICT_IN", (sourceImage.image as MyImage).dts);
+                    var fd:FunctionDelegate = new FunctionDelegate;
+                    sc.Send(bus, (sourceImage.image as MyImage).ip, (sourceImage.image as MyImage).port, fd.create(onServiceComplete, sourceImage));
+                }
+                else
+                {
+                    var formitem:MyFormItem = new MyFormItem;
+                    formitem.descXml = contentXml;
+                    trace("-------------------------------------------------------------------");
+                    trace(contentXml.toXMLString());
+                    trace("-------------------------------------------------------------------");
+                    formitem.label = formitem.descXml.display.LABEL.@text;
+                    var ti:TextInput = new TextInput;
+                    ti.width = 200;
+                    if (contentXml.services.@TYPE == "DOUBLE" || contentXml.services.@TYPE == "FLOAT")
+                    {
+                        ti.setStyle("textAlign", "right");
+                    }
+                    ti.addEventListener(FlexEvent.ENTER, enterHandler);
+                    if (formitem.descXml.display.TEXTINPUT.@displayAsPassword == "0")
+                    {
+                        ti.displayAsPassword = false;
+                    }
+                    else
+                    {
+                        ti.displayAsPassword = true;
+                    }
+                    if (formitem.descXml.display.TEXTINPUT.@length != null)
+                    {
+                        ti.maxChars = formitem.descXml.display.TEXTINPUT.@length;
+                        ti.toolTip = "最长输入" + ti.maxChars + "个字符";
+                    }
+                    var moveY:Number = event.localY;
+                    formitem.addChild(ti);
+                    var length:int = form.getChildren().length;
+                    for (var j:int = 0; j < length; j++)
+                    {
+                        if (form.getChildAt(j).y >= moveY)
+                            break;
+                    }
+                    if (j >= length)
+                        form.addChild(formitem);
+                    else if (j >= 1)
+                        form.addChildAt(formitem, j);
+                    else
+                        form.addChildAt(formitem, 0);
+                }
+            }
+
+            protected function dragDropHandler(event:DragEvent):void
+            {
+                if (event.dragSource.hasFormat("self"))
+                    dragDropSelf(event);
+                else
+                    dragDropNew(event);
+            }
+
+            protected function onServiceComplete(head:Object, bus:UserBus, sourceImage:Object):void
+            {
+
+                if (bus)
+                {
+                    var output_array:Array = bus.GetVarArray("__DICT_XML");
+                    var temp:String;
+                    for each (var output_arg:YsVar in output_array)
+                    {
+                        temp += output_arg.getValue().toString();
+                    }
+                    // problem
+                    temp = temp.replace("null", " ");
+                    temp = StringUtil.trim(temp);
+                    (sourceImage.image as MyImage).content = new XML(temp);
+                    addFormItem(sourceImage);
+                }
+                else
+                {
+                    Alert.show('网络连接失败!');
+                }
+            }
+
+            private function addFormItem(sourceImage:Object):void
+            {
+                var formitem:MyFormItem = new MyFormItem;
+                var contentXml:XML = (sourceImage.image as MyImage).content;
+                formitem.descXml = contentXml;
+                formitem.label = formitem.descXml.display.LABEL.@text;
+                var ti:TextInput = new TextInput;
+                ti.width = 200;
+                if (contentXml.services.@TYPE == "DOUBLE" || contentXml.services.@TYPE == "FLOAT")
+                {
+                    ti.setStyle("textAlign", "right");
+                }
+                ti.addEventListener(FlexEvent.ENTER, enterHandler);
+                if (formitem.descXml.display.TEXTINPUT.@displayAsPassword == "0")
+                {
+                    ti.displayAsPassword = false;
+                }
+                else
+                {
+                    ti.displayAsPassword = true;
+                }
+                if (formitem.descXml.display.TEXTINPUT.@length != null)
+                {
+                    ti.maxChars = formitem.descXml.display.TEXTINPUT.@length;
+                    ti.toolTip = "最长输入" + ti.maxChars + "个字符";
+                }
+                var moveY:Number = sourceImage.postion;
+                formitem.addChild(ti);
+                var length:int = form.getChildren().length;
+                for (var j:int = 0; j < length; j++)
+                {
+                    if (form.getChildAt(j).y >= moveY)
+                        break;
+                }
+                if (j >= length)
+                    form.addChild(formitem);
+                else if (j >= 1)
+                    form.addChildAt(formitem, j);
+                else
+                    form.addChildAt(formitem, 0);
+            }
+        ]]>
+    </mx:Script>
+    <mx:ToggleButtonBar id="tbb"
+                        height="2%"
+                        dataProvider="{storeViews}"
+                        styleName="storeButtonBar">
+    </mx:ToggleButtonBar>
+    <mx:ViewStack id="storeViews"
+                  width="100%"
+                  height="35%">
+        <mx:HBox id="dictBox"
+                 label="字典"
+                 borderStyle="solid"
+                 horizontalGap="10"
+                 paddingTop="5"
+                 paddingBottom="10"
+                 paddingLeft="10"
+                 paddingRight="10"
+                 horizontalScrollPolicy="on"
+                 width="100%"
+                 height="100%"
+                 backgroundColor="white"
+                 dragEnter="dragEnterHandlerForRemove(event)"
+                 dragDrop="dragDropHandlerForRemove(event)"
+                 creationComplete="init_dict()">
+        </mx:HBox>
+        <mx:HBox id="windowBox"
+                 label="窗口"
+                 backgroundColor="white"
+                 width="100%"
+                 height="100%"
+                 creationComplete="init_window()">
+        </mx:HBox>
+        <mx:HBox label="按钮"
+                 backgroundColor="white"
+                 width="100%"
+                 height="100%">
+        </mx:HBox>
+        <mx:HBox label="服务"
+                 backgroundColor="white"
+                 width="100%"
+                 height="100%">
+        </mx:HBox>
+    </mx:ViewStack>
+    <mx:HBox width="100%"
+             height="60%">
+        <mx:TitleWindow width="50%"
+                        height="100%"
+                        id="tpanel"
+                        layout="horizontal"
+                        y="20"
+                        x="22">
+            <mx:Form id="form"
+                     verticalGap="10"
+                     borderStyle="solid"
+                     backgroundColor="#FFFFFF"
+                     dragEnter="dragEnterHandler(event);"
+                     dragDrop="dragDropHandler(event);"
+                     width="100%"
+                     height="100%">
+            </mx:Form>
+        </mx:TitleWindow>
+        <mx:TextArea id="ta"
+                     dragEnter="dragEnterHandlerForRemove(event)"
+                     dragDrop="dragDropHandlerForRemove(event)"
+                     width="50%"
+                     height="100%"/>
+    </mx:HBox>
+    <mx:HBox width="100%"
+             id="stateBox"
+             dragEnter="dragEnterHandlerForRemove(event)"
+             dragDrop="dragDropHandlerForRemove(event)"
+             height="5%"
+             borderStyle="solid">
+        <mx:Label text="表单名"/>
+        <mx:TextInput id="formname"
+                      width="147"/>
+        <mx:Button label="保存"
+                   id="save"
+                   click="submitHandler()"/>
+        <mx:Button label="清空"
+                   click="form.removeAllChildren(); ta.text='';tpanel.title='';formname.text=''"/>
+    </mx:HBox>
+</mx:Box>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml"
+                layout="absolute">
+    <mx:Script>
+        <![CDATA[
+            import mx.managers.PopUpManager;
+            import com.esria.samples.dashboard.renderers.PopUpButtonPanel;
+
+            private function init():void
+            {
+                var buttonPanel:PopUpButtonPanel = PopUpManager.createPopUp(this, PopUpButtonPanel, true, null) as PopUpButtonPanel;
+                PopUpManager.centerPopUp(buttonPanel);
+                buttonPanel.txtName.setFocus();
+
+            }
+        ]]>
+    </mx:Script>
+    <mx:Button click="init()"/>
+</mx:Application>

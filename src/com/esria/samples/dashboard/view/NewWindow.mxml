@@ -1,0 +1,402 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+                width="100%"
+                height="100%"
+                fontSize="12"
+                creationComplete="onInit()"
+                headerHeight="8"
+                showCloseButton="true"
+                close="this.parent.removeChild(this)">
+    <mx:Script>
+        <![CDATA[
+            import com.yspay.events.EventPodNewChild;
+            import mx.controls.listClasses.ListBase;
+            import mx.controls.List;
+            import mx.events.*;
+            import mx.managers.DragManager;
+            import mx.rpc.events.ResultEvent;
+            import mx.rpc.http.mxml.HTTPService;
+            import mx.states.State;
+            import mx.utils.StringUtil;
+            import com.yspay.*;
+            import com.yspay.util.FunctionDelegate;
+            import mx.controls.TextInput;
+            import mx.core.UIComponent;
+            import mx.containers.Form;
+            import mx.containers.FormItem;
+            import mx.controls.Alert;
+            import mx.managers.CursorManager;
+            import mx.managers.PopUpManager;
+            import mx.controls.Button;
+            import com.yspay.pool.*;
+            import com.yspay.FunctionHelper;
+            import com.esria.samples.dashboard.renderers.PopUpButtonPanel;
+
+            private var _pool:Pool;
+            private var func_helper:FunctionHelper = new FunctionHelper;
+            private var dts_event_listener:Function;
+
+            public function onInit():void
+            {
+                _pool = this.parentDocument._pool;
+                this.addEventListener((_pool.dts as DBTable).select_event_name, OnDtsQueryComplete);
+            }
+
+            protected function dragEnterHandler(event:DragEvent):void
+            {
+                if (form == event.currentTarget)
+                    DragManager.acceptDragDrop(form);
+            }
+
+            protected function dragDropSelf(event:DragEvent):void
+            {
+                if ((event.dragInitiator as UIComponent).parent != this.form)
+                {
+                    return;
+                }
+                var moveYSelf:Number = event.localY;
+                var length:int = form.getChildren().length;
+                var position:int = form.getChildIndex(event.dragInitiator as UIComponent);
+                if (length <= 1)
+                    return;
+
+                for (var i:int = 0; i < length; i++)
+                {
+                    if (form.getChildAt(i).y >= moveYSelf)
+                        break;
+                }
+                form.removeChild(event.dragInitiator as UIComponent);
+
+                if (i >= length)
+                {
+                    form.addChild(event.dragInitiator as UIComponent);
+                }
+                else if (i >= 1)
+                {
+                    if (i >= position)
+                        form.addChildAt(event.dragInitiator as UIComponent, i - 1);
+                    else
+                        form.addChildAt(event.dragInitiator as UIComponent, i);
+                }
+                else
+                    form.addChildAt(event.dragInitiator as UIComponent, i);
+            }
+
+            protected function dragDropNew(event:DragEvent):void
+            {
+                /*
+                   var arg:Object = new Object;
+                   var o:Object = (event.dragInitiator as TileList).selectedItem;
+                   arg.postion = event.localY;
+                   var bus:UserBus = new UserBus;
+                   var sc:ServiceCall = new ServiceCall;
+                   bus.Add(ServiceCall.SCALL_NAME, "YSDBSDTSObjectSelect");
+                   bus.Add("__DICT_IN", o.dts);
+                   var fd:FunctionDelegate = new FunctionDelegate;
+                   CursorManager.setBusyCursor();
+                   sc.Send(bus, IP, PORT, fd.create(onServiceComplete, arg));
+                 */
+                var arg:Object = new Object;
+                arg.postion = event.localY;
+                var o:Object = (event.dragInitiator as ListBase).selectedItem;
+                var dts:DBTable = _pool.dts as DBTable;
+                dts.AddQuery(o.dts, Query, o.dts, this);
+                //dts_event_listener = func_helper.create(OnDtsQueryComplete, arg);
+                //this.addEventListener(dts.select_event_name, dts_event_listener);
+                //CursorManager.setBusyCursor();
+                dts.DoQuery(o.dts);
+
+
+            }
+
+            public function OnDtsQueryComplete(event:DBTableQueryEvent):void //, arg:Object):void
+            {
+                //CursorManager.removeBusyCursor();
+                var dts:DBTable = _pool.dts as DBTable;
+                var temp:String = dts[event.query_name][dts.arg_select];
+                temp = StringUtil.trim(temp);
+                var arg:Object = new Object;
+                arg.showxml = new XML(temp);
+                addFormItem(arg);
+                // this.removeEventListener(dts.select_event_name, dts_event_listener);
+            }
+
+            protected function onServiceComplete(bus:UserBus, arg:Object):void
+            {
+
+                if (bus)
+                {
+                    var output_array:Array = bus.GetVarArray("__DICT_XML");
+                    var temp:String;
+                    for each (var output_arg:YsVar in output_array)
+                    {
+                        temp += output_arg.getValue().toString();
+                    }
+                    temp = temp.replace("null", " ");
+                    temp = StringUtil.trim(temp);
+                    arg.showxml = new XML(temp);
+                    addFormItem(arg);
+                }
+                else
+                {
+                    Alert.show('网络连接失败!');
+                }
+            }
+
+            private function AddService(arg:Object):void
+            {
+                var pop:PopUpButtonPanel = PopUpManager.createPopUp(this, PopUpButtonPanel, true, null) as PopUpButtonPanel;
+
+                pop.parentWindow = this;
+                pop.arg = arg;
+                PopUpManager.centerPopUp(pop);
+                pop.txtName.setFocus();
+
+                return;
+            }
+
+            private function AddDict(arg:Object):void
+            {
+                var formitem:MyFormItem = new MyFormItem;
+                var contentXml:XML = arg.showxml as XML;
+
+                formitem.descXml = contentXml;
+                formitem.label = contentXml.display.LABEL.@text;
+
+                var ti:TextInput = new TextInput;
+                ti.width = 200;
+
+                if (contentXml.services.@TYPE == "DOUBLE" || contentXml.services.@TYPE == "FLOAT")
+                {
+                    ti.setStyle("textAlign", "right");
+                }
+                if (contentXml.display.TEXTINPUT.@displayAsPassword == "0")
+                {
+                    ti.displayAsPassword = false;
+                }
+                else
+                {
+                    ti.displayAsPassword = true;
+                }
+                if (contentXml.display.TEXTINPUT.@length != null)
+                {
+                    ti.maxChars = contentXml.display.TEXTINPUT.@length;
+                    ti.toolTip = "最长输入" + ti.maxChars + "个字符";
+                }
+                formitem.addChild(ti);
+                form.addChild(formitem);
+            }
+
+            private function addFormItem(arg:Object):void
+            {
+                var xml_name:String = (arg.showxml as XML).name().toString().toLocaleLowerCase();
+                if (xml_name == "services")
+                {
+                    AddService(arg);
+                }
+                else if (xml_name == 'dict')
+                {
+                    AddDict(arg);
+                }
+            /*
+               var formitem:MyFormItem = new MyFormItem;
+               var contentXml:XML = arg.showxml;
+               formitem.descXml = contentXml;
+               formitem.label = contentXml.display.LABEL.@text;
+               var ti:TextInput = new TextInput;
+               ti.width = 200;
+               if (contentXml.services.@TYPE == "DOUBLE" || contentXml.services.@TYPE == "FLOAT")
+               {
+               ti.setStyle("textAlign", "right");
+               }
+               if (contentXml.display.TEXTINPUT.@displayAsPassword == "0")
+               {
+               ti.displayAsPassword = false;
+               }
+               else
+               {
+               ti.displayAsPassword = true;
+               }
+               if (contentXml.display.TEXTINPUT.@length != null)
+               {
+               ti.maxChars = contentXml.display.TEXTINPUT.@length;
+               ti.toolTip = "最长输入" + ti.maxChars + "个字符";
+               }
+               formitem.addChild(ti);
+               form.addChild(formitem);
+             */ /*
+               var moveY:Number = arg.postion;
+               formitem.addChild(ti);
+               var length:int = form.getChildren().length;
+               for (var j:int = 0; j < length; j++)
+               {
+               if (form.getChildAt(j).y >= moveY)
+               break;
+               }
+               if (j >= length)
+               form.addChild(formitem);
+               else if (j >= 1)
+               form.addChildAt(formitem, j);
+               else
+               form.addChildAt(formitem, 0);
+             */
+            }
+
+            protected function dragDropHandler(event:DragEvent):void
+            {
+                if (event.dragSource.hasFormat("self"))
+                    dragDropSelf(event);
+                else
+                    dragDropNew(event);
+            }
+
+
+            public function save_windows_xml():XML
+            {
+
+                var main_bus:UserBus = _pool.MAIN_BUS as UserBus;
+                var ename:Object = main_bus.GetFirst("__W_ENAME");
+                var cname:Object = main_bus.GetFirst("__W_CNAME");
+                var rtn:XML = <L KEY="windows" KEYNAME="windows" VALUE="windows IN">
+                        <A KEY="TITLE" KEYNAME="Title" />
+                    </L>;
+                // var tb_xml_args:Object = {'TITLE': 'ENAME'};
+                //  rtn.A.(@KEY == 'TITLE').@VALUE = (args_obj[tb_xml_args['TITLE']].text);
+                rtn.@VALUE = ename;
+                rtn.A.(@KEY == 'TITLE').@VALUE = cname;
+                for each (var form_item:MyFormItem in form.getChildren())
+                {
+                    var form_xml:XML = form_item.descXml;
+                    if (form_xml.name() == 'SERVICES')
+                    {
+                        var labelXml:XML = <A KEY="LABEL" KEYNAME="按钮信息"/>;
+                        labelXml.@VALUE = form_xml.@LABEL;
+                        var serviceXml:XML = <L KEY="SERVICES" KEYNAME="按钮服务"/>;
+                        serviceXml.@VALUE = "SERVICES://" + form_xml.text();
+                        var button_xml:XML = <L KEY="BUTTON" KEYNAME="按钮" VALUE=""/>;
+                        button_xml.appendChild(labelXml);
+                        button_xml.appendChild(serviceXml);
+                        rtn.appendChild(button_xml);
+                    }
+                    else
+                    {
+                        var dict_xml:XML = <L/>;
+                        dict_xml.@KEY = form_xml.localName();
+                        dict_xml.@KEYNAME = form_item.label;
+                        dict_xml.@VALUE = form_xml.localName() + "://" + form_xml.services.@NAME;
+                        rtn.appendChild(dict_xml);
+                    }
+                }
+
+                return rtn;
+            }
+
+            protected function submitHandler():void
+            {
+                var str:String = "";
+                //var nameOfWindow:String = StringUtil.trim(formname.text);
+                //if (nameOfWindow == "" || StringUtil.trim(englishName.text) == "")
+                {
+                    Alert.show("请输入表单名!", "提示");
+                    return;
+                }
+                //(this.parent as Pod).title = formname.text;
+                var length:int = form.getChildren().length;
+
+                var resultOfWindow:XML = <L TYPE="WINDOWS" NAME="IDNUMBER" VER="20091120999999" ISUSED="0" APPNAME="MapServer" CUSER="xing">
+                        <L KEY="windows" KEYNAME="windows IN" VALUE="windows IN">
+                            <A KEY="TITLE" KEYNAME="Title" />
+                        </L>
+                    </L>;
+                resultOfWindow..A.(@KEY == "TITLE").@VALUE = nameOfWindow;
+                for (var i:int = 0; i < length; i++)
+                {
+                    var temp:XML = (form.getChildAt(i) as MyFormItem).descXml;
+                    if (temp.localName().toString() == "SERVICES")
+                    {
+                        var labelXml:XML = <A KEY="LABEL" KEYNAME="按钮信息"/>;
+                        labelXml.@VALUE = temp.@LABEL;
+                        var serviceXml:XML = <L KEY="SERVICES" KEYNAME="按钮服务"/>;
+                        serviceXml.@VALUE = "SERVICES://" + temp.text();
+                        var buttonXml:XML = <L KEY="BUTTON" KEYNAME="按钮" VALUE=""/>;
+                        buttonXml.appendChild(labelXml);
+                        buttonXml.appendChild(serviceXml);
+                        resultOfWindow.L.appendChild(buttonXml);
+                    }
+                    else
+                    {
+                        var inserted:XML = <L/>;
+                        inserted.@KEY = temp.localName();
+                        inserted.@KEYNAME = (form.getChildAt(i) as MyFormItem).label;
+                        inserted.@VALUE = temp.localName() + "://" + temp.services.@NAME;
+                        //resultOfWindow.@NAME = formname.text;
+                        //resultOfWindow.L.@VALUE = englishName.text;
+                        resultOfWindow.L.appendChild(inserted);
+                    }
+                }
+                str += resultOfWindow.toXMLString();
+                //str = '<?xml version="1.0" encoding="gbk"?>' + str;
+                Alert.show(str);
+                var dts:DBTable = _pool.dts as DBTable;
+
+                this.addEventListener(dts.insert_event_name, OnDtsInsertComplete);
+                dts.Insert([dts.arg_insert], ['<?xml version="1.0" encoding="gbk"?>' + str], this);
+            }
+
+            public function OnDtsInsertComplete(event:DBTableInsertEvent):void
+            {
+                var dts:DBTable = _pool.dts as DBTable;
+                if (event.user_bus == null)
+                {
+                    Alert.show("保存失败！！");
+                    this.removeEventListener(dts.insert_event_name, OnDtsInsertComplete);
+                    return;
+                }
+                var dts_no:String = event.user_bus.GetFirst('__DICT_OUT');
+                this.removeEventListener(dts.insert_event_name, OnDtsInsertComplete);
+                dts.AddQuery(dts_no, Query, dts_no, this);
+                this.addEventListener(dts.select_event_name, OnQueryNewDtsWindow);
+                dts.DoQuery(dts_no);
+            }
+
+            public function OnQueryNewDtsWindow(event:DBTableQueryEvent):void
+            {
+                var dts:DBTable = _pool.dts as DBTable;
+                this.removeEventListener(dts.insert_event_name, OnQueryNewDtsWindow);
+            }
+
+            public function OnSureClickToAddButton(arg:Object):void
+            {
+                var formitem:MyFormItem = new MyFormItem;
+                var contentXml:XML = arg.showxml;
+                contentXml.@LABEL = arg.buttonName;
+                formitem.descXml = contentXml;
+                var button:Button = new Button;
+                button.label = arg.buttonName;
+                formitem.addChild(button);
+                var moveY:Number = arg.postion;
+                var length:int = form.getChildren().length;
+                for (var j:int = 0; j < length; j++)
+                {
+                    if (form.getChildAt(j).y >= moveY)
+                        break;
+                }
+                if (j >= length)
+                    form.addChild(formitem);
+                else if (j >= 1)
+                    form.addChildAt(formitem, j);
+                else
+                    form.addChildAt(formitem, 0);
+            }
+        ]]>
+    </mx:Script>
+    <mx:Form id="form"
+             verticalGap="10"
+             borderStyle="solid"
+             backgroundColor="#FFFFFF"
+             dragEnter="dragEnterHandler(event);"
+             dragDrop="dragDropHandler(event);"
+             width="100%"
+             height="100%">
+    </mx:Form>
+</mx:TitleWindow>

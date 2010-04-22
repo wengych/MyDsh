@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items>
+	<item name="ABC Inc" date="1188599570000" description="90% - Need to send updated PSA and rate sheet." />
+	<item name="Acme Systems" date="1188599570000" description="80% - Meeting with Chris Davids for implementation follow-up." />
+	<item name="Micro LLP" date="1188513170000" description="99% - Should close within the next week or so." />
+	<item name="Anders Consulting" date="1188513170000" description="100% - Deal has been signed." />
+	<item name="Widgets Unlimited" date="1188426770000" description="10% - Terrible meeting last week. Customer doesn't see a need for our products." />
+	<item name="HRC Inc" date="1188426770000" description="50% - Going out with Mike to discuss technical implementation details." />
+	<item name="Charter Industries" date="1188340370000" description="5% - Unable to work out terms and services agreement." />
+	<item name="Swenson Corp" date="1188340370000" description="50% - Need to follow up with product roadmap and partner program." />
+	<item name="Western Lending" date="1188340370000" description="60% - Julie would like case studies and rate sheet." />
+	<item name="Chambers Inc" date="1188253970000" description="10% - Met with customer for the first time last week. Will schedule a follow up." />
+	<item name="A.R. Technologies" date="1188253970000" description="95% - SOW and MSA are en route for the customer to sign." />
+</items>

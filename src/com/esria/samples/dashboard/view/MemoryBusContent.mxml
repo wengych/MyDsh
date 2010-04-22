@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         width="100%"
+         height="100%"
+         creationComplete="init_memory_bus()">
+    <mx:Script>
+        <![CDATA[
+            import com.yspay.UserBus;
+            import com.yspay.pool.Pool;
+            private var _pool:Pool;
+
+            private function init_memory_bus(add:Boolean=true):void
+            {
+                _pool = this.parentDocument._pool as Pool;
+                var user_bus:UserBus = _pool.MAIN_BUS as UserBus;
+                if (add)
+                    user_bus.Add('test', 'test');
+                ta.text = "user_bus(XML):\n" + user_bus.toXml();
+                ta.text += "\n------------------------------------------------------\n";
+                ta.text += "user_bus(String):\n" + user_bus.toString();
+            }
+        ]]>
+    </mx:Script>
+    <mx:Button label="refresh"
+               height="3%"
+               click="init_memory_bus(false)"/>
+    <mx:TextArea id="ta"
+                 height="97%"
+                 width="100%"/>
+</mx:VBox>
