@@ -9,7 +9,6 @@ package com.yspay
     import com.yspay.pool.DBTable;
     import com.yspay.pool.Pool;
     import com.yspay.pool.QueryObject;
-    import com.yspay.util.DateUtil;
     import com.yspay.util.FunctionDelegate;
     import com.yspay.util.StackUtil;
 
@@ -32,6 +31,11 @@ package com.yspay
     import mx.events.FlexEvent;
     import mx.managers.DragManager;
     import mx.managers.PopUpManager;
+
+    // 事件方法
+    import com.yspay.event_handlers.make_tran_xml;
+    import com.yspay.event_handlers.make_windows_xml;
+    import com.yspay.event_handlers.show_xml;
 
     public class YsPod extends Pod
     {
@@ -468,8 +472,8 @@ package com.yspay
         private function doBttonActions(e:StackSendXmlEvent, container:Container):void
         {
             var event_obj:Object = {'event_clean': event_clean,
-                    'event_make_windows_xml': event_make_windows_xml,
-                    'event_make_tran_xml': event_make_tran_xml,
+                    'event_make_windows_xml': make_windows_xml,
+                    'event_make_tran_xml': make_tran_xml,
                     'event_bus2window': event_bus2window,
                     'new_window': new_window,
                     'event_show_xml': show_xml,
@@ -482,7 +486,7 @@ package com.yspay
                 {
                     if (event_obj.hasOwnProperty(action))
                     {
-                        event_obj[action](container);
+                        event_obj[action](this, container);
                         e.stackUtil.dispatchEvent(new Event(StackUtil.EVENT_STACK_NEXT));
                     }
                     else
@@ -611,86 +615,6 @@ package com.yspay
             e.stackUtil.dispatchEvent(new Event(StackUtil.EVENT_STACK_NEXT));
         }
 
-        private function event_make_tran_xml(container:Container):void
-        {
-            var win_per:String = "WINDOWS://";
-            trace('event_make_windows_xml');
-            var xml:XML = <L TYPE="TRAN" NAME="IDNUMBER" VER="20091120999999" ISUSED="0" APPNAME="MapServer" CUSER="xing">
-                    <L KEY="pod" KEYNAME="tran">
-                        <A KEY="title" KEYNAME="title"/>
-                    </L>
-                </L>;
-            var child_wnd:Container;
-            var ename:Object = main_bus.GetFirst("__W_ENAME");
-            var cname:Object = main_bus.GetFirst("__W_CNAME");
-            var date:Date = new Date;
-            xml.@NAME = ename;
-            xml.L.@VALUE = ename;
-            xml.L.A.@VALUE = cname;
-            xml.@MEMO = cname;
-            xml.@VER = date.fullYear + DateUtil.doubleString(date.month + 1) + DateUtil.doubleString(date.date) + DateUtil.doubleString(date.hours) + DateUtil.doubleString(date.minutes) + DateUtil.doubleString(date.seconds);
-            for each (child_wnd in getChildren())
-            {
-                var new_wnd:NewWindow = child_wnd as NewWindow
-                if (new_wnd == null)
-                    continue;
-                var win_xml:XML = <L KEY="windows" KEYNAME="windows"/>;
-                var postion:int = new_wnd.title.search(":");
-                win_xml.@VALUE = (win_per + new_wnd.title.substr(0, postion));
-                xml.L.appendChild(win_xml);
-            }
-            var xml_head:String = '<?xml version="1.0" encoding="GBK"?>';
-            if (main_bus.GetVarArray('__DICT_XML') != null)
-            {
-                main_bus.RemoveByKey('__DICT_XML');
-            }
-            main_bus.Add('__DICT_XML', xml_head + xml.toXMLString());
-        }
-
-        private function event_make_windows_xml(container:Container):void
-        {
-            trace('event_make_windows_xml');
-            var xml:XML = <L TYPE="WINDOWS" NAME="IDNUMBER" VER="20091120999999" ISUSED="0" APPNAME="MapServer" CUSER="xing" MEMO=""></L>;
-            var child_wnd:Container;
-            var date:Date = new Date;
-            xml.@VER = date.fullYear + DateUtil.doubleString(date.month + 1) + DateUtil.doubleString(date.date) + DateUtil.doubleString(date.hours) + DateUtil.doubleString(date.minutes) + DateUtil.doubleString(date.seconds);
-            for each (child_wnd in getChildren())
-            {
-                var new_wnd:NewWindow = child_wnd as NewWindow
-                if (new_wnd == null)
-                    continue;
-                var new_xml:XML = new_wnd.save_windows_xml();
-                xml.appendChild(new_xml);
-                xml.@NAME = new_xml.@VALUE;
-                xml.@MEMO = new_xml.A.(@KEYNAME == 'Title').@VALUE;
-            }
-            var xml_head:String = '<?xml version="1.0" encoding="GBK"?>';
-            if (main_bus.GetVarArray('__DICT_XML') != null)
-            {
-                main_bus.RemoveByKey('__DICT_XML');
-            }
-            main_bus.Add('__DICT_XML', xml_head + xml.toXMLString());
-        }
-
-        private function show_xml(container:Container):void
-        {
-            trace('show_xml');
-            var xml:XML = <L TYPE="WINDOWS" NAME="IDNUMBER" VER="20091120999999" ISUSED="0" APPNAME="MapServer" CUSER="xing" MEMO=""></L>;
-            var child_wnd:Container;
-            var date:Date = new Date;
-            xml.@VER = date.fullYear + DateUtil.doubleString(date.month + 1) + DateUtil.doubleString(date.date) + DateUtil.doubleString(date.hours) + DateUtil.doubleString(date.minutes) + DateUtil.doubleString(date.seconds);
-            for each (child_wnd in getChildren())
-            {
-                var new_wnd:NewWindow = child_wnd as NewWindow
-                if (new_wnd == null)
-                    continue;
-                var new_xml:XML = new_wnd.save_windows_xml();
-                xml.appendChild(new_xml);
-                xml.@NAME = new_xml.@VALUE;
-                xml.@MEMO = new_xml.A.(@KEYNAME == 'Title').@VALUE;
-            }
-            Alert.show(xml.toXMLString());
-        }
 
         private function new_window(container:Container):void
         {
@@ -713,7 +637,7 @@ package com.yspay
             var current:TextInput = event.target as TextInput;
             var hbox:HBox = (current.parent as HBox);
             var arr:Array = new Array;
-            for each (var textinput:*in hbox.getChildren())
+            for each (var textinput:* in hbox.getChildren())
             {
                 if (textinput is TextInput)
                 {
