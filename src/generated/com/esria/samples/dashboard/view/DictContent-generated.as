@@ -6,7 +6,7 @@
  *	Class: 		DictContent
  *	Source: 	D:\workspace\MyDsh\src\com\esria\samples\dashboard\view\DictContent.mxml
  *	Template: 	flex2/compiler/mxml/gen/ClassDef.vm
- *	Time: 		2010.04.22 12:05:34 CST
+ *	Time: 		2010.04.23 12:29:30 CST
  */
 
 package com.esria.samples.dashboard.view
@@ -109,7 +109,7 @@ new mx.core.UIComponentDescriptor({
           percentHeight: 100.0,
           dragEnabled: true,
           dragMoveEnabled: false,
-          columns: [_DictContent_DataGridColumn1_c(), _DictContent_DataGridColumn2_c()]
+          columns: [_DictContent_DataGridColumn1_c(), _DictContent_DataGridColumn2_c(), _DictContent_DataGridColumn3_c()]
         }}
       })
     ]
@@ -186,7 +186,7 @@ new mx.core.UIComponentDescriptor({
 	}
 
 	//	scripts
-	//	<Script>, line 18 - 99
+	//	<Script>, line 18 - 100
 
                 import com.yspay.pool.QueryObject;
                 import com.yspay.pool.DBTable;
@@ -237,6 +237,7 @@ new mx.core.UIComponentDescriptor({
                         o.desc = ys_var.MEMO.getValue();
                         dp.addItem(o);
                     }
+
                 }
 
                 private function refreshHandler():void
@@ -303,6 +304,14 @@ private function _DictContent_DataGridColumn2_c() : mx.controls.dataGridClasses.
 	var temp : mx.controls.dataGridClasses.DataGridColumn = new mx.controls.dataGridClasses.DataGridColumn();
 	temp.headerText = "英文名字";
 	temp.dataField = "name";
+	return temp;
+}
+
+private function _DictContent_DataGridColumn3_c() : mx.controls.dataGridClasses.DataGridColumn
+{
+	var temp : mx.controls.dataGridClasses.DataGridColumn = new mx.controls.dataGridClasses.DataGridColumn();
+	temp.headerText = "DTS";
+	temp.dataField = "dts";
 	return temp;
 }
 

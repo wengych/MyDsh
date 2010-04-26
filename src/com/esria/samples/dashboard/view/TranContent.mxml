@@ -43,10 +43,10 @@
             private function init_window():void
             {
                 _pool = this.parentDocument._pool as Pool;
-                onInit_window();
+                onInit_tran();
             }
 
-            private function onInit_window():void
+            private function onInit_tran():void
             {
 //                var info:DBTable = _pool.info as DBTable;
 //                for each (var dict_obj:QueryObject in info.WINDOWS)

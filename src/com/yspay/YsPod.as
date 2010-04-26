@@ -3,7 +3,6 @@ package com.yspay
     import com.esria.samples.dashboard.renderers.PopUpNamePanel;
     import com.esria.samples.dashboard.view.NewWindow;
     import com.esria.samples.dashboard.view.Pod;
-    import com.esria.samples.dashboard.view.WindowContent;
     import com.yspay.events.EventCacheComplete;
     import com.yspay.events.EventPodShowXml;
     import com.yspay.events.StackSendXmlEvent;
@@ -18,13 +17,16 @@ package com.yspay
     import flash.events.FocusEvent;
     import flash.events.MouseEvent;
 
+    import mx.collections.ArrayCollection;
     import mx.containers.FormItem;
     import mx.containers.HBox;
     import mx.controls.Alert;
     import mx.controls.Button;
+    import mx.controls.DataGrid;
     import mx.controls.Label;
     import mx.controls.TextArea;
     import mx.controls.TextInput;
+    import mx.controls.dataGridClasses.DataGridColumn;
     import mx.core.Container;
     import mx.events.DragEvent;
     import mx.events.FlexEvent;
@@ -60,7 +62,8 @@ package com.yspay
         public function onDragDropHandler(e:DragEvent, action:String):void
         {
             var xml:XML = <windows />
-            var str:String = 'windows://' + (e.dragInitiator as WindowContent).dg.selectedItem.name;
+            trace(e.dragInitiator)
+            var str:String = 'windows://' + (e.dragInitiator as DataGrid).selectedItem.name;
             xml.appendChild(str);
             _cache.DoCache(xml.toXMLString(), this);
         }
@@ -99,7 +102,7 @@ package com.yspay
                 {
 
                     child_name = child.name().toString().toLowerCase();
-                    if (child_name == 'windows' || child_name == 'hbox')
+                    if (child_name == 'windows' || child_name == 'hbox' || child_name == 'datagrid')
                     {
                         ShowWindow(child);
                     }
@@ -124,7 +127,7 @@ package com.yspay
                 var child_name:String;
                 titleWindow.data = new Object;
                 titleWindow.percentWidth = 100;
-                titleWindow.title = dxml.@TITLE;
+                titleWindow.title = dxml.text() + ":" + dxml.@TITLE;
                 this.addChild(titleWindow);
                 for each (var kid:XML in dxml.elements())
                 {
@@ -161,14 +164,40 @@ package com.yspay
                     }
                 }
             }
+            else if ((dxml.localName().toString().toLocaleLowerCase()) == 'datagrid')
+            {
+                var dg:DataGrid = new DataGrid;
+                dg.data = {'xml': dxml};
+                dg.percentWidth = 100;
+                dg.percentHeight = 100;
+
+                var dp:ArrayCollection = new ArrayCollection;
+
+                dg.dataProvider = dp;
+
+                dg.setStyle('borderStyle', 'solid');
+                dg.setStyle('fontSize', '12');
+                this.addChild(dg);
+
+
+                for each (var childs:XML in dxml.elements())
+                {
+                    child_name = childs.name().toString().toLowerCase();
+                    if (child_name == 'dict')
+                    {
+                        ShowDict(dg, childs);
+                    }
+                    else if (child_name == 'pool')
+                    {
+                        ShowPool(dg, childs);
+                    }
+                }
+            }
 
         }
 
-        //ShowDict 用完整的链接显示一个DICT
-        private function ShowDict(container:Container, dict_xml:XML):void
+        private function ShowPool(container:*, dict_xml:XML):void
         {
-            var label:Label = new Label;
-            var ti:TextInput = new TextInput;
             var search_str:String = '://';
             var url:String = dict_xml.text();
             var idx:int = url.search(search_str);
@@ -193,32 +222,146 @@ package com.yspay
             else
                 dxml = dict_xml;
 
-            label.text = dxml.display.LABEL.@text;
-            var ti_name:String = dxml.services.@NAME;
-            ti.text = '';
-            ti.maxChars = int(dxml.services.@LEN);
-            ti.width = (dxml.display.TEXTINPUT.@length * 50 > 200) ? 200 : (dxml.display.TEXTINPUT.@length) * 50;
-            ti.displayAsPassword = (dxml.display.TEXTINPUT.@displayAsPassword == 0 ? false : true);
-            main_bus.Add(ti_name, '');
-            ti.data = {'key': ti_name, //'ys_var': main_bus.GetVarArray(ti_name),
-                    'index': 0}; //arr[0];
-
-            var func_dele:FunctionDelegate = new FunctionDelegate;
-            var ti_focus_out_func:Function = func_dele.create(OnTextInputFocusOut, ti_name);
-            ti.addEventListener(FocusEvent.FOCUS_OUT, ti_focus_out_func);
-            ti.addEventListener(FlexEvent.ENTER, enterHandler);
-            if (container is HBox)
+            if (container is DataGrid)
             {
-                container.addChild(label);
-                container.addChild(ti);
-                return;
+
+                var dg:DataGrid = container;
+
+                var dgc:DataGridColumn =  new DataGridColumn;
+                var obj_var:Object;
+                var obj_name:String;
+                var obj_title:String;
+
+                var dp:ArrayCollection = container.dataProvider;
+
+                var info:*;
+                if (dxml.object.@att == "DBTABLE")
+                {
+                    info = _pool[dxml.object.text()] as DBTable;
+                    if (dxml.object.object.@att == "array")
+                    {
+                        obj_var = info[dxml.object.object.text()];
+                        obj_name = dxml.object.object.object.text();
+                        obj_title = dxml.object.object.object.@id;
+
+                    }
+
+                }
+
+                dgc.headerText = obj_title;
+                dgc.dataField = obj_name;
+
+                var i:int = 0;
+                for each (var dict_obj:QueryObject in obj_var)
+                {
+                    var ys_var:YsVarStruct = dict_obj.Get();
+
+                    if (dp.length <= i)
+                    {
+                        dp.addItem(new Object);
+                    }
+
+                    dp[i][obj_name] = ys_var[obj_name].getValue();
+
+
+                    i++;
+                }
+
+
+                dg.columns = dg.columns.concat(dgc);
+                dp.refresh();
             }
-            var formitem:FormItem = new FormItem;
-            formitem.direction = "horizontal";
-            formitem.label = label.text;
-            formitem.addChild(ti);
-            container.addChild(formitem);
-            _bus_ctrl_arr.push({ti_name: ti});
+        }
+
+        //ShowDict 用完整的链接显示一个DICT
+        private function ShowDict(container:*, dict_xml:XML):void
+        {
+            var search_str:String = '://';
+            var url:String = dict_xml.text();
+            var idx:int = url.search(search_str);
+            var dxml:XML;
+            if (idx > 0)
+            {
+                var query_key:String = url.substr(0, idx).toLocaleUpperCase();
+                var obj_key:String = url.substr(idx + search_str.length);
+                var query_obj:QueryObject = _pool.info[query_key][obj_key];
+
+                if (query_obj == null)
+                {
+                    Alert.show('no this key in pool.info.' + query_key + '.' + obj_key);
+                    return;
+                }
+
+                var dts_no:String = query_obj.Get().DTS;
+                var dts:DBTable = _pool.dts as DBTable;
+
+                dxml = new XML(dts[dts_no].__DICT_XML);
+            }
+            else
+                dxml = dict_xml;
+
+            if (container is DataGrid)
+            {
+
+                var dg:DataGrid = container;
+
+                var dgc:DataGridColumn =  new DataGridColumn;
+                dgc.headerText = dxml.display.LABEL.@text;
+                dgc.dataField = dxml.text();
+
+                var dp:ArrayCollection = container.dataProvider;
+
+                var data:Array = main_bus.GetVarArray(dxml.text());
+                var datalen:int = data.length;
+
+                for (var i:int = 0; i < datalen; i++)
+                {
+                    if (dp.length <= i)
+                    {
+                        dp.addItem(new Object);
+                    }
+                    dp[i][dxml.text()] = data[i].toString();
+
+                }
+
+                dg.columns = dg.columns.concat(dgc);
+                dp.refresh();
+            }
+            else //if (container is NewWindow || container is HBox)
+            {
+                var label:Label = new Label;
+                var ti:TextInput = new TextInput;
+
+                label.text = dxml.display.LABEL.@text;
+                var ti_name:String = dxml.services.@NAME;
+                ti.text = '';
+                ti.maxChars = int(dxml.services.@LEN);
+                ti.width = (dxml.display.TEXTINPUT.@length * 50 > 200) ? 200 : (dxml.display.TEXTINPUT.@length) * 50;
+                ti.displayAsPassword = (dxml.display.TEXTINPUT.@displayAsPassword == 0 ? false : true);
+                main_bus.Add(ti_name, '');
+                ti.data = {'key': ti_name, //'ys_var': main_bus.GetVarArray(ti_name),
+                        'index': 0}; //arr[0];
+
+                var func_dele:FunctionDelegate = new FunctionDelegate;
+                var ti_focus_out_func:Function = func_dele.create(OnTextInputFocusOut, ti_name);
+                ti.addEventListener(FocusEvent.FOCUS_OUT, ti_focus_out_func);
+                ti.addEventListener(FlexEvent.ENTER, enterHandler);
+                if (container is HBox)
+                {
+                    container.addChild(label);
+                    container.addChild(ti);
+                }
+                else
+                {
+                    var formitem:FormItem = new FormItem;
+                    formitem.direction = "horizontal";
+                    formitem.label = label.text;
+                    formitem.addChild(ti);
+                    container.addChild(formitem);
+                    _bus_ctrl_arr.push({ti_name: ti});
+                }
+            }
+
         }
 
         private function ShowButton(container:Container, button_xml:XML):void
@@ -329,7 +472,8 @@ package com.yspay
                     'event_make_tran_xml': event_make_tran_xml,
                     'event_bus2window': event_bus2window,
                     'new_window': new_window,
-                    'event_show_xml': show_xml};
+                    'event_show_xml': show_xml,
+                    'event_refresh_pool': event_refresh_pool};
             var action:XML = e.data as XML;
             var type:String = (action.localName().toString().toLocaleLowerCase());
             switch (type)
@@ -483,6 +627,7 @@ package com.yspay
             xml.@NAME = ename;
             xml.L.@VALUE = ename;
             xml.L.A.@VALUE = cname;
+            xml.@MEMO = cname;
             xml.@VER = date.fullYear + DateUtil.doubleString(date.month + 1) + DateUtil.doubleString(date.date) + DateUtil.doubleString(date.hours) + DateUtil.doubleString(date.minutes) + DateUtil.doubleString(date.seconds);
             for each (child_wnd in getChildren())
             {
@@ -490,7 +635,8 @@ package com.yspay
                 if (new_wnd == null)
                     continue;
                 var win_xml:XML = <L KEY="windows" KEYNAME="windows"/>;
-                win_xml.@VALUE = (win_per + new_wnd.title);
+                var postion:int = new_wnd.title.search(":");
+                win_xml.@VALUE = (win_per + new_wnd.title.substr(0, postion));
                 xml.L.appendChild(win_xml);
             }
             var xml_head:String = '<?xml version="1.0" encoding="GBK"?>';
@@ -586,13 +732,17 @@ package com.yspay
             }
         }
 
+        private function event_refresh_pool(container:Container):void
+        {
+
+        }
+
         private function OnTextInputFocusOut(event:Event, key_name:String):void
         {
             //var main_bus:UserBus = _pool.MAIN_BUS as UserBus;
             var ti:TextInput = event.target.owner as TextInput;
             var ys_var:YsVarArray = main_bus[ti.data.key]
             ys_var.value[ti.data.index].value = ti.text;
-
             //main_bus.RemoveByKey(key_name);
             //main_bus.Add(key_name, event.target.text);
         }

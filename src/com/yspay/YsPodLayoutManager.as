@@ -107,6 +107,50 @@ new\
 </event> \
 </pod>';
 
+        private var showtran_xml_str:String = '<POD title="show tran"> \
+<HBOX>\
+<BUTTON LABEL="refresh">\
+ <ACTION>event_refresh_pool</ACTION>\
+</BUTTON>\
+</HBOX>\
+<DATAGRID dragenable="true">\
+<POOL> _POOL\
+  <object att="DBTABLE"> info\
+    <object att="array"> TRAN\
+    <object att="col" id="中文名字"> MEMO\
+    </object>\
+    </object>\
+   </object>\
+</POOL>\
+<POOL>_POOL\
+  <object att="DBTABLE">  info\
+    <object att="array">    TRAN\
+    <object att="col" id="英文名字"> NAME\
+    </object>\
+    </object>\
+   </object>\
+</POOL>\
+<POOL>\
+_POOL\
+  <object att="DBTABLE">  info\
+    <object att="array">    TRAN\
+    <object att="col" id="DTS">      DTS\
+    </object>\
+    </object>\
+   </object>\
+</POOL>\
+<POOL>\
+_POOL\
+  <object att="DBTABLE">  info\
+    <object att="array">    TRAN\
+    <object att="col" id="版本号">      VER\
+    </object>\
+    </object>\
+   </object>\
+</POOL>\
+</DATAGRID>\
+</POD>';
+
         public function YsPodLayoutManager(pool:Pool)
         {
             super();
@@ -137,6 +181,10 @@ new\
             {
                 DoNewYsPod(new XML(newtran_xml_str));
             }
+            else if (event.windows_type == 'show tran')
+            {
+                DoNewYsPod(new XML(showtran_xml_str));
+            }
             else if (event.windows_type.toLocaleLowerCase().search(windows_pre_string) >= 0)
             {
                 // 'WINDOWS://testop'
@@ -155,17 +203,16 @@ new\
             }
             else
             {
-                Alert.show('字符不合法！');
-//                var tran_name:String = event.windows_type;
-////                if (_pool.info.TRAN[tran_name] == null)
-////                {
-////                    Alert.show("无此交易!!");
-////                    return;
-////                }
-//                var pod_xml:XML = <pod>
-//                    </pod>;
-//                pod_xml.appendChild("tran://" + tran_name);
-//                DoNewYsPod(pod_xml);
+                var tran_name:String = event.windows_type;
+//                if (_pool.info.TRAN[tran_name] == null)
+//                {
+//                    Alert.show("无此交易!!");
+//                    return;
+//                }
+                var pod_xml:XML = <pod>
+                    </pod>;
+                pod_xml.appendChild("tran://" + tran_name);
+                DoNewYsPod(pod_xml);
             }
         }
 

@@ -65,6 +65,7 @@
                         o.desc = ys_var.MEMO.getValue();
                         dp.addItem(o);
                     }
+
                 }
 
                 private function refreshHandler():void
@@ -103,6 +104,9 @@
                                dataField="desc"/>
             <mx:DataGridColumn headerText="英文名字"
                                dataField="name">
+            </mx:DataGridColumn>
+            <mx:DataGridColumn headerText="DTS"
+                               dataField="dts">
             </mx:DataGridColumn>
         </mx:columns>
     </mx:DataGrid>

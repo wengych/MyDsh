@@ -6,7 +6,7 @@
  *	Class: 		main0
  *	Source: 	D:\workspace\MyDsh\src\main0.mxml
  *	Template: 	flex2/compiler/mxml/gen/ClassDef.vm
- *	Time: 		2010.04.22 16:17:30 CST
+ *	Time: 		2010.04.23 17:14:57 CST
  */
 
 package 
@@ -486,7 +486,7 @@ new mx.core.UIComponentDescriptor({
 	}
 
 	//	scripts
-	//	<Script>, line 18 - 157
+	//	<Script>, line 18 - 143
 
             import mx.containers.Canvas;
             import mx.controls.Alert;
@@ -546,10 +546,8 @@ new mx.core.UIComponentDescriptor({
                 var dts_table_name:String = 'dts';
                 var dts_select_name:String = 'YSDBSDTSObjectSelect';
                 var dts_select_arg:String = '__DICT_XML';
-
                 var dts_insert_name:String = 'YSDBSDTSObjectConfigInsert';
                 var dts_insert_arg:String = '__DICT_XML';
-
                 _pool = new Pool;
                 _pool.Add(info_table_name, DBTable,
                           info_select_name, info_select_arg,
@@ -559,29 +557,17 @@ new mx.core.UIComponentDescriptor({
                           dts_select_name, dts_select_arg,
                           dts_insert_name, dts_insert_arg,
                           ip, port);
-                var info_query_dict:String = 'DICT';
-                var info_query_cond:String = "type='DICT' and appname='MapServer'";
-                var info_query_windows:String = 'WINDOWS';
-                var info_query_windows_cond:String = "type='WINDOWS' and appname='MapServer'";
-                var info_query_button:String = 'BUTTON';
-                var info_query_button_cond:String = "type='BUTTON' and appname='MapServer'";
-                var info_query_service:String = 'SERVICES';
-                var info_query_service_cond:String = "type='SERVICES' and appname='MapServer'";
                 var info:DBTable = _pool.info as DBTable;
+                var arr:Array = ['DICT', 'WINDOWS', 'BUTTON', 'SERVICES', 'TRAN', 'ACTION', 'HBOX', 'EVENT'];
                 this.addEventListener(info.select_event_name, InfoQueryComplete);
                 CursorManager.setBusyCursor();
-                info.AddQuery(info_query_dict, QueryWithIndex, info_query_cond, this);
-                info.DoQuery(info_query_dict, 'NAME', 'VER');
-
-                info.AddQuery(info_query_windows, QueryWithIndex, info_query_windows_cond, this);
-                info.DoQuery(info_query_windows, 'NAME', 'VER');
-
-                info.AddQuery(info_query_button, QueryWithIndex, info_query_button_cond, this);
-                info.DoQuery(info_query_button, 'NAME', 'VER');
-
-                info.AddQuery(info_query_service, QueryWithIndex, info_query_service_cond, this);
-                info.DoQuery(info_query_service, 'NAME', 'VER');
-
+                for each (var str:String in arr)
+                {
+                    var info_query_dict:String = str;
+                    var info_query_cond:String = "type='" + str + "' and appname='MapServer'";
+                    info.AddQuery(info_query_dict, QueryWithIndex, info_query_cond, this);
+                    info.DoQuery(info_query_dict, 'NAME', 'VER');
+                }
                 _pool.Add('MAIN_BUS', UserBus);
             }
 
@@ -628,11 +614,12 @@ new mx.core.UIComponentDescriptor({
             }
         
 
-	//	<Script>, line 195 - 309
+	//	<Script>, line 181 - 296
 
             //longin handler 
             [Bindable]
-            private var comboboxDP:ArrayCollection = new ArrayCollection([{name: "请选择"}, {name: "show memory bus"}, {name: "show dict"}, {name: "show window"}, {name: "show service"}, {name: "new window"},
+            private var comboboxDP:ArrayCollection = new ArrayCollection([{name: "请选择"}, {name: "show memory bus"}, {name: "show dict"}, {name: "show window"}, {name: "show service"}, {name: "show tran"},
+                                                                          {name: "new window"},
                                                                           {name: "new service"}, {name: "new tran"}]);
             [Bindable]
             private var ipDP:ArrayCollection = new ArrayCollection([{ip: "192.168.0.77", port: "16920"}, {ip: "192.168.0.216", port: "16920"}, {ip: "124.207.197.178", port: "6802"}]);
