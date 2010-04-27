@@ -8,6 +8,7 @@ package com.esria.samples.dashboard.managers
     import com.esria.samples.dashboard.events.PodStateChangeEvent;
     import com.esria.samples.dashboard.view.DragHighlight;
     import com.esria.samples.dashboard.view.Pod;
+    import com.yspay.*;
 
     import flash.events.EventDispatcher;
     import flash.events.MouseEvent;
@@ -16,7 +17,6 @@ package com.esria.samples.dashboard.managers
 
     import mx.containers.Canvas;
     import mx.core.Application;
-    import mx.core.UIComponent;
     import mx.effects.Move;
     import mx.effects.Parallel;
     import mx.effects.Resize;
@@ -29,6 +29,7 @@ package com.esria.samples.dashboard.managers
 
     public class PodLayoutManager extends EventDispatcher
     {
+        public var _M_data:Object = Application.application.M_data; //xingj
         public var id:String;
         public var items:Array = new Array(); // Stores the pods which are not minimized.
         public var minimizedItems:Array = new Array(); // Stores the minimized pods.
@@ -213,6 +214,7 @@ package com.esria.samples.dashboard.managers
         private function onClosePod(e:PodStateChangeEvent):void
         {
             var pod:Pod = Pod(e.currentTarget);
+
             if (pod.windowState == Pod.WINDOW_STATE_MAXIMIZED) // Current state is maximized
             {
                 if (maximizeParallel != null && maximizeParallel.isPlaying)
@@ -252,6 +254,12 @@ package com.esria.samples.dashboard.managers
                 this.container.removeChild(dragHighlightItems.pop());
                 this.updateLayout(true);
                 dispatchEvent(new LayoutChangeEvent(LayoutChangeEvent.UPDATE));
+            }
+            if (pod is YsPod)
+            {
+                var _pod:YsPod = pod as YsPod;
+                if(_M_data.TRAN[_pod.P_cont] != null)
+                    delete _M_data.TRAN[_pod.P_cont];
             }
         }
 
