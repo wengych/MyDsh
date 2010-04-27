@@ -19,6 +19,10 @@ package com.yspay
         private var show_save_xml_str:String = '<pod tilte="show xml">\
 <windows>\
   new window\
+ <event>\
+   dragDrop\
+  <ACTION>show_aa</ACTION>\
+ </event> \
 </windows>\
 <windows>\
   xml window\
@@ -35,31 +39,29 @@ package com.yspay
 <BUTTON LABEL="保存">\
  <ACTION>event_make_windows_xml</ACTION>\
  <SERVICES>\
-  YSDBSDTSObjectConfigInsert\
-  <SendPKG>\
-    <HEAD active="YSDBSDTSObjectConfigInsert"/>\
-    <BODY>\
-      <DICT>DICT://__DICT_XML</DICT>\
-    </BODY>\
-  </SendPKG>\
-  <RecvPKG>\
-     <BODY>\
-      <DICT>DICT://__DICT_OUT</DICT>\
-      <DICT>DICT://__DICT_USER_RTN</DICT>\
-      <DICT>DICT://__DICT_USER_RTNMSG</DICT>\
-    </BODY>\
-  </RecvPKG>\
+  SERVICES://YSDBSDTSObjectConfigInsert\
 </SERVICES>\
  <ACTION>\
     event_bus2window\
  </ACTION>\
 </BUTTON>\
 <BUTTON LABEL="清空">\
- <ACTION>event_clean</ACTION>\
+ <ACTION>event_clean_text</ACTION>\
 </BUTTON>\
 <BUTTON LABEL="显示xml">\
 <ACTION>event_show_xml</ACTION>\
 </BUTTON>\
+</HBox>\
+<HBox line="top">\
+<DICT>\
+  DICT://__DICT_USER_RTN\
+</DICT>\
+<DICT>\
+  DICT://__DICT_USER_RTNMSG\
+</DICT>\
+<DICT>\
+  DICT://__DICT_OUT\
+</DICT>\
 </HBox>\
 <windows title="new">\
 new\
@@ -79,27 +81,25 @@ new\
 <BUTTON LABEL="保存">\
  <ACTION>event_make_tran_xml</ACTION>\
  <SERVICES>\
-  YSDBSDTSObjectConfigInsert\
-  <SendPKG>\
-    <HEAD active="YSDBSDTSObjectConfigInsert"/>\
-    <BODY>\
-      <DICT>DICT://__DICT_XML</DICT>\
-    </BODY>\
-  </SendPKG>\
-  <RecvPKG>\
-     <BODY>\
-      <DICT>DICT://__DICT_OUT</DICT>\
-      <DICT>DICT://__DICT_USER_RTN</DICT>\
-      <DICT>DICT://__DICT_USER_RTNMSG</DICT>\
-     </BODY>\
-  </RecvPKG>\
+  SERVICES://YSDBSDTSObjectConfigInsert\
 </SERVICES>\
  <ACTION>\
     event_bus2window\
  </ACTION>\</BUTTON>\
 <BUTTON LABEL="清空">\
- <ACTION>event_clean</ACTION>\
+ <ACTION>event_clean_text</ACTION>\
 </BUTTON>\
+</HBox>\
+<HBox line="top">\
+<DICT>\
+  DICT://__DICT_USER_RTN\
+</DICT>\
+<DICT>\
+  DICT://__DICT_USER_RTNMSG\
+</DICT>\
+<DICT>\
+  DICT://__DICT_OUT\
+</DICT>\
 </HBox>\
 <event>\
  dragDrop\
@@ -204,11 +204,6 @@ _POOL\
             else
             {
                 var tran_name:String = event.windows_type;
-//                if (_pool.info.TRAN[tran_name] == null)
-//                {
-//                    Alert.show("无此交易!!");
-//                    return;
-//                }
                 var pod_xml:XML = <pod>
                     </pod>;
                 pod_xml.appendChild("tran://" + tran_name);
@@ -261,46 +256,5 @@ _POOL\
             this.removeNullItems();
             this.updateLayout(true);
         }
-//
-//        private function OnQueryWindowsDTSComplete(event:DBTableQueryEvent):void
-//        {
-//            var dts:DBTable = _pool.dts as DBTable;
-//            trace(event.query_name);
-//
-//            if (!dts.hasOwnProperty(event.query_name) || dts[event.query_name].__DICT_XML == null)
-//            {
-//                return;
-//            }
-//            var dispObj:DisplayObject = new DeployedWindow;
-//            DoNewPod(dispObj, event.query_name);
-//            var pod:Pod = dispObj.parent as Pod;
-//            var dts_xml:XML = new XML(dts[event.query_name].__DICT_XML);
-//            this.removeEventListener(dts.select_event_name, OnQueryWindowsDTSComplete);
-//        }
-
-//        private function OnDtsQueryComplete(event:DBTableQueryEvent, pod:YsPod):void
-//        {
-//            var dts:DBTable = _pool.dts as DBTable;
-//            var contentXml:XML = new XML(StringUtil.trim(dts[event.query_name].__DICT_XML));
-//            pod.dispatchEvent(new EventPodNewChild(contentXml));
-//        }
-//
-//        private function onDragDropHandler(e:DragEvent, action:String):void
-//        {
-//            var object:Object = {'new window': ['cache window', 'new_window']}
-//            var functionHepler:FunctionDelegate = new FunctionDelegate;
-//            var search_str:String = '://';
-//            var pod:YsPod = e.currentTarget as YsPod;
-//            this.addEventListener(_pool.dts.select_event_name, functionHepler.create(OnDtsQueryComplete, pod));
-//            var url:String = "WINDOWS://" + (e.dragInitiator as WindowContent).selectedItem.name;
-//            var idx:int = url.search(search_str);
-//            var query_key:String = url.substr(0, idx).toLocaleUpperCase();
-//            var obj_key:String = url.substr(idx + search_str.length);
-//            var dts_no:String = _pool.info[query_key][obj_key].Get().DTS;
-//            var dts:DBTable = _pool.dts as DBTable;
-//            dts.AddQuery(dts_no, Query, dts_no, this);
-//            dts.DoQuery(dts_no);
-//
-//        }
     }
 }

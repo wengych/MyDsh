@@ -1,9 +1,12 @@
 // ActionScript file
 package com.yspay.event_handlers
 {
+    import com.esria.samples.dashboard.view.NewWindow;
+    import com.yspay.util.DateUtil;
+
     import mx.core.Container;
 
-    public function make_tran_xml(container:Container):void
+    public function make_tran_xml(wnd:Object, event_container:Container):void
     {
         var win_per:String = "WINDOWS://";
         trace('event_make_windows_xml');
@@ -13,15 +16,16 @@ package com.yspay.event_handlers
                 </L>
             </L>;
         var child_wnd:Container;
-        var ename:Object = main_bus.GetFirst("__W_ENAME");
-        var cname:Object = main_bus.GetFirst("__W_CNAME");
+        var P_data:Object = wnd._M_data.TRAN[wnd.P_cont];
+        var ename:Object = P_data.data[0]["__W_ENAME"]; // wnd.main_bus.GetFirst("__W_ENAME");
+        var cname:Object = P_data.data[0]["__W_CNAME"]; // wnd.main_bus.GetFirst("__W_CNAME");
         var date:Date = new Date;
         xml.@NAME = ename;
         xml.L.@VALUE = ename;
         xml.L.A.@VALUE = cname;
         xml.@MEMO = cname;
         xml.@VER = date.fullYear + DateUtil.doubleString(date.month + 1) + DateUtil.doubleString(date.date) + DateUtil.doubleString(date.hours) + DateUtil.doubleString(date.minutes) + DateUtil.doubleString(date.seconds);
-        for each (child_wnd in getChildren())
+        for each (child_wnd in wnd.getChildren())
         {
             var new_wnd:NewWindow = child_wnd as NewWindow
             if (new_wnd == null)
@@ -32,10 +36,10 @@ package com.yspay.event_handlers
             xml.L.appendChild(win_xml);
         }
         var xml_head:String = '<?xml version="1.0" encoding="GBK"?>';
-        if (main_bus.GetVarArray('__DICT_XML') != null)
+        if (wnd.main_bus.GetVarArray('__DICT_XML') != null)
         {
-            main_bus.RemoveByKey('__DICT_XML');
+            wnd.main_bus.RemoveByKey('__DICT_XML');
         }
-        main_bus.Add('__DICT_XML', xml_head + xml.toXMLString());
+        wnd.main_bus.Add('__DICT_XML', xml_head + xml.toXMLString());
     }
 }
