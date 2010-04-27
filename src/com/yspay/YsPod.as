@@ -1,8 +1,8 @@
 package com.yspay
 {
-    import com.esria.samples.dashboard.renderers.PopUpNamePanel;
     import com.esria.samples.dashboard.view.NewWindow;
     import com.esria.samples.dashboard.view.Pod;
+    import com.yspay.event_handlers.EventHandlerFactory;
     import com.yspay.events.EventCacheComplete;
     import com.yspay.events.EventPodShowXml;
     import com.yspay.events.StackSendXmlEvent;
@@ -23,19 +23,12 @@ package com.yspay
     import mx.controls.Button;
     import mx.controls.DataGrid;
     import mx.controls.Label;
-    import mx.controls.TextArea;
     import mx.controls.TextInput;
     import mx.controls.dataGridClasses.DataGridColumn;
     import mx.core.Container;
     import mx.events.DragEvent;
     import mx.events.FlexEvent;
     import mx.managers.DragManager;
-    import mx.managers.PopUpManager;
-
-    // 事件方法
-    import com.yspay.event_handlers.make_tran_xml;
-    import com.yspay.event_handlers.make_windows_xml;
-    import com.yspay.event_handlers.show_xml;
 
     public class YsPod extends Pod
     {
@@ -397,50 +390,7 @@ package com.yspay
                     serviceNum++;
                 arr.push(kid);
             }
-            /*
-               if (serviceNum > 1) //多个SERVICES调用
-               {
-               //NEW SESSION
-               var Session_New:XML =
-               <SERVICES>
-               YSDBSDTSObjectConfigInsert
-               <SendPKG>
-               <HEAD active="YSDBSDTSObjectConfigInsert"/>
-               <BODY>
-               <DICT>DICT://__DICT_XML</DICT>
-               </BODY>
-               </SendPKG>
-               <RecvPKG>
-               <BODY>
-               <DICT>DICT://__SESSION_NO</DICT>
-               <DICT>DICT://__DICT_OUT</DICT>
-               </BODY>
-               </RecvPKG>
-               </SERVICES>;
 
-               var Session_Commit:XML =
-               <SERVICES>
-               YSDBSDTSObjectConfigInsert
-               <SendPKG>
-               <HEAD active="YSDBSDTSObjectConfigInsert"/>
-               <BODY>
-               <DICT>DICT://__DICT_XML</DICT>
-               </BODY>
-               </SendPKG>
-               <RecvPKG>
-               <BODY>
-               <DICT>DICT://__SESSION_NO</DICT>
-               <DICT>DICT://__DICT_OUT</DICT>
-               </BODY>
-               </RecvPKG>
-               </SERVICES>;
-
-               var Session : Session = new session;
-               bus.back();
-               arr.unshift(Session_New);
-               arr.push(Session_Commit);
-               }
-             */
             var event_bus2windowsXML:XML = <ACTION> event_bus2window </ACTION>;
             arr.push(event_bus2windowsXML);
 
@@ -454,45 +404,25 @@ package com.yspay
         }
 
         //button一系列action services的最后一个
-        private function event_bus2window(container:Container):void
-        {
-            var children:Array = container.getChildren();
-            var ti:TextInput;
-            /*
-               for each (var obj:Object in children)
-               {
-               var ti:TextInput = obj as TextInput;
-               if (ti != null && ti.data.key == '')
-
-               }
-             */
-            Alert.show(main_bus.toString());
-        }
 
         private function doBttonActions(e:StackSendXmlEvent, container:Container):void
         {
-            var event_obj:Object = {'event_clean': event_clean,
-                    'event_make_windows_xml': make_windows_xml,
-                    'event_make_tran_xml': make_tran_xml,
-                    'event_bus2window': event_bus2window,
-                    'new_window': new_window,
-                    'event_show_xml': show_xml,
-                    'event_refresh_pool': event_refresh_pool};
             var action:XML = e.data as XML;
             var type:String = (action.localName().toString().toLocaleLowerCase());
             switch (type)
             {
                 case 'action':
                 {
-                    if (event_obj.hasOwnProperty(action))
+                    //if (event_obj.hasOwnProperty(action))
                     {
-                        event_obj[action](this, container);
+                        var func:Function = EventHandlerFactory.get_handler(action);
+                        func(this, container);
                         e.stackUtil.dispatchEvent(new Event(StackUtil.EVENT_STACK_NEXT));
                     }
-                    else
-                    {
-                        trace('no this function: ', action);
-                    }
+                    /*else
+                       {
+                       trace('no this function: ', action);
+                     }*/
                     break;
                 }
                 case 'services':
@@ -521,21 +451,6 @@ package com.yspay
             return service_desc;
         }
 
-        private function event_clean(container:Container):void
-        {
-            var children:Array = container.getChildren();
-
-            for each (var obj:Object in children)
-            {
-                var ti:TextInput = obj as TextInput;
-                if (ti != null)
-                    ti.text = ti.data.value = '';
-
-                var ta:TextArea = obj as TextArea;
-                if (ta != null)
-                    ta.text = ta.data.value = '';
-            }
-        }
 
         private function DoService(e:StackSendXmlEvent, service:XML):void
         {
@@ -615,16 +530,6 @@ package com.yspay
             e.stackUtil.dispatchEvent(new Event(StackUtil.EVENT_STACK_NEXT));
         }
 
-
-        private function new_window(container:Container):void
-        {
-
-            var new_popName:PopUpNamePanel = new PopUpNamePanel;
-            new_popName.parentYsPod = this;
-            PopUpManager.addPopUp(new_popName, this, true, null);
-            PopUpManager.centerPopUp(new_popName);
-        }
-
         public function OnNewWindowNameReady(name:String):void
         {
             var new_wnd:NewWindow = new NewWindow;
@@ -654,11 +559,6 @@ package com.yspay
                         (arr[0] as TextInput).setFocus();
                 }
             }
-        }
-
-        private function event_refresh_pool(container:Container):void
-        {
-
         }
 
         private function OnTextInputFocusOut(event:Event, key_name:String):void

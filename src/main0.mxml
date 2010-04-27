@@ -47,10 +47,14 @@
             import com.yspay.events.EventNewPod;
             import com.yspay.util.EncryptUtil;
             import com.yspay.UserBus;
+            import com.yspay.event_handlers.EventHandlerFactory;
 
             // Array of PodLayoutManagers
             private var podLayoutManagers:Array = new Array();
             public var _pool:Pool;
+
+            // for init event functions
+            //private var event_handler_factory:EventHandlerFactory;
 
             private function onEnterState():void
             {

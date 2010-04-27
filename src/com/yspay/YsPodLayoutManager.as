@@ -55,7 +55,7 @@ package com.yspay
  </ACTION>\
 </BUTTON>\
 <BUTTON LABEL="清空">\
- <ACTION>event_clean</ACTION>\
+ <ACTION>event_clean_text</ACTION>\
 </BUTTON>\
 <BUTTON LABEL="显示xml">\
 <ACTION>event_show_xml</ACTION>\
@@ -98,7 +98,7 @@ new\
     event_bus2window\
  </ACTION>\</BUTTON>\
 <BUTTON LABEL="清空">\
- <ACTION>event_clean</ACTION>\
+ <ACTION>event_clean_text</ACTION>\
 </BUTTON>\
 </HBox>\
 <event>\
