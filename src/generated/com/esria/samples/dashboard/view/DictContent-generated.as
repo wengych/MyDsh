@@ -6,7 +6,7 @@
  *	Class: 		DictContent
  *	Source: 	D:\workspace\MyDsh\src\com\esria\samples\dashboard\view\DictContent.mxml
  *	Template: 	flex2/compiler/mxml/gen/ClassDef.vm
- *	Time: 		2010.04.23 12:29:30 CST
+ *	Time: 		2010.04.27 12:00:32 CST
  */
 
 package com.esria.samples.dashboard.view

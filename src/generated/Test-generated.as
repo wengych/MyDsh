@@ -6,7 +6,7 @@
  *	Class: 		Test
  *	Source: 	D:\workspace\MyDsh\src\Test.mxml
  *	Template: 	flex2/compiler/mxml/gen/ClassDef.vm
- *	Time: 		2010.04.22 09:52:12 CST
+ *	Time: 		2010.04.27 10:35:10 CST
  */
 
 package 

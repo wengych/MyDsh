@@ -6,7 +6,7 @@
  *	Class: 		NewService
  *	Source: 	D:\workspace\MyDsh\src\com\esria\samples\dashboard\view\NewService.mxml
  *	Template: 	flex2/compiler/mxml/gen/ClassDef.vm
- *	Time: 		2010.04.22 09:52:16 CST
+ *	Time: 		2010.04.27 12:00:32 CST
  */
 
 package com.esria.samples.dashboard.view

@@ -6,7 +6,7 @@
  *	Class: 		ServiceContent
  *	Source: 	D:\workspace\MyDsh\src\com\esria\samples\dashboard\view\ServiceContent.mxml
  *	Template: 	flex2/compiler/mxml/gen/ClassDef.vm
- *	Time: 		2010.04.22 12:11:05 CST
+ *	Time: 		2010.04.27 12:00:32 CST
  */
 
 package com.esria.samples.dashboard.view

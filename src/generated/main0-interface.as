@@ -83,7 +83,7 @@ public class main0 extends mx.core.Application
 	mx_internal var _bindingsByDestination : Object;
 	mx_internal var _bindingsBeginWithWord : Object;
 
-include "D:/workspace/MyDsh/src/main0.mxml:18,143";
-include "D:/workspace/MyDsh/src/main0.mxml:181,296";
+include "D:/workspace/MyDsh/src/main0.mxml:18,183";
+include "D:/workspace/MyDsh/src/main0.mxml:221,337";
 
 }}

@@ -6,7 +6,7 @@
  *	Class: 		main0
  *	Source: 	D:\workspace\MyDsh\src\main0.mxml
  *	Template: 	flex2/compiler/mxml/gen/ClassDef.vm
- *	Time: 		2010.04.23 17:14:57 CST
+ *	Time: 		2010.04.27 12:00:32 CST
  */
 
 package 
@@ -486,7 +486,7 @@ new mx.core.UIComponentDescriptor({
 	}
 
 	//	scripts
-	//	<Script>, line 18 - 143
+	//	<Script>, line 18 - 183
 
             import mx.containers.Canvas;
             import mx.controls.Alert;
@@ -519,10 +519,12 @@ new mx.core.UIComponentDescriptor({
             import com.yspay.events.EventNewPod;
             import com.yspay.util.EncryptUtil;
             import com.yspay.UserBus;
+            import com.yspay.*;
 
             // Array of PodLayoutManagers
             private var podLayoutManagers:Array = new Array();
             public var _pool:Pool;
+            public var M_data:Object = new Object; //xingj
 
             private function onEnterState():void
             {
@@ -561,12 +563,21 @@ new mx.core.UIComponentDescriptor({
                 var arr:Array = ['DICT', 'WINDOWS', 'BUTTON', 'SERVICES', 'TRAN', 'ACTION', 'HBOX', 'EVENT'];
                 this.addEventListener(info.select_event_name, InfoQueryComplete);
                 CursorManager.setBusyCursor();
+                M_data.POOL = new Object; // xingj
+                M_data.POOL.INFO = new Object; // xingj
+                M_data.BUS = new Object;
+                M_data.BUS.MAIN = new Object;
+                M_data.BUS.RECV = new Object;
+                M_data.TRAN = new Object;
+                M_data.TRAN.cont = new int;
+                M_data.TRAN.cont = 10000;
                 for each (var str:String in arr)
                 {
                     var info_query_dict:String = str;
                     var info_query_cond:String = "type='" + str + "' and appname='MapServer'";
                     info.AddQuery(info_query_dict, QueryWithIndex, info_query_cond, this);
                     info.DoQuery(info_query_dict, 'NAME', 'VER');
+                    M_data.POOL.INFO[str] = new ArrayCollection;
                 }
                 _pool.Add('MAIN_BUS', UserBus);
             }
@@ -577,6 +588,35 @@ new mx.core.UIComponentDescriptor({
                 CursorManager.removeBusyCursor();
                 trace("--------------------pool-----------------------")
                 trace(event.user_bus);
+                var info:DBTable = _pool.info as DBTable;
+                var i:int = 0;
+
+                if (M_data.POOL.INFO[event.query_name] != null)
+                    M_data.POOL.INFO[event.query_name].removeAll();
+
+                M_data.POOL.INFO[event.query_name] = new ArrayCollection;
+
+                for each (var dict_obj:QueryObject in info[event.query_name])
+                {
+                    var ys_var:YsVarStruct = dict_obj.Get();
+                    if (M_data.POOL.INFO[event.query_name].length <= i)
+                        M_data.POOL.INFO[event.query_name].addItem(new Object);
+                    M_data.POOL.INFO[event.query_name][i]["APPNAME"] = ys_var.APPNAME.getValue();
+                    M_data.POOL.INFO[event.query_name][i]["CDATE"] = ys_var.CDATE.getValue();
+                    M_data.POOL.INFO[event.query_name][i]["CUSER"] = ys_var.CUSER.getValue();
+                    M_data.POOL.INFO[event.query_name][i]["DTS"] = ys_var.DTS.getValue();
+                    M_data.POOL.INFO[event.query_name][i]["ISUSED"] = ys_var.ISUSED.getValue();
+                    M_data.POOL.INFO[event.query_name][i]["MDATE"] = ys_var.MDATE.getValue();
+                    M_data.POOL.INFO[event.query_name][i]["MEMO"] = ys_var.MEMO.getValue();
+                    M_data.POOL.INFO[event.query_name][i]["MUSER"] = ys_var.MUSER.getValue();
+                    M_data.POOL.INFO[event.query_name][i]["NAME"] = ys_var.NAME.getValue();
+                    M_data.POOL.INFO[event.query_name][i]["TYPE"] = ys_var.TYPE.getValue();
+                    M_data.POOL.INFO[event.query_name][i]["VALUE"] = ys_var.VALUE.getValue();
+                    M_data.POOL.INFO[event.query_name][i]["VER"] = ys_var.VER.getValue();
+
+                    i++;
+                }
+                //xingj ..
             }
 
             private function onFaultHttpService(e:FaultEvent):void
@@ -614,7 +654,7 @@ new mx.core.UIComponentDescriptor({
             }
         
 
-	//	<Script>, line 181 - 296
+	//	<Script>, line 221 - 337
 
             //longin handler 
             [Bindable]
@@ -622,7 +662,8 @@ new mx.core.UIComponentDescriptor({
                                                                           {name: "new window"},
                                                                           {name: "new service"}, {name: "new tran"}]);
             [Bindable]
-            private var ipDP:ArrayCollection = new ArrayCollection([{ip: "192.168.0.77", port: "16920"}, {ip: "192.168.0.216", port: "16920"}, {ip: "124.207.197.178", port: "6802"}]);
+            private var ipDP:ArrayCollection = new ArrayCollection([{ip: "192.168.0.77", port: "16920"}, {ip: "192.168.0.216", port: "16920"}, {ip: "124.207.197.178", port: "6802"}, {ip: "192.168.0.75",
+                                                                        port: "16920"}]);
 
             private function comboboxClickHandler(event:Event):void
             {

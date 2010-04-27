@@ -43,6 +43,6 @@ public class NewWindow extends mx.containers.TitleWindow
 	mx_internal var _bindingsByDestination : Object;
 	mx_internal var _bindingsBeginWithWord : Object;
 
-include "D:/workspace/MyDsh/src/com/esria/samples/dashboard/view/NewWindow.mxml:11,391";
+include "D:/workspace/MyDsh/src/com/esria/samples/dashboard/view/NewWindow.mxml:11,398";
 
 }}

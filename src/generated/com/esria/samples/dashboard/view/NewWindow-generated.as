@@ -6,7 +6,7 @@
  *	Class: 		NewWindow
  *	Source: 	D:\workspace\MyDsh\src\com\esria\samples\dashboard\view\NewWindow.mxml
  *	Template: 	flex2/compiler/mxml/gen/ClassDef.vm
- *	Time: 		2010.04.22 09:52:16 CST
+ *	Time: 		2010.04.27 12:04:44 CST
  */
 
 package com.esria.samples.dashboard.view
@@ -146,8 +146,9 @@ new mx.core.UIComponentDescriptor({
 	}
 
 	//	scripts
-	//	<Script>, line 11 - 391
+	//	<Script>, line 11 - 398
 
+            import mx.collections.ArrayCollection;
             import com.yspay.events.EventPodNewChild;
             import mx.controls.listClasses.ListBase;
             import mx.controls.List;
@@ -170,6 +171,12 @@ new mx.core.UIComponentDescriptor({
             import com.yspay.pool.*;
             import com.yspay.FunctionHelper;
             import com.esria.samples.dashboard.renderers.PopUpButtonPanel;
+            import mx.core.Application;
+
+            public var _M_data:Object = Application.application.M_data; //xingj
+
+            [Bindable]
+            private var arr_col:ArrayCollection;
 
             private var _pool:Pool;
             private var func_helper:FunctionHelper = new FunctionHelper;
@@ -390,12 +397,12 @@ new mx.core.UIComponentDescriptor({
             }
 
 
-            public function save_windows_xml():XML
+            public function save_windows_xml(p_cont:int):XML
             {
 
-                var main_bus:UserBus = _pool.MAIN_BUS as UserBus;
-                var ename:Object = main_bus.GetFirst("__W_ENAME");
-                var cname:Object = main_bus.GetFirst("__W_CNAME");
+                var P_data:Object = _M_data.TRAN[p_cont];
+                var ename:String = P_data.data[0]["__W_ENAME"];
+                var cname:String = P_data.data[0]["__W_CNAME"];
                 var rtn:XML = <L KEY="windows" KEYNAME="windows" VALUE="windows IN">
                         <A KEY="TITLE" KEYNAME="Title" />
                     </L>;

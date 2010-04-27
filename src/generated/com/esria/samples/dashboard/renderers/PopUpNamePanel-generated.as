@@ -6,7 +6,7 @@
  *	Class: 		PopUpNamePanel
  *	Source: 	D:\workspace\MyDsh\src\com\esria\samples\dashboard\renderers\PopUpNamePanel.mxml
  *	Template: 	flex2/compiler/mxml/gen/ClassDef.vm
- *	Time: 		2010.04.23 16:13:35 CST
+ *	Time: 		2010.04.27 13:18:53 CST
  */
 
 package com.esria.samples.dashboard.renderers
