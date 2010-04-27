@@ -83,7 +83,7 @@ package com.yspay
             ShowWindow(event.cache_xml);
         }
 
-        //相当于入�
+        //相当于入�
         private function ShowWindow(xml:XML):void
         {
             var search_str:String = '://';
@@ -113,10 +113,10 @@ package com.yspay
                 P_data.obj = this;
                 P_data.data = new ArrayCollection;
                 //xingj ..
-//??????? P_data中如果某个数据字典不止一项，那么他的TEXTINPUT是不是只有一项？还是所有的输入域都是数�
+//??????? P_data中如果某个数据字典不止一项，那么他的TEXTINPUT是不是只有一项？还是所有的输入域都是数�
                 if (P_data.data.length == 0)
                     P_data.data.addItem(new Object);
-//???Proxy 被定义在某个下标(P_data.data[0])，所以如果需要通过事件改变其他下标的值，需要多个事件，目前TEXTINPUT不存在这个问题。DATAGRID是一个问�
+//???Proxy 被定义在某个下标(P_data.data[0])，所以如果需要通过事件改变其他下标的值，需要多个事件，目前TEXTINPUT不存在这个问题。DATAGRID是一个问�
                 var proxy:ObjectProxy = new ObjectProxy;
                 proxy = new ObjectProxy(P_data.data[0]);
                 proxy.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE,
@@ -162,7 +162,7 @@ package com.yspay
                 this.addChild(titleWindow);
 
                 //xingj
-                var W_cont = new int;
+                var W_cont:int = new int;
                 W_cont = P_data.cont;
                 P_data.cont++;
                 P_data[W_cont] = new Object;
@@ -199,7 +199,7 @@ package com.yspay
                 this.addChild(hbox);
 
                 //xingj
-                var W_cont = new int;
+                var W_cont:int = new int;
                 W_cont = P_data.cont;
                 P_data.cont++;
                 P_data[W_cont] = new Object;
@@ -239,7 +239,7 @@ package com.yspay
 
 
                 //xingj
-                var W_cont = new int;
+                var W_cont:int = new int;
                 W_cont = P_data.cont;
                 P_data.cont++;
                 P_data[W_cont] = new Object;
@@ -512,14 +512,14 @@ package com.yspay
 
             var fg:FunctionDelegate = new FunctionDelegate;
             stackUtil.addEventListener(StackUtil.EVENT_STACK_NEXT, fg.create(stackUtil.stack, btn, arr));
-            //驱动�
+            //驱动�
             stackUtil.stack(new Event(StackUtil.EVENT_STACK_NEXT), btn, arr);
             trace(btn.label);
             // trace(btn.data.ACTION);
             trace(container.className);
         }
 
-        //button一系列action services的最后一�
+        //button一系列action services的最后一�
 
         private function doBttonActions(e:StackSendXmlEvent, container:Container):void
         {
@@ -591,7 +591,7 @@ package com.yspay
             bus.Add(ServiceCall.SCALL_NAME, scall_name);
             for each (var var_name:String in bus_in_name_args)
             {
-                // 参数从本地bus中获�?xingjun getfrist is err
+                // 参数从本地bus中获�?xingjun getfrist is err
                 if (!P_data.data[0].hasOwnProperty(var_name))
                     bus.Add(var_name, main_bus.GetFirst(var_name));
                 else
@@ -645,7 +645,7 @@ package com.yspay
                Session.Roolback()
                Session = Null;
                bus.rtn = -1;
-               bus.rtmsg = "交易回退�
+               bus.rtmsg = "交易回退�
 
                }
              */
@@ -688,7 +688,7 @@ package com.yspay
             if (o is FormItem)
                 for each (var t:Object in o.parent.getChildren())
                 {
-                    for each (var textinput:*in t.getChildren())
+                    for each (var textinput:* in t.getChildren())
                     {
                         if (textinput is TextInput)
                         {
@@ -698,7 +698,7 @@ package com.yspay
 
                 }
             else
-                for each (var textinput:*in o.getChildren())
+                for each (var textinput:* in o.getChildren())
                 {
                     if (textinput is TextInput)
                     {

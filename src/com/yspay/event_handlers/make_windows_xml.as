@@ -18,7 +18,7 @@ package com.yspay.event_handlers
             var new_wnd:NewWindow = child_wnd as NewWindow
             if (new_wnd == null)
                 continue;
-            var new_xml:XML = new_wnd.save_windows_xml();
+            var new_xml:XML = new_wnd.save_windows_xml(wnd.P_cont);
             xml.appendChild(new_xml);
             xml.@NAME = new_xml.@VALUE;
             xml.@MEMO = new_xml.A.(@KEYNAME == 'Title').@VALUE;

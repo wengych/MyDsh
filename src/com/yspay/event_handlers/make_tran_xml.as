@@ -1,10 +1,10 @@
 // ActionScript file
 package com.yspay.event_handlers
 {
-    import com.yspay.util.DateUtil;
-    import mx.core.Container;
-
     import com.esria.samples.dashboard.view.NewWindow;
+    import com.yspay.util.DateUtil;
+
+    import mx.core.Container;
 
     public function make_tran_xml(wnd:Object, event_container:Container):void
     {
@@ -16,8 +16,9 @@ package com.yspay.event_handlers
                 </L>
             </L>;
         var child_wnd:Container;
-        var ename:Object = wnd.main_bus.GetFirst("__W_ENAME");
-        var cname:Object = wnd.main_bus.GetFirst("__W_CNAME");
+        var P_data:Object = wnd._M_data.TRAN[wnd.P_cont];
+        var ename:Object = P_data.data[0]["__W_ENAME"]; // wnd.main_bus.GetFirst("__W_ENAME");
+        var cname:Object = P_data.data[0]["__W_CNAME"]; // wnd.main_bus.GetFirst("__W_CNAME");
         var date:Date = new Date;
         xml.@NAME = ename;
         xml.L.@VALUE = ename;
