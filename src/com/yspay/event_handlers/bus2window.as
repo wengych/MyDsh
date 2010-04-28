@@ -10,14 +10,14 @@ package com.yspay.event_handlers
     {
         var children:Array = container.getChildren();
         var ti:TextInput;
-        /*
-           for each (var obj:Object in children)
-           {
-           var ti:TextInput = obj as TextInput;
-           if (ti != null && ti.data.key == '')
+    /*
+       for each (var obj:Object in children)
+       {
+       var ti:TextInput = obj as TextInput;
+       if (ti != null && ti.data.key == '')
 
-           }
-         */
-        Alert.show(wnd.main_bus.toString());
+       }
+     */
+         //Alert.show(wnd.main_bus.toString());
     }
 }

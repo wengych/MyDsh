@@ -41,9 +41,6 @@ package com.yspay
  <SERVICES>\
   SERVICES://YSDBSDTSObjectConfigInsert\
 </SERVICES>\
- <ACTION>\
-    event_bus2window\
- </ACTION>\
 </BUTTON>\
 <BUTTON LABEL="清空">\
  <ACTION>event_clean_text</ACTION>\
@@ -52,7 +49,7 @@ package com.yspay
 <ACTION>event_show_xml</ACTION>\
 </BUTTON>\
 </HBox>\
-<HBox line="top">\
+<HBox>\
 <DICT>\
   DICT://__DICT_USER_RTN\
 </DICT>\
@@ -62,6 +59,9 @@ package com.yspay
 <DICT>\
   DICT://__DICT_OUT\
 </DICT>\
+<BUTTON LABEL="清空">\
+ <ACTION>event_clean_text</ACTION>\
+</BUTTON>\
 </HBox>\
 <windows title="new">\
 new\
@@ -106,51 +106,67 @@ new\
  <ACTION>new_window</ACTION>\
 </event> \
 </pod>';
-
         private var showtran_xml_str:String = '<POD title="show tran"> \
 <HBOX>\
 <BUTTON LABEL="refresh">\
  <ACTION>event_refresh_pool</ACTION>\
 </BUTTON>\
 </HBOX>\
-<DATAGRID dragenable="true">\
-<POOL> _POOL\
-  <object att="DBTABLE"> info\
-    <object att="array"> TRAN\
-    <object att="col" id="中文名字"> MEMO\
-    </object>\
-    </object>\
+<HBox line="top">\
+<DICT>\
+  DICT://__W_CNAME\
+</DICT>\
+<DICT>\
+  DICT://__W_ENAME\
+</DICT>\
+<DICT>\
+  DICT://__W_ENAME\
+</DICT>\
+<BUTTON LABEL="保存">\
+ <ACTION>event_make_tran_xml</ACTION>\
+ <SERVICES>\
+  SERVICES://YSDBSDTSObjectConfigInsert\
+</SERVICES>\
+ <ACTION>\
+    event_bus2window\
+ </ACTION>\</BUTTON>\
+<BUTTON LABEL="清空">\
+ <ACTION>event_clean_text</ACTION>\
+</BUTTON>\
+</HBox>\
+<DATAGRID dragEnabled="true" editable="true" >\
+<POOL> POOL\
+  <object> INFO\
+    <object att="array"> TRAN \
+        <object id="中文名字"> MEMO</object>\
+        <object id="英文名字"> NAME</object>\
+        <object id="DTS">      DTS</object>\
+        <object id="版本号">      VER</object>\
    </object>\
-</POOL>\
-<POOL>_POOL\
-  <object att="DBTABLE">  info\
-    <object att="array">    TRAN\
-    <object att="col" id="英文名字"> NAME\
-    </object>\
-    </object>\
-   </object>\
-</POOL>\
-<POOL>\
-_POOL\
-  <object att="DBTABLE">  info\
-    <object att="array">    TRAN\
-    <object att="col" id="DTS">      DTS\
-    </object>\
-    </object>\
-   </object>\
-</POOL>\
-<POOL>\
-_POOL\
-  <object att="DBTABLE">  info\
-    <object att="array">    TRAN\
-    <object att="col" id="版本号">      VER\
-    </object>\
-    </object>\
-   </object>\
+  </object>\
 </POOL>\
 </DATAGRID>\
+<DATAGRID editable="true" append="true" itemEditEnd="true">\
+<DICT editable="true">DICT://__W_ENAME</DICT>\
+<DICT>  DICT://__DICT_USER_RTN</DICT>\
+<DICT>  DICT://__DICT_USER_RTNMSG</DICT>\
+</DATAGRID>\
+<event>\
+ dragDrop\
+ <ACTION>new_window</ACTION>\
+</event> \
 </POD>';
 
+    /*
+           <POOL> _POOL\
+           <object att="DBTABLE"> info\
+           <object att="array"> TRAN\
+           <object att="col" id="中文名字"> MEMO\
+           </object>\
+           </object>\
+           </object>\
+           </POOL>\
+         */
         public function YsPodLayoutManager(pool:Pool)
         {
             super();
@@ -185,6 +201,10 @@ _POOL\
             {
                 DoNewYsPod(new XML(showtran_xml_str));
             }
+            else if (event.windows_type == 'show xml')
+            {
+                DoNewYsPod(new XML(show_save_xml_str));
+            }
             else if (event.windows_type.toLocaleLowerCase().search(windows_pre_string) >= 0)
             {
                 // 'WINDOWS://testop'
@@ -206,6 +226,11 @@ _POOL\
                 var tran_name:String = event.windows_type;
                 var pod_xml:XML = <pod>
                     </pod>;
+                if (_pool.info.TRAN[tran_name] == null)
+                {
+                    Alert.show("无此交易!!");
+                    return;
+                }
                 pod_xml.appendChild("tran://" + tran_name);
                 DoNewYsPod(pod_xml);
             }
