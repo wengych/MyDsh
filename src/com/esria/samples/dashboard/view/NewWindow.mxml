@@ -45,7 +45,7 @@
 
             public function onInit():void
             {
-                _pool = this.parentDocument._pool;
+                _pool = Application.application._pool;
                 this.addEventListener((_pool.dts as DBTable).select_event_name, OnDtsQueryComplete);
             }
 
@@ -107,11 +107,11 @@
                 arg.postion = event.localY;
                 var o:Object = (event.dragInitiator as ListBase).selectedItem;
                 var dts:DBTable = _pool.dts as DBTable;
-                dts.AddQuery(o.dts, Query, o.dts, this);
+                dts.AddQuery(o.DTS, Query, o.DTS, this);
                 //dts_event_listener = func_helper.create(OnDtsQueryComplete, arg);
                 //this.addEventListener(dts.select_event_name, dts_event_listener);
                 //CursorManager.setBusyCursor();
-                dts.DoQuery(o.dts);
+                dts.DoQuery(o.DTS);
 
 
             }

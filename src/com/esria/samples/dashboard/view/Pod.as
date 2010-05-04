@@ -61,7 +61,6 @@ package com.esria.samples.dashboard.view
             super();
             doubleClickEnabled = true;
             setStyle("titleStyleName", "podTitle");
-
             windowState = WINDOW_STATE_DEFAULT;
             //   horizontalScrollPolicy = "off";
         }

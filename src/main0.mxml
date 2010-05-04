@@ -31,11 +31,8 @@
             import flexlib.events.SuperTabEvent;
             import com.esria.samples.dashboard.view.MemoryBusContent;
             import com.esria.samples.dashboard.view.NewService;
-            import com.esria.samples.dashboard.view.ServiceContent;
-            import com.esria.samples.dashboard.view.WindowContent;
             import com.esria.samples.dashboard.view.DeployedWindow;
             import com.esria.samples.dashboard.view.NewWindow;
-            import com.esria.samples.dashboard.view.DictContent;
             import com.esria.samples.dashboard.view.SetupContent;
             import com.yspay.util.FunctionDelegate;
             import com.esria.samples.dashboard.events.*;
@@ -55,8 +52,6 @@
             public var _pool:Pool;
             public var M_data:Object = new Object; //xingj
 
-            // for init event functions
-            //private var event_handler_factory:EventHandlerFactory;
 
             private function onEnterState():void
             {
@@ -67,10 +62,10 @@
                 httpService.addEventListener(FaultEvent.FAULT, onFaultHttpService);
                 httpService.addEventListener(ResultEvent.RESULT, onResultHttpService);
                 httpService.send();
-                initPool();
+                initPoolAndM_data();
             }
 
-            public function initPool():void
+            public function initPoolAndM_data():void
             {
                 var ip:String = ipChoose.selectedItem.ip;
                 var port:String = ipChoose.selectedItem.port;
@@ -105,48 +100,43 @@
                 M_data.TRAN.cont = 10000;
                 for each (var str:String in arr)
                 {
-                    var info_query_dict:String = str;
+                    var info_query:String = str;
                     var info_query_cond:String = "type='" + str + "' and appname='MapServer'";
-                    info.AddQuery(info_query_dict, QueryWithIndex, info_query_cond, this);
-                    info.DoQuery(info_query_dict, 'NAME', 'VER');
+                    info.AddQuery(info_query, QueryWithIndex, info_query_cond, this);
+                    info.DoQuery(info_query, 'NAME', 'VER');
                     M_data.POOL.INFO[str] = new ArrayCollection;
                 }
                 _pool.Add('MAIN_BUS', UserBus);
             }
 
+            //event.query_name "dict window tran event hbox ........"
+            //M_data.POOL.INFO.DICT is ArrayCollection 里面存储每个dict
             private function InfoQueryComplete(event:DBTableQueryEvent):void
             {
-                // ;
                 CursorManager.removeBusyCursor();
-                trace("--------------------pool-----------------------")
-                trace(event.user_bus);
-                var info:DBTable = _pool.info as DBTable;
-                var i:int = 0;
-
                 if (M_data.POOL.INFO[event.query_name] != null)
                     M_data.POOL.INFO[event.query_name].removeAll();
 
                 M_data.POOL.INFO[event.query_name] = new ArrayCollection;
-
+                var info:DBTable = _pool.info as DBTable;
                 for each (var dict_obj:QueryObject in info[event.query_name])
                 {
                     var ys_var:YsVarStruct = dict_obj.Get();
-                    if (M_data.POOL.INFO[event.query_name].length <= i)
-                        M_data.POOL.INFO[event.query_name].addItem(new Object);
-                    M_data.POOL.INFO[event.query_name][i]["APPNAME"] = ys_var.APPNAME.getValue();
-                    M_data.POOL.INFO[event.query_name][i]["CDATE"] = ys_var.CDATE.getValue();
-                    M_data.POOL.INFO[event.query_name][i]["CUSER"] = ys_var.CUSER.getValue();
-                    M_data.POOL.INFO[event.query_name][i]["DTS"] = ys_var.DTS.getValue();
-                    M_data.POOL.INFO[event.query_name][i]["ISUSED"] = ys_var.ISUSED.getValue();
-                    M_data.POOL.INFO[event.query_name][i]["MDATE"] = ys_var.MDATE.getValue();
-                    M_data.POOL.INFO[event.query_name][i]["MEMO"] = ys_var.MEMO.getValue();
-                    M_data.POOL.INFO[event.query_name][i]["MUSER"] = ys_var.MUSER.getValue();
-                    M_data.POOL.INFO[event.query_name][i]["NAME"] = ys_var.NAME.getValue();
-                    M_data.POOL.INFO[event.query_name][i]["TYPE"] = ys_var.TYPE.getValue();
-                    M_data.POOL.INFO[event.query_name][i]["VALUE"] = ys_var.VALUE.getValue();
-                    M_data.POOL.INFO[event.query_name][i]["VER"] = ys_var.VER.getValue();
+                    var o:Object = new Object;
+                    o["APPNAME"] = ys_var.APPNAME.getValue();
+                    o["CDATE"] = ys_var.CDATE.getValue();
+                    o["CUSER"] = ys_var.CUSER.getValue();
+                    o["DTS"] = ys_var.DTS.getValue();
+                    o["ISUSED"] = ys_var.ISUSED.getValue();
+                    o["MDATE"] = ys_var.MDATE.getValue();
+                    o["MEMO"] = ys_var.MEMO.getValue();
+                    o["MUSER"] = ys_var.MUSER.getValue();
+                    o["NAME"] = ys_var.NAME.getValue();
+                    o["TYPE"] = ys_var.TYPE.getValue();
+                    o["VALUE"] = ys_var.VALUE.getValue();
+                    o["VER"] = ys_var.VER.getValue();
+                    M_data.POOL.INFO[event.query_name].addItem(o);
 
-                    i++;
                 }
                 //xingj ..
             }

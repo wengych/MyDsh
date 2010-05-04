@@ -11,23 +11,21 @@ package com.yspay
     import com.yspay.util.StackUtil;
 
     import flash.events.Event;
-    import flash.events.FocusEvent;
     import flash.events.MouseEvent;
 
     import mx.collections.ArrayCollection;
+    import mx.containers.Form;
     import mx.containers.FormItem;
     import mx.containers.HBox;
     import mx.controls.Alert;
     import mx.controls.Button;
     import mx.controls.DataGrid;
     import mx.controls.Label;
-    import mx.controls.TextInput;
-    import mx.containers.Form;
-    import mx.containers.FormItem;
-    import mx.containers.HBox;
     import mx.controls.TextArea;
+    import mx.controls.TextInput;
     import mx.controls.dataGridClasses.DataGridColumn;
     import mx.core.Application;
+    import mx.core.ClassFactory;
     import mx.core.Container;
     import mx.events.DataGridEvent;
     import mx.events.DragEvent;
@@ -40,14 +38,14 @@ package com.yspay
     public class YsPod extends Pod
     {
         public var _M_data:Object = Application.application.M_data; //xingj
+        public var P_cont:int = _M_data.TRAN.cont; //xingj
+        public var main_bus:UserBus;
+
         protected var _pool:Pool;
         protected var _cache:EventCache;
         protected var _bus_ctrl_arr:Array = new Array;
         protected var P_data:Object = new Object; //xingj
-        public var P_cont:int = _M_data.TRAN.cont;
 
-        [Bindable]
-        public var main_bus:UserBus;
 
         public function YsPod(pool:Pool)
         {
@@ -70,8 +68,7 @@ package com.yspay
         public function onDragDropHandler(e:DragEvent, action:String):void
         {
             var xml:XML = <windows />
-            trace(e.dragInitiator)
-            var str:String = 'windows://' + (e.dragInitiator as DataGrid).selectedItem.name;
+            var str:String = 'windows://' + (e.dragInitiator as DataGrid).selectedItem.NAME;
             xml.appendChild(str);
             _cache.DoCache(xml.toXMLString(), this);
         }
@@ -83,11 +80,11 @@ package com.yspay
 
         private function OnEventCacheComplete(event:EventCacheComplete):void
         {
-            ShowWindow(event.cache_xml);
+            ShowWindow(this, event.cache_xml);
         }
 
         //相当于入�
-        private function ShowWindow(xml:XML):void
+        private function ShowWindow(container:*, xml:XML):void
         {
             var search_str:String = '://';
             var url:String = xml.text();
@@ -97,6 +94,11 @@ package com.yspay
             {
                 var query_key:String = url.substr(0, idx).toLocaleUpperCase();
                 var obj_key:String = url.substr(idx + search_str.length);
+                if (_pool.info[query_key][obj_key] == undefined)
+                {
+                    Alert.show('error！');
+                    return;
+                }
                 var dts_no:String = _pool.info[query_key][obj_key].Get().DTS;
                 var dts:DBTable = _pool.dts as DBTable;
                 dxml = xml;
@@ -106,7 +108,12 @@ package com.yspay
             }
             else
                 dxml = xml;
-
+//            <pod>
+//              11
+//              <windows>
+//                 WINDOWS://290
+//              </windows>
+//            </pod>
             if ((dxml.localName().toString().toLocaleLowerCase()) == 'pod')
             {
                 //xingj
@@ -116,14 +123,13 @@ package com.yspay
 
                 P_data.XML = dxml;
                 P_data.cont = 1000;
-                P_data.obj = this;
+                P_data.obj = container;
                 P_data.data = new ArrayCollection;
                 P_data.proxy = new ArrayCollection;
 
                 P_data.data.addItem(new Object);
                 P_data.proxy.addItem(new Object);
-                var proxy:ObjectProxy;
-                proxy = new ObjectProxy(P_data.data[0]);
+                var proxy:ObjectProxy = new ObjectProxy(P_data.data[0]);
                 proxy.DictNum = 0;
                 proxy.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE,
                                        updateChange);
@@ -137,15 +143,15 @@ package com.yspay
                     child_name = child.name().toString().toLowerCase();
                     if (child_name == 'windows' || child_name == 'hbox' || child_name == 'datagrid')
                     {
-                        ShowWindow(child);
+                        ShowWindow(container, child);
                     }
                     else if (child_name == 'dict')
                     {
-                        ShowDict(titleWindow.form, child);
+                        ShowDict(container, child);
                     }
                     else if (child_name == 'button')
                     {
-                        ShowButton(titleWindow, child);
+                        ShowButton(container, child);
                     }
                     else if (child_name == 'event')
                     {
@@ -161,11 +167,10 @@ package com.yspay
                 titleWindow.data = new Object;
                 titleWindow.percentWidth = 100;
                 titleWindow.title = dxml.text() + ":" + dxml.@TITLE;
-                this.addChild(titleWindow);
+                container.addChild(titleWindow);
 
                 //xingj
-                var W_cont:int = new int;
-                W_cont = P_data.cont;
+                var W_cont:int = P_data.cont;
                 P_data.cont++;
                 P_data[W_cont] = new Object;
                 var W_data:Object = P_data[W_cont];
@@ -182,12 +187,20 @@ package com.yspay
                     }
                     else if (child_name == 'button')
                     {
-                        ShowButton(titleWindow, kid);
+                        ShowButton(titleWindow.form, kid);
+                    }
+                    else if (child_name == 'hbox')
+                    {
+                        ShowWindow(titleWindow, kid);
+                    }
+                    else if (child_name == 'windows')
+                    {
+                        ShowWindow(titleWindow, kid);
                     }
                     else if (child_name == 'event')
                     {
-                        var fd:FunctionDelegate = new FunctionDelegate;
-                        addEventListener(kid.text().toString(), fd.create(onDragDropHandler, kid.ACTION.text()));
+                        var fhelper:FunctionDelegate = new FunctionDelegate;
+                        addEventListener(kid.text().toString(), fhelper.create(onDragDropHandler, kid.ACTION.text()));
                     }
                 }
             }
@@ -198,16 +211,15 @@ package com.yspay
                 hbox.percentWidth = 100;
                 hbox.setStyle('borderStyle', 'solid');
                 hbox.setStyle('fontSize', '12');
-                this.addChild(hbox);
+                container.addChild(hbox);
 
                 //xingj
-                var W_cont:int = new int;
-                W_cont = P_data.cont;
+                var W_cont1:int = P_data.cont;
                 P_data.cont++;
-                P_data[W_cont] = new Object;
-                var W_data:Object = P_data[W_cont];
-                W_data.XML = dxml;
-                W_data.obj = hbox;
+                P_data[W_cont1] = new Object;
+                var W_data1:Object = P_data[W_cont1];
+                W_data1.XML = dxml;
+                W_data1.obj = hbox;
 
                 //xingj ..
 
@@ -224,8 +236,8 @@ package com.yspay
                     }
                     else if (child_name == 'event')
                     {
-                        var fd:FunctionDelegate = new FunctionDelegate;
-                        addEventListener(childs.text().toString(), fd.create(onDragDropHandler, childs.ACTION.text()));
+                        var fd1:FunctionDelegate = new FunctionDelegate;
+                        addEventListener(childs.text().toString(), fd1.create(onDragDropHandler, childs.ACTION.text()));
                     }
                 }
             }
@@ -235,21 +247,20 @@ package com.yspay
                 dg.data = {'xml': dxml};
                 dg.percentWidth = 100;
                 dg.percentHeight = 100;
-                for each (var kid:XML in dxml.attributes())
+                for each (var kids:XML in dxml.attributes())
                 {
-                    trace("属性名:" + kid.name() + " ，值" + kid.toString());
-                    if (kid.name() == "editable")
-                        dg.editable = kid.toString();
-                    if (kid.name() == "dragEnabled")
-                        dg.dragEnabled = kid.toString();
-                    if (kid.name() == "append")
+                    if (kids.name() == "editable")
+                        dg.editable = kids.toString();
+                    if (kids.name() == "dragEnabled")
+                        dg.dragEnabled = kids.toString();
+                    if (kids.name() == "append")
                     {
                         dg.data["attrib"] = new Object;
-                        dg.data["attrib"][kid.name().toString()] = kid.toString();
+                        dg.data["attrib"][kids.name().toString()] = kids.toString();
                     }
-                    if (kid.name() == "itemEditEnd")
+                    if (kids.name() == "itemEditEnd")
                     {
-                        if (kid.toString() == "true")
+                        if (kids.toString() == "true")
                             dg.addEventListener("itemEditEnd", itemEditEndHandler);
                         else
                         {
@@ -290,37 +301,40 @@ package com.yspay
                 else
                     return;
                 //xingj
-                var W_cont:int = new int;
-                W_cont = P_data.cont;
+                var W_cont2:int = P_data.cont;
                 P_data.cont++;
-                P_data[W_cont] = new Object;
-                var W_data:Object = P_data[W_cont];
-                W_data.XML = dxml;
-                W_data.obj = dg;
+                P_data[W_cont2] = new Object;
+                var W_data2:Object = P_data[W_cont2];
+                W_data2.XML = dxml;
+                W_data2.obj = dg;
 
                 //xingj ..
 
-                for each (var childs:XML in dxml.elements())
+                for each (var childs1:XML in dxml.elements())
                 {
-                    child_name = childs.name().toString().toLowerCase();
+                    child_name = childs1.name().toString().toLowerCase();
                     if (child_name == 'dict')
                     {
-                        ShowDict(dg, childs);
+                        ShowDict(dg, childs1);
+                    }
+                    if (child_name == 'button')
+                    {
+                        ShowButton(dg, childs1);
                     }
                     else if (child_name == 'pool')
                     {
-                        ShowPool(dg, childs);
+                        ShowPool(dg, childs1);
                     }
                     else if (child_name == 'event')
                     {
-                        var fd:FunctionDelegate = new FunctionDelegate;
-                        addEventListener(childs.text().toString(), fd.create(onDragDropHandler, childs.ACTION.text()));
+                        var fd2:FunctionDelegate = new FunctionDelegate;
+                        addEventListener(childs1.text().toString(), fd2.create(onDragDropHandler, childs1.ACTION.text()));
                     }
                 }
                 dg.dataProvider = arr;
                 dg.setStyle('borderStyle', 'solid');
                 dg.setStyle('fontSize', '12');
-                this.addChild(dg);
+                container.addChild(dg);
                 arr.refresh();
             }
         }
@@ -419,7 +433,6 @@ package com.yspay
 
                 for each (var kid:XML in dxml.attributes())
                 {
-                    trace("属性名:" + kid.name() + " ，值" + kid.toString());
                     if (kid.name() == "editable")
                         dgc.editable = kid.toString();
                 }
@@ -466,6 +479,7 @@ package com.yspay
                         P_data.ti[i][ti.data.name] = new Object;
                     if (P_data.ti[i][ti.data.name][ti.data.index] == null)
                     {
+                        //ti ArrayCollection 的 i个Object的[英文名][索引号]
                         P_data.ti[i][ti.data.name][ti.data.index] = ti;
                         break;
                     }
@@ -478,18 +492,15 @@ package com.yspay
                         P_data.proxy[0][ti_name] = '';
                     else
                     {
-                        var str:String = dxml.services.@DEFAULT;
-                        P_data.proxy[0][ti_name] = str;
+                        var str1:String = dxml.services.@DEFAULT;
+                        P_data.proxy[0][ti_name] = str1;
                     }
                 }
                 else
                 {
-                    var str:String = P_data.data[0][ti_name];
-                    ti.text = str;
+                    var str2:String = P_data.data[0][ti_name];
+                    ti.text = str2;
                 }
-                //var func_dele:FunctionDelegate = new FunctionDelegate;
-                //var ti_focus_out_func:Function = func_dele.create(OnTextInputFocusOut, ti_name);
-                //ti.addEventListener(FocusEvent.FOCUS_OUT, ti_focus_out_func);
                 ti.addEventListener(FlexEvent.ENTER, enterHandler);
                 if (container is HBox)
                 {
@@ -511,8 +522,6 @@ package com.yspay
 
         private function tichange(evt:Event):void
         {
-            trace(evt);
-            //txtTitle = proxy.firstName + " " + proxy.lastName;  
             var tt:TextInput = evt.target as TextInput;
             P_data.proxy[tt.data.index][tt.data.name] = tt.text;
             P_data.data.refresh();
@@ -530,28 +539,39 @@ package com.yspay
                     break;
                 if (P_data.ti[i][dictname][dictNum] == null)
                     break;
-
                 P_data.ti[i][dictname][dictNum].text = dictvalue;
             }
         }
 
-        private function ShowButton(container:Container, button_xml:XML):void
+        private function ShowButton(container:*, button_xml:XML):void
         {
-            var btn:Button = new Button;
-            btn.label = button_xml.@LABEL;
+            if (container is DataGrid)
+            {
+                var dg:DataGrid = container as DataGrid;
+                var dgc:DataGridColumn = new DataGridColumn;
+                dgc.editable = false;
+                dgc.headerText = button_xml.@LABEL;
 
-            btn.data = button_xml;
-
-            var func_delegate:FunctionDelegate = new FunctionDelegate;
-            var func:Function = func_delegate.create(OnBtnClick, container);
-            btn.addEventListener(MouseEvent.CLICK, func);
-            var fd:FunctionDelegate = new FunctionDelegate;
-            btn.addEventListener(StackSendXmlEvent.EVENT_STACK_SENDXML, fd.create(doBttonActions, container));
-            btn.setStyle('fontWeight', 'normal');
-            container.addChild(btn);
+                var fac:ClassFactory = new ClassFactory(com.esria.samples.dashboard.view.datagridbtn);
+                fac.properties = {xml: button_xml, yspod: this, dg: container};
+                dgc.itemRenderer = fac;
+                dg.columns = dg.columns.concat(dgc);
+            }
+            else
+            {
+                var btn:Button = new Button;
+                btn.label = button_xml.@LABEL;
+                btn.data = button_xml;
+                var func_delegate:FunctionDelegate = new FunctionDelegate;
+                btn.addEventListener(MouseEvent.CLICK, OnBtnClick);
+                var fd:FunctionDelegate = new FunctionDelegate;
+                btn.addEventListener(StackSendXmlEvent.EVENT_STACK_SENDXML, fd.create(doBttonActions, container));
+                btn.setStyle('fontWeight', 'normal');
+                container.addChild(btn);
+            }
         }
 
-        private function OnBtnClick(e:MouseEvent, container:Container):void
+        public function OnBtnClick(e:MouseEvent):void
         {
             var btn:Button = e.target as Button;
             var stackUtil:StackUtil = new StackUtil;
@@ -572,9 +592,6 @@ package com.yspay
             stackUtil.addEventListener(StackUtil.EVENT_STACK_NEXT, fg.create(stackUtil.stack, btn, arr));
             //驱动�
             stackUtil.stack(new Event(StackUtil.EVENT_STACK_NEXT), btn, arr);
-            trace(btn.label);
-            // trace(btn.data.ACTION);
-            trace(container.className);
         }
 
         //button一系列action services的最后一�
@@ -612,8 +629,6 @@ package com.yspay
         {
             var service_value:String = service_desc.toString();
             var link_head:String = 'services://';
-            trace(service_value);
-
             if (service_value.substr(0, link_head.length).toLowerCase() == link_head.toLowerCase())
             {
                 var service_name:String = service_value.substr(link_head.length);
@@ -647,6 +662,7 @@ package com.yspay
             var scall:ServiceCall = new ServiceCall;
             var bus:UserBus = new UserBus;
             bus.Add(ServiceCall.SCALL_NAME, scall_name);
+            //var_name=dict名字
             for each (var var_name:String in bus_in_name_args)
             {
                 // 参数从本地bus中获�?xingjun getfrist is err
@@ -683,6 +699,9 @@ package com.yspay
             var bus_out_name_args:Array = new Array;
             var dict_list:XMLList = service_info.RecvPKG.BODY.DICT;
 
+            if (bus == null)
+                return; //?错误处理！
+
             // 生成输出参数列表
             for each (var dict_xml:XML in dict_list)
             {
@@ -714,13 +733,14 @@ package com.yspay
             for each (var var_name:String in bus_out_name_args)
             {
                 main_bus.RemoveByKey(var_name);
+                if (bus[var_name] == null)
+                    continue;
                 var ys_var:YsVar = bus[var_name];
                 main_bus.Add(var_name, ys_var);
             }
 
             for each (var key_name:String in bus.GetKeyArray())
             {
-                trace(key_name);
                 if (bus[key_name][0].value is String || bus[key_name][0].value is int)
                 {
                     var i:int = 0;
@@ -773,11 +793,11 @@ package com.yspay
 
                 }
             else
-                for each (var textinput:*in o.getChildren())
+                for each (var textinput1:*in o.getChildren())
                 {
-                    if (textinput is TextInput)
+                    if (textinput1 is TextInput)
                     {
-                        arr.push(textinput);
+                        arr.push(textinput1);
                     }
                 }
             for (var i:int = 0; i < arr.length; i++)
@@ -829,7 +849,6 @@ package com.yspay
 
         public function _YsInfoQueryComplete(event:DBTableQueryEvent):void
         {
-            // ;
             CursorManager.removeBusyCursor();
             var info:DBTable = _pool.info as DBTable;
             var i:int = 0;
@@ -857,7 +876,6 @@ package com.yspay
                 vare["VER"] = ys_var.VER.getValue();
                 if (_M_data.POOL.INFO[event.query_name].length <= i)
                     _M_data.POOL.INFO[event.query_name].addItem(vare);
-
                 i++;
             }
             _M_data.POOL.INFO[event.query_name].refresh();

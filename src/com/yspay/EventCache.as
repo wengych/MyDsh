@@ -119,7 +119,6 @@ package com.yspay
                 e.cache_xml = cache_xml;
                 e.cache_obj = this;
                 disp.dispatchEvent(e);
-                trace("cache findished");
             }
         }
 
@@ -137,7 +136,6 @@ package com.yspay
                 var e:EventCacheComplete = new EventCacheComplete;
                 e.cache_xml = cache_xml;
                 e.cache_obj = this;
-                trace(" cache call back finished")
                 disp.dispatchEvent(e);
             }
         }
