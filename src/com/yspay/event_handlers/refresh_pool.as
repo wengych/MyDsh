@@ -24,7 +24,7 @@ package com.yspay.event_handlers
             var info_query_dict:String = str;
             var info_query_cond:String = "type='" + str + "' and appname='MapServer'";
             info.AddQuery(info_query_dict, QueryWithIndex, info_query_cond, wnd as EventDispatcher);
-            info.DoQuery(info_query_dict, 'NAME', 'VER');
+            info.DoQuery(info_query_dict, false, 'NAME', 'VER');
         }
         trace("refresh_pool ok!");
     }

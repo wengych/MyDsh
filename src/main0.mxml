@@ -12,10 +12,12 @@
                 paddingRight="45"
                 paddingBottom="35"
                 paddingTop="34"
+                creationComplete="onCreationComp()"
                 xmlns:flexlib="http://code.google.com/p/flexlib/">
     <mx:Style source="/assets/styles.css"/>
     <mx:Script>
         <![CDATA[
+            import flash.system.Security;
             import mx.containers.Canvas;
             import mx.controls.Alert;
             import mx.controls.ComboBox;
@@ -57,6 +59,13 @@
 
             // for init event functions
             //private var event_handler_factory:EventHandlerFactory;
+
+            private function onCreationComp():void
+            {
+                // Security.loadPolicyFile("xmlsocket://192.168.0.77:843");
+
+                //System.security.loadPolicyFile("xmlsocket://yourip:port");
+            }
 
             private function onEnterState():void
             {
@@ -108,7 +117,7 @@
                     var info_query_dict:String = str;
                     var info_query_cond:String = "type='" + str + "' and appname='MapServer'";
                     info.AddQuery(info_query_dict, QueryWithIndex, info_query_cond, this);
-                    info.DoQuery(info_query_dict, 'NAME', 'VER');
+                    info.DoQuery(info_query_dict, false, 'NAME', 'VER');
                     M_data.POOL.INFO[str] = new ArrayCollection;
                 }
                 _pool.Add('MAIN_BUS', UserBus);

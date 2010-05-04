@@ -75,7 +75,7 @@
                     var info:DBTable = _pool.info as DBTable;
                     info.AddQuery(info_query_dict, QueryWithIndex, info_query_cond, this);
                     CursorManager.setBusyCursor();
-                    info.DoQuery(info_query_dict, 'NAME', 'VER');
+                    info.DoQuery(info_query_dict, false, 'NAME', 'VER');
                     this.addEventListener(info.select_event_name, InfoQueryComplete);
                 }
 

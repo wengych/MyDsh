@@ -86,7 +86,7 @@
                     this.addEventListener(info.select_event_name, InfoQueryComplete);
                     info.AddQuery(info_query_service, QueryWithIndex, info_query_service_cond, this);
                     CursorManager.setBusyCursor();
-                    info.DoQuery(info_query_service, 'NAME', 'VER');
+                    info.DoQuery(info_query_service, false, 'NAME', 'VER');
                 }
 
                 private function InfoQueryComplete(event:DBTableQueryEvent):void

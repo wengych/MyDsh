@@ -93,6 +93,11 @@ package com.yspay
             var url:String = xml.text();
             var idx:int = url.search(search_str);
             var dxml:XML;
+
+            var W_cont:int;
+            var W_data:Object;
+            var fd:FunctionDelegate = new FunctionDelegate;
+
             if (idx > 0)
             {
                 var query_key:String = url.substr(0, idx).toLocaleUpperCase();
@@ -149,7 +154,7 @@ package com.yspay
                     }
                     else if (child_name == 'event')
                     {
-                        var fd:FunctionDelegate = new FunctionDelegate;
+                        // var fd:FunctionDelegate = new FunctionDelegate;
                         addEventListener(child.text().toString(), fd.create(onDragDropHandler, child.ACTION.text()));
                     }
                 }
@@ -164,11 +169,10 @@ package com.yspay
                 this.addChild(titleWindow);
 
                 //xingj
-                var W_cont:int = new int;
                 W_cont = P_data.cont;
                 P_data.cont++;
                 P_data[W_cont] = new Object;
-                var W_data:Object = P_data[W_cont];
+                W_data = P_data[W_cont];
                 W_data.XML = dxml;
                 W_data.obj = titleWindow;
 
@@ -186,7 +190,7 @@ package com.yspay
                     }
                     else if (child_name == 'event')
                     {
-                        var fd:FunctionDelegate = new FunctionDelegate;
+                        // var fd1:FunctionDelegate = new FunctionDelegate;
                         addEventListener(kid.text().toString(), fd.create(onDragDropHandler, kid.ACTION.text()));
                     }
                 }
@@ -201,11 +205,10 @@ package com.yspay
                 this.addChild(hbox);
 
                 //xingj
-                var W_cont:int = new int;
                 W_cont = P_data.cont;
                 P_data.cont++;
                 P_data[W_cont] = new Object;
-                var W_data:Object = P_data[W_cont];
+                W_data = P_data[W_cont];
                 W_data.XML = dxml;
                 W_data.obj = hbox;
 
@@ -224,7 +227,7 @@ package com.yspay
                     }
                     else if (child_name == 'event')
                     {
-                        var fd:FunctionDelegate = new FunctionDelegate;
+                        //var fd:FunctionDelegate = new FunctionDelegate;
                         addEventListener(childs.text().toString(), fd.create(onDragDropHandler, childs.ACTION.text()));
                     }
                 }
@@ -235,7 +238,7 @@ package com.yspay
                 dg.data = {'xml': dxml};
                 dg.percentWidth = 100;
                 dg.percentHeight = 100;
-                for each (var kid:XML in dxml.attributes())
+                for each (kid in dxml.attributes())
                 {
                     trace("属性名:" + kid.name() + " ，值" + kid.toString());
                     if (kid.name() == "editable")
@@ -290,11 +293,11 @@ package com.yspay
                 else
                     return;
                 //xingj
-                var W_cont:int = new int;
+                W_cont = new int;
                 W_cont = P_data.cont;
                 P_data.cont++;
                 P_data[W_cont] = new Object;
-                var W_data:Object = P_data[W_cont];
+                W_data = P_data[W_cont];
                 W_data.XML = dxml;
                 W_data.obj = dg;
 
@@ -313,7 +316,7 @@ package com.yspay
                     }
                     else if (child_name == 'event')
                     {
-                        var fd:FunctionDelegate = new FunctionDelegate;
+                        //var fd:FunctionDelegate = new FunctionDelegate;
                         addEventListener(childs.text().toString(), fd.create(onDragDropHandler, childs.ACTION.text()));
                     }
                 }
@@ -761,9 +764,10 @@ package com.yspay
             var o:Object = current.parent;
             var arr:Array = new Array;
             if (o is FormItem)
+            {
                 for each (var t:Object in o.parent.getChildren())
                 {
-                    for each (var textinput:*in t.getChildren())
+                    for each (var textinput:* in t.getChildren())
                     {
                         if (textinput is TextInput)
                         {
@@ -772,14 +776,17 @@ package com.yspay
                     }
 
                 }
+            }
             else
-                for each (var textinput:*in o.getChildren())
+            {
+                for each (var textinput:* in o.getChildren())
                 {
                     if (textinput is TextInput)
                     {
                         arr.push(textinput);
                     }
                 }
+            }
             for (var i:int = 0; i < arr.length; i++)
             {
                 if (arr[i] == current)

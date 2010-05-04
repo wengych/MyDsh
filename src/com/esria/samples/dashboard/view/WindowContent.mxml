@@ -75,7 +75,7 @@
                     var info:DBTable = _pool.info as DBTable;
                     info.AddQuery(info_query_windows, QueryWithIndex, info_query_windows_cond, this);
                     CursorManager.setBusyCursor();
-                    info.DoQuery(info_query_windows, 'NAME', 'VER');
+                    info.DoQuery(info_query_windows, false, 'NAME', 'VER');
                     this.addEventListener(info.select_event_name, InfoQueryComplete);
                 }
 
