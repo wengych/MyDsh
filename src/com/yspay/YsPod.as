@@ -19,6 +19,7 @@ package com.yspay
     import mx.containers.HBox;
     import mx.controls.Alert;
     import mx.controls.Button;
+    import mx.controls.ComboBox;
     import mx.controls.DataGrid;
     import mx.controls.Label;
     import mx.controls.TextArea;
@@ -83,7 +84,7 @@ package com.yspay
             ShowWindow(this, event.cache_xml);
         }
 
-        //相当于入�
+        //相当于入口�
         private function ShowWindow(container:*, xml:XML):void
         {
             var search_str:String = '://';
@@ -114,7 +115,7 @@ package com.yspay
 //                 WINDOWS://290
 //              </windows>
 //            </pod>
-            if ((dxml.localName().toString().toLocaleLowerCase()) == 'pod')
+            if ((dxml.localName().toString().toLocaleLowerCase()) == 'pod') //windows hbox datagrid
             {
                 //xingj
 
@@ -341,10 +342,7 @@ package com.yspay
 
         private function itemEditEndHandler(e:DataGridEvent):void
         {
-
             e.target.dataProvider.refresh();
-
-
         }
 
         private function ShowPool(container:*, dict_xml:XML):void
@@ -469,6 +467,37 @@ package com.yspay
                         'index': 0}; //arr[0];
                 ti.addEventListener(Event.CHANGE, tichange);
 
+//                            <list labelField="GENDER">
+//                                <listarg>
+//                                    <GENDER> 女 </GENDER>
+//                                    <GENDER_ID> 0 </GENDER_ID>
+//                                </listarg>
+//                                <listarg>
+//                                    <GENDER> 男 </GENDER>
+//                                    <GENDER_ID> 1 </GENDER_ID>
+//                                </listarg>
+//                            </list>
+                if (dxml.display.TEXTINPUT.list != undefined)
+                { //ComboBox
+                    var coboBox:ComboBox = new ComboBox;
+                    if (dxml.display.TEXTINPUT.list.attribute('labelField').length() == 0)
+                        coboBox.labelFunction = show; //if (xml.display.TEXTINPUT.list.@labelField != null)
+                    else
+                        coboBox.labelField = dxml.display.TEXTINPUT.list.@labelField;
+
+                    if (dxml.display.TEXTINPUT.list..attribute('labelField') != null)
+                        coboBox.labelField = dxml.display.TEXTINPUT.list.@labelField;
+
+                    coboBox.addEventListener("close", comboboxchange);
+                    coboBox.prompt = "请选择...";
+                    coboBox.labelFunction = comboboxshowlabel;
+                    coboBox.dataProvider = arr;
+                    coboBox.data = {'name': ti_name, 'index': 0, 'xml': dxml};
+                    this.addChild(coboBox);
+
+
+                }
+
                 for (var i:int = 0; i <= P_data.ti.length; i++)
                 {
                     if (i == P_data.ti.length)
@@ -520,6 +549,25 @@ package com.yspay
 
         }
 
+        private function comboboxshowlabel(o:Object):String
+        {
+            return (item.GENDER + " - " + item.GENDER_ID);
+        }
+
+        private function comboboxchange(evt:Event):void
+        {
+
+            var tmpcobox:ComboBox = evt.target as ComboBox;
+
+            var o:Object = (evt.target as ComboBox).selectedItem;
+            if (o == null)
+                return;
+            var x:XML = tmpcobox.data.xml;
+            P_data.proxy[tmpcobox.data.index][tmpcobox.data.name] = o[tmpcobox.data.name];
+
+            P_data.data.refresh();
+        }
+
         private function tichange(evt:Event):void
         {
             var tt:TextInput = evt.target as TextInput;
@@ -539,7 +587,16 @@ package com.yspay
                     break;
                 if (P_data.ti[i][dictname][dictNum] == null)
                     break;
-                P_data.ti[i][dictname][dictNum].text = dictvalue;
+                if (P_data.ti[i][dictname][dictNum] is TextInput)
+                    P_data.ti[i][dictname][dictNum].text = dictvalue;
+                else if (P_data.ti[i][dictname][dictNum] is ComboBox)
+                {
+                    for each (var aa:Object in P_data.ti[i][dictname][dictNum].dataProvider)
+                    {
+                        if (aa[dictname] == dictvalue)
+                            P_data.ti[i][dictname][dictNum].selectedItem = aa;
+                    }
+                }
             }
         }
 

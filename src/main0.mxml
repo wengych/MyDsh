@@ -220,7 +220,7 @@
                                                                           {name: "new service"}, {name: "new tran"}]);
             [Bindable]
             private var ipDP:ArrayCollection = new ArrayCollection([{ip: "192.168.0.77", port: "16920"}, {ip: "192.168.0.216", port: "16920"}, {ip: "124.207.197.178", port: "6802"}, {ip: "192.168.0.75",
-                                                                        port: "16920"}]);
+                                                                        port: "16920"}, {ip: "192.168.88.84", port: "16920"}]);
 
             private function comboboxClickHandler(event:Event):void
             {

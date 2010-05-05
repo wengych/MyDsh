@@ -16,34 +16,6 @@ package com.yspay
     public class YsPodLayoutManager extends PodLayoutManager
     {
         public var _pool:Pool;
-        private var show_save_xml_str:String = '<pod tilte="show xml">\
-<DATAGRID dragEnabled="true" editable="true" >\
-<DICT>DICT://__W_CNAME</DICT>\
-<DICT>DICT://__W_ENAME</DICT>\
-<BUTTON LABEL="保存">\
- <ACTION>event_make_windows_xml</ACTION>\
- <SERVICES>\
-  SERVICES://YSDBSDTSObjectConfigInsert\
-</SERVICES>\
-</BUTTON>\
-<BUTTON LABEL="删除行">\
- <ACTION>_delete_line</ACTION>\
-</BUTTON>\
-<BUTTON LABEL="增加行">\
- <ACTION>_add_line</ACTION>\
-</BUTTON>\
-</DATAGRID>\
-<windows>\
-  new window\
- <event>\
-   dragDrop\
-  <ACTION>show_aa</ACTION>\
- </event> \
-</windows>\
-<windows>\
-  xml window\
-</windows>\
-</pod>';
         private var newwindow_xml_str:String = '<pod title="new windows">\
 <HBox line="top">\
 <DICT>\
@@ -118,6 +90,34 @@ new\
  dragDrop\
  <ACTION>new_window</ACTION>\
 </event> \
+</pod>';
+        private var show_save_xml_str:String = '<pod tilte="show xml">\
+<DATAGRID dragEnabled="true" editable="true" >\
+<DICT>DICT://__W_CNAME</DICT>\
+<DICT>DICT://__W_ENAME</DICT>\
+<BUTTON LABEL="保存">\
+ <ACTION>event_make_windows_xml</ACTION>\
+ <SERVICES>\
+  SERVICES://YSDBSDTSObjectConfigInsert\
+</SERVICES>\
+</BUTTON>\
+<BUTTON LABEL="删除行">\
+ <ACTION>_delete_line</ACTION>\
+</BUTTON>\
+<BUTTON LABEL="增加行">\
+ <ACTION>_add_line</ACTION>\
+</BUTTON>\
+</DATAGRID>\
+<windows>\
+  new window\
+ <event>\
+   dragDrop\
+  <ACTION>show_aa</ACTION>\
+ </event> \
+</windows>\
+<windows>\
+  xml window\
+</windows>\
 </pod>';
         private var showtran_xml_str:String = '<POD title="show tran"> \
 <HBOX>\
