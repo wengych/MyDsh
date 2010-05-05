@@ -103,7 +103,7 @@
                     var info_query:String = str;
                     var info_query_cond:String = "type='" + str + "' and appname='MapServer'";
                     info.AddQuery(info_query, QueryWithIndex, info_query_cond, this);
-                    info.DoQuery(info_query, 'NAME', 'VER');
+                    info.DoQuery(info_query, false, 'NAME', 'VER');
                     M_data.POOL.INFO[str] = new ArrayCollection;
                 }
                 _pool.Add('MAIN_BUS', UserBus);
