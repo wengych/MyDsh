@@ -5,13 +5,24 @@
         <![CDATA[
             import mx.managers.PopUpManager;
             import com.esria.samples.dashboard.renderers.PopUpButtonPanel;
-
+            private var aa:XML=<list>
+                                   <listarg>
+                                    <GENDER> 女 </GENDER>
+                                    <GENDER_ID> 0 </GENDER_ID>
+                                </listarg>
+                                <listarg>
+                                    <GENDER> 男 </GENDER>
+                                    <GENDER_ID> 1 </GENDER_ID>
+                                </listarg>
+                            </list>;
             private function init():void
             {
-                var buttonPanel:PopUpButtonPanel = PopUpManager.createPopUp(this, PopUpButtonPanel, true, null) as PopUpButtonPanel;
-                PopUpManager.centerPopUp(buttonPanel);
-                buttonPanel.txtName.setFocus();
-
+                    for each (var x:XML in aa.*){
+                        trace(x);
+                        for each(var xx:XML in x.*){
+                            trace(xx);
+                        }
+                    }
             }
         ]]>
     </mx:Script>

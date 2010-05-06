@@ -162,34 +162,36 @@
 
             private function AddDict(arg:Object):void
             {
-                var formitem:MyFormItem = new MyFormItem;
+                //var formitem:MyFormItem = new MyFormItem;
                 var contentXml:XML = arg.showxml as XML;
-
-                formitem.descXml = contentXml;
-                formitem.label = contentXml.display.LABEL.@text;
-
-                var ti:TextInput = new TextInput;
-                ti.width = 200;
-
-                if (contentXml.services.@TYPE == "DOUBLE" || contentXml.services.@TYPE == "FLOAT")
-                {
-                    ti.setStyle("textAlign", "right");
-                }
-                if (contentXml.display.TEXTINPUT.@displayAsPassword == "0")
-                {
-                    ti.displayAsPassword = false;
-                }
-                else
-                {
-                    ti.displayAsPassword = true;
-                }
-                if (contentXml.display.TEXTINPUT.@length != null)
-                {
-                    ti.maxChars = contentXml.display.TEXTINPUT.@length;
-                    ti.toolTip = "最长输入" + ti.maxChars + "个字符";
-                }
-                formitem.addChild(ti);
-                form.addChild(formitem);
+                
+                (this.parent as YsPod).ShowDict(form, contentXml);
+//
+//                formitem.descXml = contentXml;
+//                formitem.label = contentXml.display.LABEL.@text;
+//
+//                var ti:TextInput = new TextInput;
+//                ti.width = 200;
+//
+//                if (contentXml.services.@TYPE == "DOUBLE" || contentXml.services.@TYPE == "FLOAT")
+//                {
+//                    ti.setStyle("textAlign", "right");
+//                }
+//                if (contentXml.display.TEXTINPUT.@displayAsPassword == "0")
+//                {
+//                    ti.displayAsPassword = false;
+//                }
+//                else
+//                {
+//                    ti.displayAsPassword = true;
+//                }
+//                if (contentXml.display.TEXTINPUT.@length != null)
+//                {
+//                    ti.maxChars = contentXml.display.TEXTINPUT.@length;
+//                    ti.toolTip = "最长输入" + ti.maxChars + "个字符";
+//                }
+//                formitem.addChild(ti);
+//                form.addChild(formitem);
             }
 
             private function addFormItem(arg:Object):void

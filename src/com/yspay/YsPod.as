@@ -9,10 +9,10 @@ package com.yspay
     import com.yspay.pool.*;
     import com.yspay.util.FunctionDelegate;
     import com.yspay.util.StackUtil;
-
+    
     import flash.events.Event;
     import flash.events.MouseEvent;
-
+    
     import mx.collections.ArrayCollection;
     import mx.containers.Form;
     import mx.containers.FormItem;
@@ -137,6 +137,8 @@ package com.yspay
                 P_data.proxy[0] = proxy;
                 P_data.ti = new ArrayCollection;
                 P_data.ti.addItem(new Object);
+                P_data.DataGrid = new ArrayCollection;
+                P_data.DataGrid.addItem(new Object);
 
                 for each (var child:XML in dxml.elements())
                 {
@@ -177,6 +179,8 @@ package com.yspay
                 var W_data:Object = P_data[W_cont];
                 W_data.XML = dxml;
                 W_data.obj = titleWindow;
+                W_data.datacont = 10000;
+
 
                 //xingj ..
                 for each (var kid:XML in dxml.elements())
@@ -221,6 +225,7 @@ package com.yspay
                 var W_data1:Object = P_data[W_cont1];
                 W_data1.XML = dxml;
                 W_data1.obj = hbox;
+                W_data1.datacont = 10000;
 
                 //xingj ..
 
@@ -270,6 +275,17 @@ package com.yspay
                         }
                     }
                 }
+                //xingj
+                var W_cont2:int = P_data.cont;
+                P_data.cont++;
+                P_data[W_cont2] = new Object;
+                var W_data2:Object = P_data[W_cont2];
+                W_data2.XML = dxml;
+                W_data2.obj = dg;
+                W_data2.datacont = 10000;
+                var D_data:* = "data" + W_data2.datacont;
+                W_data2[D_data] = new ArrayCollection;
+                //xingj ..
                 var arr:ArrayCollection;
 
                 if (dxml.POOL != undefined)
@@ -297,19 +313,11 @@ package com.yspay
                 else if (dxml.DICT != undefined)
                 {
                     //arr = P_data.data;
-                    arr = P_data.proxy;
+                    //arr = P_data.proxy;
+                    arr = W_data2[D_data];
                 }
                 else
                     return;
-                //xingj
-                var W_cont2:int = P_data.cont;
-                P_data.cont++;
-                P_data[W_cont2] = new Object;
-                var W_data2:Object = P_data[W_cont2];
-                W_data2.XML = dxml;
-                W_data2.obj = dg;
-
-                //xingj ..
 
                 for each (var childs1:XML in dxml.elements())
                 {
@@ -324,7 +332,7 @@ package com.yspay
                     }
                     else if (child_name == 'pool')
                     {
-                        ShowPool(dg, childs1);
+                        ShowPool(dg, childs1); //pool中dict...等的哪那几列
                     }
                     else if (child_name == 'event')
                     {
@@ -393,7 +401,7 @@ package com.yspay
         }
 
         //ShowDict 用完整的链接显示一个DICT
-        private function ShowDict(container:*, dict_xml:XML):void
+        public function ShowDict(container:*, dict_xml:XML):void
         {
             var search_str:String = '://';
             var url:String = dict_xml.text();
@@ -427,6 +435,8 @@ package com.yspay
 
                 var dg:DataGrid = container;
 
+                var data:ArrayCollection = dg.dataProvider as ArrayCollection;
+
                 var dgc:DataGridColumn =  new DataGridColumn;
 
                 for each (var kid:XML in dxml.attributes())
@@ -450,6 +460,16 @@ package com.yspay
                         P_data.proxy[0][en_name] = str;
                     }
                 }
+                var i:int = new int;
+                for (i = 0; i < P_data.data.length; i++)
+                {
+                    if (!P_data.data[i].hasOwnProperty(en_name))
+                        break;
+                    if (data.length < i)
+                        data.addItem(new Object);
+                    data[i][en_name] = P_data.data[i][en_name];
+                }
+
                 dg.columns = dg.columns.concat(dgc);
             }
             else //if (container is NewWindow || container is HBox)
@@ -477,25 +497,53 @@ package com.yspay
 //                                    <GENDER_ID> 1 </GENDER_ID>
 //                                </listarg>
 //                            </list>
+//                            <list labelField="NAME">
+//                                <dict>dict://ACNO</dict>
+//                                <dict>dict://NAME</dict>
+//                            </list>
                 if (dxml.display.TEXTINPUT.list != undefined)
                 { //ComboBox
                     var coboBox:ComboBox = new ComboBox;
                     if (dxml.display.TEXTINPUT.list.attribute('labelField').length() == 0)
-                        coboBox.labelFunction = show; //if (xml.display.TEXTINPUT.list.@labelField != null)
+                        coboBox.labelFunction = comboboxshowlabel; //if (xml.display.TEXTINPUT.list.@labelField != null)
                     else
-                        coboBox.labelField = dxml.display.TEXTINPUT.list.@labelField;
-
-                    if (dxml.display.TEXTINPUT.list..attribute('labelField') != null)
                         coboBox.labelField = dxml.display.TEXTINPUT.list.@labelField;
 
                     coboBox.addEventListener("close", comboboxchange);
                     coboBox.prompt = "请选择...";
-                    coboBox.labelFunction = comboboxshowlabel;
-                    coboBox.dataProvider = arr;
                     coboBox.data = {'name': ti_name, 'index': 0, 'xml': dxml};
-                    this.addChild(coboBox);
 
-
+                    //xingj
+                    var W_cont3:int = P_data.cont;
+                    P_data.cont++;
+                    P_data[W_cont3] = new Object;
+                    var W_data3:Object = P_data[W_cont3];
+                    W_data3.XML = dxml;
+                    W_data3.obj = coboBox;
+                    W_data3.datacont = 10000;
+                    var D_data:String = "data" + W_data3.datacont;
+                    W_data3.datacont++;
+                    W_data3[D_data] = new ArrayCollection;
+                    //xingj ..
+                    if (dxml.display.TEXTINPUT.list.listarg != undefined)
+                        for each (var x:XML in dxml.display.TEXTINPUT.list.*)
+                        {
+                            W_data3[D_data].addItem(new Object);
+                            for  each (var xx:XML in x.* )
+                            {
+                                W_data3[D_data][W_data3[D_data].length - 1][xx.name().toString()] = xx.text().toString();
+                            }
+                            
+                        }
+                    else if (dxml.display.TEXTINPUT.list.DICT != undefined)
+                    {
+                        for each (var x:XML in dxml.display.TEXTINPUT.list.DICT)
+                        {
+                            W_data3[D_data].addItem(new Object);
+////////////////////////?????????????????????????????????
+                        }
+                    }
+                    coboBox.dataProvider = W_data3[D_data];
                 }
 
                 for (var i:int = 0; i <= P_data.ti.length; i++)
@@ -538,10 +586,12 @@ package com.yspay
                 }
                 else
                 {
-                    var formitem:FormItem = new FormItem;
+                    var formitem:MyFormItem = new MyFormItem;
                     formitem.direction = "horizontal";
                     formitem.label = label.text;
                     formitem.addChild(ti);
+                    if(coboBox!=null)
+                    formitem.addChild(coboBox);
                     container.addChild(formitem);
                     _bus_ctrl_arr.push({ti_name: ti});
                 }
@@ -549,9 +599,17 @@ package com.yspay
 
         }
 
-        private function comboboxshowlabel(o:Object):String
+        private function comboboxshowlabel(item:Object):String
         {
-            return (item.GENDER + " - " + item.GENDER_ID);
+            var returnvalue:String = new String;
+           if( item.hasOwnProperty("mx_internal_uid"))
+            item.setPropertyIsEnumerable('mx_internal_uid', false);
+
+            for (var o:Object in item)
+
+                returnvalue += item[o].toString() + ' - ';
+
+            return (returnvalue.substring(0, returnvalue.length - 3));
         }
 
         private function comboboxchange(evt:Event):void
@@ -597,6 +655,23 @@ package com.yspay
                             P_data.ti[i][dictname][dictNum].selectedItem = aa;
                     }
                 }
+            }
+            for (var i:int = 0; i < P_data.DataGrid.length; i++)
+            {
+                if (P_data.DataGrid[i][dictname] == null)
+                    break;
+
+                var dataw:String = P_data.DataGrid[i][dictname]["W_data"];
+                var datad:String = P_data.DataGrid[i][dictname]["D_data"];
+                if (P_data[dataw] == undefined)
+                    break;
+                if (P_data[dataw][datad] == undefined)
+                    break;
+                if (P_data[dataw][datad][dictNum] == undefined)
+                    break;
+                if (P_data[dataw][datad][dictNum][dictname] == undefined)
+                    break;
+                P_data[dataw][datad][dictNum][dictname] = dictvalue;
             }
         }
 
@@ -908,8 +983,6 @@ package com.yspay
         {
             CursorManager.removeBusyCursor();
             var info:DBTable = _pool.info as DBTable;
-            var i:int = 0;
-
             if (_M_data.POOL.INFO[event.query_name] != null)
                 _M_data.POOL.INFO[event.query_name].removeAll();
 
@@ -931,9 +1004,7 @@ package com.yspay
                 vare["TYPE"] = ys_var.TYPE.getValue();
                 vare["VALUE"] = ys_var.VALUE.getValue();
                 vare["VER"] = ys_var.VER.getValue();
-                if (_M_data.POOL.INFO[event.query_name].length <= i)
-                    _M_data.POOL.INFO[event.query_name].addItem(vare);
-                i++;
+                _M_data.POOL.INFO[event.query_name].addItem(vare);
             }
             _M_data.POOL.INFO[event.query_name].refresh();
             //xingj ..
