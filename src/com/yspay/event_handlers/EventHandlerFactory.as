@@ -1,6 +1,10 @@
 package com.yspay.event_handlers
 {
+    import com.yspay.YsPod;
+
     import flash.utils.getDefinitionByName;
+
+    import mx.core.Container;
 
     public class EventHandlerFactory
     {
@@ -30,6 +34,23 @@ package com.yspay.event_handlers
             var func:Function = getDefinitionByName(func_name) as Function;
 
             return func;
+        }
+
+        public static function GetParentYsPod(container:Container):YsPod
+        {
+            var ys_pod:YsPod = null;
+            while (container != null)
+            {
+                if (container is YsPod)
+                {
+                    ys_pod = container as YsPod;
+                    break;
+                }
+
+                container = container.parent as Container;
+            }
+
+            return ys_pod;
         }
     }
 }

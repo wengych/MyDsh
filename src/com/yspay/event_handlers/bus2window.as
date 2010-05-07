@@ -2,14 +2,12 @@
 
 package com.yspay.event_handlers
 {
-    import mx.core.Container;
+    import mx.core.UIComponent;
     import mx.controls.Alert;
     import mx.controls.TextInput;
 
-    public function bus2window(wnd:Object, container:Container):void
+    public function bus2window(ui_comp:UIComponent):void
     {
-        var children:Array = container.getChildren();
-        var ti:TextInput;
     /*
        for each (var obj:Object in children)
        {

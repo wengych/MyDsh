@@ -9,10 +9,10 @@ package com.yspay
     import com.yspay.pool.*;
     import com.yspay.util.FunctionDelegate;
     import com.yspay.util.StackUtil;
-    
+
     import flash.events.Event;
     import flash.events.MouseEvent;
-    
+
     import mx.collections.ArrayCollection;
     import mx.containers.Form;
     import mx.containers.FormItem;
@@ -27,7 +27,7 @@ package com.yspay
     import mx.controls.dataGridClasses.DataGridColumn;
     import mx.core.Application;
     import mx.core.ClassFactory;
-    import mx.core.Container;
+    import mx.core.UIComponent;
     import mx.events.DataGridEvent;
     import mx.events.DragEvent;
     import mx.events.FlexEvent;
@@ -529,11 +529,11 @@ package com.yspay
                         for each (var x:XML in dxml.display.TEXTINPUT.list.*)
                         {
                             W_data3[D_data].addItem(new Object);
-                            for  each (var xx:XML in x.* )
+                            for each (var xx:XML in x.*)
                             {
                                 W_data3[D_data][W_data3[D_data].length - 1][xx.name().toString()] = xx.text().toString();
                             }
-                            
+
                         }
                     else if (dxml.display.TEXTINPUT.list.DICT != undefined)
                     {
@@ -590,8 +590,8 @@ package com.yspay
                     formitem.direction = "horizontal";
                     formitem.label = label.text;
                     formitem.addChild(ti);
-                    if(coboBox!=null)
-                    formitem.addChild(coboBox);
+                    if (coboBox != null)
+                        formitem.addChild(coboBox);
                     container.addChild(formitem);
                     _bus_ctrl_arr.push({ti_name: ti});
                 }
@@ -602,8 +602,8 @@ package com.yspay
         private function comboboxshowlabel(item:Object):String
         {
             var returnvalue:String = new String;
-           if( item.hasOwnProperty("mx_internal_uid"))
-            item.setPropertyIsEnumerable('mx_internal_uid', false);
+            if (item.hasOwnProperty("mx_internal_uid"))
+                item.setPropertyIsEnumerable('mx_internal_uid', false);
 
             for (var o:Object in item)
 
@@ -697,7 +697,7 @@ package com.yspay
                 var func_delegate:FunctionDelegate = new FunctionDelegate;
                 btn.addEventListener(MouseEvent.CLICK, OnBtnClick);
                 var fd:FunctionDelegate = new FunctionDelegate;
-                btn.addEventListener(StackSendXmlEvent.EVENT_STACK_SENDXML, fd.create(doBttonActions, container));
+                btn.addEventListener(StackSendXmlEvent.EVENT_STACK_SENDXML, fd.create(doBttonActions, btn));
                 btn.setStyle('fontWeight', 'normal');
                 container.addChild(btn);
             }
@@ -722,37 +722,37 @@ package com.yspay
 
             var fg:FunctionDelegate = new FunctionDelegate;
             stackUtil.addEventListener(StackUtil.EVENT_STACK_NEXT, fg.create(stackUtil.stack, btn, arr));
-            //驱动�
+            //驱动
             stackUtil.stack(new Event(StackUtil.EVENT_STACK_NEXT), btn, arr);
         }
 
-        //button一系列action services的最后一�
+        //button一系列action services的最后一
 
-        private function doBttonActions(e:StackSendXmlEvent, container:Container):void
+        private function doBttonActions(e:StackSendXmlEvent, ctrl:UIComponent):void
         {
             var action:XML = e.data as XML;
             var type:String = (action.localName().toString().toLocaleLowerCase());
             switch (type)
             {
                 case 'action':
-                {
-                    //if (event_obj.hasOwnProperty(action))
                     {
-                        var func:Function = EventHandlerFactory.get_handler(action);
-                        func(this, container);
-                        e.stackUtil.dispatchEvent(new Event(StackUtil.EVENT_STACK_NEXT));
+                        //if (event_obj.hasOwnProperty(action))
+                        {
+                            var func:Function = EventHandlerFactory.get_handler(action);
+                            func(ctrl);
+                            e.stackUtil.dispatchEvent(new Event(StackUtil.EVENT_STACK_NEXT));
+                        }
+                        /*else
+                           {
+                           trace('no this function: ', action);
+                         }*/
+                        break;
                     }
-                    /*else
-                       {
-                       trace('no this function: ', action);
-                     }*/
-                    break;
-                }
                 case 'services':
-                {
-                    DoService(e, GetServiceXml(action));
-                    break;
-                }
+                    {
+                        DoService(e, GetServiceXml(action));
+                        break;
+                    }
             }
 
         }
@@ -797,7 +797,7 @@ package com.yspay
             //var_name=dict名字
             for each (var var_name:String in bus_in_name_args)
             {
-                // 参数从本地bus中获�?xingjun getfrist is err
+                // 参数从本地bus中获取 xingjun getfrist is err
                 if (!P_data.data[0].hasOwnProperty(var_name))
                 {
                     var ys_var:YsVar = main_bus[var_name];
@@ -826,7 +826,7 @@ package com.yspay
             trace(service_info.toXMLString());
             trace(bus);
 
-            var dict_str:String
+            var dict_str:String;
             var dict_search:String = 'dict://';
             var bus_out_name_args:Array = new Array;
             var dict_list:XMLList = service_info.RecvPKG.BODY.DICT;
@@ -915,7 +915,7 @@ package com.yspay
             if (o is FormItem)
                 for each (var t:Object in o.parent.getChildren())
                 {
-                    for each (var textinput:*in t.getChildren())
+                    for each (var textinput:* in t.getChildren())
                     {
                         if (textinput is TextInput)
                         {
@@ -925,7 +925,7 @@ package com.yspay
 
                 }
             else
-                for each (var textinput1:*in o.getChildren())
+                for each (var textinput1:* in o.getChildren())
                 {
                     if (textinput1 is TextInput)
                     {
