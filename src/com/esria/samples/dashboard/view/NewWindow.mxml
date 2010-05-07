@@ -188,7 +188,7 @@
             private function AddService(arg:Object):void
             {
                 var pop:PopUpButtonPanel = PopUpManager.createPopUp(this, PopUpButtonPanel, true, null) as PopUpButtonPanel;
-                pop.parentWindow = this;
+                //pop.parentWindow = this;
                 pop.arg = arg;
                 PopUpManager.centerPopUp(pop);
                 pop.txtName.setFocus();

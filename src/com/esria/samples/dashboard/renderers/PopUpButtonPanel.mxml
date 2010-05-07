@@ -10,11 +10,11 @@
           paddingTop="1">
     <mx:Script>
         <![CDATA[
-            import com.esria.samples.dashboard.view.NewWindow;
+            import com.yspay.YsTitleWindow;
             import mx.controls.Alert;
             import mx.managers.PopUpManager;
             import com.yspay.util.FunctionDelegate;
-            public var parentWindow:NewWindow;
+            public var parentWindow:YsTitleWindow;
             public var arg:Object;
         ]]>
     </mx:Script>

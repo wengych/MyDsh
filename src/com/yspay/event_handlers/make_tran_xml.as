@@ -4,13 +4,14 @@ package com.yspay.event_handlers
     import com.esria.samples.dashboard.view.NewWindow;
     import com.yspay.YsPod;
     import com.yspay.util.DateUtil;
+    import com.yspay.util.GetParentByType;
 
     import mx.core.Container;
     import mx.core.UIComponent;
 
     public function make_tran_xml(ui_comp:UIComponent):void
     {
-        var ys_pod:YsPod = EventHandlerFactory.GetParentYsPod(ui_comp.parent as Container);
+        var ys_pod:YsPod = GetParentByType(ui_comp.parent as Container, YsPod) as YsPod;
         var win_per:String = "WINDOWS://";
         trace('event_make_windows_xml');
         var xml:XML = <L TYPE="TRAN" NAME="IDNUMBER" VER="20091120999999" ISUSED="0" APPNAME="MapServer" CUSER="xing">

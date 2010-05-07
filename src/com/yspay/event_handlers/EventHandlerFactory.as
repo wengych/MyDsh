@@ -35,22 +35,5 @@ package com.yspay.event_handlers
 
             return func;
         }
-
-        public static function GetParentYsPod(container:Container):YsPod
-        {
-            var ys_pod:YsPod = null;
-            while (container != null)
-            {
-                if (container is YsPod)
-                {
-                    ys_pod = container as YsPod;
-                    break;
-                }
-
-                container = container.parent as Container;
-            }
-
-            return ys_pod;
-        }
     }
 }

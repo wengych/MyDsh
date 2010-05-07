@@ -1,21 +1,38 @@
 // ActionScript file
+
 package com.yspay.event_handlers
 {
-    import com.esria.samples.dashboard.renderers.PopUpNamePanel;
-    import com.yspay.YsPod;
+    import com.yspay.events.EventPodShowXml;
+    import com.yspay.pool.DBTable;
+    import com.yspay.pool.DBTableQueryEvent;
+    import com.yspay.pool.Query;
 
+    import mx.controls.Button;
+    import mx.controls.listClasses.ListBase;
+    import mx.core.Application;
     import mx.core.UIComponent;
-    import mx.core.Container;
-    import mx.managers.PopUpManager;
+    import mx.events.DragEvent;
 
-    public function new_window(ui_comp:UIComponent):void
+    public function new_window(e:DragEvent, ui_comp:UIComponent):void
     {
-        var ys_pod:YsPod = EventHandlerFactory.GetParentYsPod(ui_comp.parent as Container);
+        var func:Function = function(event:DBTableQueryEvent):void
+            {
+                var dts:DBTable = Application.application._pool.dts as DBTable;
+                var temp:String = dts[event.query_name][dts.arg_select];
+                ui_comp.removeEventListener(dts.select_event_name, func);
 
-        var new_popName:PopUpNamePanel = new PopUpNamePanel;
-        new_popName.parentYsPod = ys_pod;
+                // addFormItem(arg);
 
-        PopUpManager.addPopUp(new_popName, ys_pod, true, null);
-        PopUpManager.centerPopUp(new_popName);
+                var e:EventPodShowXml = new EventPodShowXml(new XML(temp));
+                ui_comp.dispatchEvent(e);
+            };
+
+        var o:Object = (e.dragInitiator as ListBase).selectedItem;
+        var dts:DBTable = Application.application._pool.dts as DBTable;
+
+
+        dts.AddQuery(o.DTS, Query, o.DTS, ui_comp);
+        ui_comp.addEventListener(dts.select_event_name, func);
+        dts.DoQuery(o.DTS);
     }
 }

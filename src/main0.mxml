@@ -215,9 +215,14 @@
         <![CDATA[
             //longin handler 
             [Bindable]
-            private var comboboxDP:ArrayCollection = new ArrayCollection([{name: "请选择"}, {name: "show memory bus"}, {name: "show dict"}, {name: "show window"}, {name: "show service"}, {name: "show tran"},
-                                                                          {name: "new window"},
-                                                                          {name: "new service"}, {name: "new tran"}]);
+            private var comboboxDP:ArrayCollection = new ArrayCollection([{name: "请选择"}, {name: "show memory bus"},
+                                                                          {name: "show_dict"},
+                                                                          {name: "show_window"},
+                                                                          {name: "show_service"},
+                                                                          {name: "show_tran"},
+                                                                          {name: "new_window"},
+                                                                          {name: "new_service"},
+                                                                          {name: "new_tran"}]);
             [Bindable]
             private var ipDP:ArrayCollection = new ArrayCollection([{ip: "192.168.0.77", port: "16920"}, {ip: "192.168.0.216", port: "16920"}, {ip: "124.207.197.178", port: "6802"}, {ip: "192.168.0.75",
                                                                         port: "16920"}, {ip: "192.168.88.84", port: "16920"}]);

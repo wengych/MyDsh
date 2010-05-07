@@ -3,7 +3,7 @@ package com.yspay
     import com.esria.samples.dashboard.renderers.PopUpButtonPanel;
     import com.yspay.events.EventWindowShowXml;
     import com.yspay.pool.*;
-    import com.yspay.util.FunctionDelegate;
+    import com.yspay.util.GetParentByType;
 
     import mx.collections.ArrayCollection;
     import mx.containers.Form;
@@ -50,8 +50,10 @@ package com.yspay
             form.percentWidth = 100;
             this.addChild(form);
 
-            onInit();
+            _pool = Application.application._pool;
 
+            this.addEventListener((_pool.dts as DBTable).select_event_name, OnDtsQueryComplete);
+            this.addEventListener(EventWindowShowXml.EVENT_NAME, OnShow);
             // TODO: 拖拽事件的支持需要自定义
             // TODO: 目前直接支持拖拽事件
             form.addEventListener(DragEvent.DRAG_ENTER, dragEnterHandler);
@@ -60,6 +62,29 @@ package com.yspay
 
         public function Init(xml:XML):void
         {
+            _YsPod = GetParentByType(this, YsPod) as YsPod;
+
+            _P_cont = _YsPod.P_cont;
+            _P_data = _M_data.TRAN[_P_cont]; //M_DATA.TRAN.序列号
+
+            P_cont = _P_data.cont;
+            _P_data.cont++;
+
+            P_data = new Object; //M_DATA.TRAN.序列号.序列号
+            _P_data[P_cont] = P_data;
+
+            var event:EventWindowShowXml = new EventWindowShowXml(xml);
+            this.dispatchEvent(event);
+        }
+
+        private function closeHandler(e:CloseEvent):void
+        {
+            this.parent.removeChild(this);
+        }
+
+        protected function OnShow(event:EventWindowShowXml):void
+        {
+            var xml:XML = event.xml;
             var child_name:String;
             //xingj ..
             for each (var kid:XML in xml.elements())
@@ -67,7 +92,8 @@ package com.yspay
                 child_name = kid.name().toString().toLowerCase();
                 if (child_name == 'dict')
                 {
-                    ShowDict(titleWindow.form, kid);
+                    // TODO: 新建dict类型，处理dict节点
+                    //ShowDict(titleWindow.form, kid);
                 }
                 else if (child_name == 'button')
                 {
@@ -87,48 +113,10 @@ package com.yspay
                 }
                 else if (child_name == 'event')
                 {
-                    var fhelper:FunctionDelegate = new FunctionDelegate;
-                    addEventListener(kid.text().toString(), fhelper.create(onDragDropHandler, kid.ACTION.text()));
+                    //var fhelper:FunctionDelegate = new FunctionDelegate;
+                    //addEventListener(kid.text().toString(), fhelper.create(onDragDropHandler, kid.ACTION.text()));
                 }
             }
-        }
-
-        private function closeHandler(e:CloseEvent):void
-        {
-            this.parent.removeChild(this);
-        }
-
-        public function onInit():void
-        {
-            var o:Object = this;
-            for (; ; )
-            {
-                if (o.parent is YsPod)
-                {
-                    _YsPod = o.parent;
-                    break;
-                }
-                else
-                    o = o.parent;
-            }
-            _P_cont = _YsPod.P_cont;
-            _P_data = _M_data.TRAN[_P_cont];
-
-            P_cont = _P_data.cont;
-            _P_data.cont++;
-
-            P_data = new Object;
-            _P_data[P_cont] = P_data;
-//M_DATA.TRAN.序列号.序列号
-            P_data = _YsPod.P_cont++;
-            _pool = Application.application._pool;
-            this.addEventListener((_pool.dts as DBTable).select_event_name, OnDtsQueryComplete);
-            this.addEventListener(EventWindowShowXml.EVENT_NAME, OnShow);
-        }
-
-        protected function OnShow(event:EventWindowShowXml):void
-        {
-
         }
 
         protected function dragEnterHandler(event:DragEvent):void

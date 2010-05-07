@@ -3,6 +3,7 @@
 package com.yspay.event_handlers
 {
     import com.yspay.YsPod;
+    import com.yspay.util.GetParentByType;
 
     import mx.controls.TextArea;
     import mx.controls.TextInput;
@@ -12,11 +13,11 @@ package com.yspay.event_handlers
     public function clean_text(ui_comp:UIComponent):void
     {
         // wnd.clean_allti_ta(event_container);
-        var ys_pod:YsPod = EventHandlerFactory.GetParentYsPod(ui_comp.parent as Container);
+        var ys_pod:YsPod = GetParentByType(ui_comp.parent as Container, YsPod) as YsPod;
 
         var func:Function = function(container:Container):void
             {
-                for each (var child:* in container.getChildren())
+                for each (var child:*in container.getChildren())
                 {
                     if (child is TextArea || child is TextInput)
                     {

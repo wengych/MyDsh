@@ -3,48 +3,44 @@ package com.yspay
     import com.yspay.event_handlers.EventHandlerFactory;
     import com.yspay.events.StackSendXmlEvent;
     import com.yspay.pool.Pool;
+    import com.yspay.util.GetParentByTyeName;
     import com.yspay.util.FunctionDelegate;
     import com.yspay.util.StackUtil;
-
     import flash.events.Event;
     import flash.events.MouseEvent;
-
+    import mx.controls.Alert;
     import mx.controls.Button;
     import mx.core.Application;
 
     public class YsButton extends Button implements YsControl
     {
-        protected var _xml:XML;
-        protected var _pool:Pool;
-
         public function YsButton()
         {
             super();
-            _pool = Application.application.pool;
+            _pool = Application.application._pool;
         }
+        protected var _pool:Pool;
+        protected var _xml:XML;
 
         public function Init(xml:XML):void
         {
+            this.setStyle('fontWeight', 'normal');
             this.label = xml.@LABEL;
             _xml = xml;
-            var func_delegate:FunctionDelegate = new FunctionDelegate;
             this.addEventListener(MouseEvent.CLICK, OnBtnClick);
-            var fd:FunctionDelegate = new FunctionDelegate;
-            this.addEventListener(StackSendXmlEvent.EVENT_STACK_SENDXML, fd.create(DoActions, this));
-            this.addEventListener(MouseEvent.CLICK, OnBtnClick);
-            this.setStyle('fontWeight', 'normal');
+            this.addEventListener(StackSendXmlEvent.EVENT_STACK_SENDXML, DoActions);
         }
 
         protected function DoActions(e:StackSendXmlEvent):void
         {
-            var type:String = (_xml.localName().toString().toLocaleLowerCase());
+            var type:String = (e.data.localName().toString().toLocaleLowerCase());
             switch (type)
             {
                 case 'action':
                 {
                     //if (event_obj.hasOwnProperty(action))
                     {
-                        var func:Function = EventHandlerFactory.get_handler(_xml);
+                        var func:Function = EventHandlerFactory.get_handler(e.data.toString());
                         func(this);
                         e.stackUtil.dispatchEvent(new Event(StackUtil.EVENT_STACK_NEXT));
                     }
@@ -82,22 +78,6 @@ package com.yspay
             stackUtil.addEventListener(StackUtil.EVENT_STACK_NEXT, fg.create(stackUtil.stack, this, arr));
             //驱动�
             stackUtil.stack(new Event(StackUtil.EVENT_STACK_NEXT), this, arr);
-        }
-
-
-        private function GetServiceXml(service_desc:XML):XML
-        {
-            var service_value:String = service_desc.toString();
-            var link_head:String = 'services://';
-            if (service_value.substr(0, link_head.length).toLowerCase() == link_head.toLowerCase())
-            {
-                var service_name:String = service_value.substr(link_head.length);
-                var dts_no:String = _pool.info.SERVICES[service_name].Get().DTS;
-                var service_xml:String = _pool.dts[dts_no].__DICT_XML;
-                return new XML(service_xml);
-            }
-
-            return service_desc;
         }
 
         private function CallBack(bus:UserBus):void
@@ -151,8 +131,24 @@ package com.yspay
             var ip:String = this.parentApplication.GetServiceIp(scall_name);
             var port:String = this.parentApplication.GetServicePort(scall_name);
             var func_dele:FunctionDelegate = new FunctionDelegate;
-            //Alert.show(bus.toString());
+            Alert.show(bus.toString());
             scall.Send(bus, ip, port, func_dele.create(CallBack, service, e));
+        }
+
+
+        private function GetServiceXml(service_desc:XML):XML
+        {
+            var service_value:String = service_desc.toString();
+            var link_head:String = 'services://';
+            if (service_value.substr(0, link_head.length).toLowerCase() == link_head.toLowerCase())
+            {
+                var service_name:String = service_value.substr(link_head.length);
+                var dts_no:String = _pool.info.SERVICES[service_name].Get().DTS;
+                var service_xml:String = _pool.dts[dts_no].__DICT_XML;
+                return new XML(service_xml);
+            }
+
+            return service_desc;
         }
     }
 }
