@@ -16,81 +16,7 @@ package com.yspay
     public class YsPodLayoutManager extends PodLayoutManager
     {
         public var _pool:Pool;
-        private var newwindow_xml_str:String = '<pod title="new windows">\
-<HBox line="top">\
-<DICT>\
-  DICT://__W_CNAME\
-</DICT>\
-<DICT>\
-  DICT://__W_ENAME\
-</DICT>\
-<BUTTON LABEL="保存">\
- <ACTION>event_make_windows_xml</ACTION>\
- <SERVICES>\
-  SERVICES://YSDBSDTSObjectConfigInsert\
-</SERVICES>\
-</BUTTON>\
-<BUTTON LABEL="清空">\
- <ACTION>event_clean_text</ACTION>\
-</BUTTON>\
-<BUTTON LABEL="显示xml">\
-<ACTION>event_show_xml</ACTION>\
-</BUTTON>\
-</HBox>\
-<HBox>\
-<DICT>\
-  DICT://__DICT_USER_RTN\
-</DICT>\
-<DICT>\
-  DICT://__DICT_USER_RTNMSG\
-</DICT>\
-<DICT>\
-  DICT://__DICT_OUT\
-</DICT>\
-<BUTTON LABEL="清空">\
- <ACTION>event_clean_text</ACTION>\
-</BUTTON>\
-</HBox>\
-<windows title="new">\
-new\
-</windows>\
-</pod>';
-        private var newtran_xml_str:String = '<pod title="new tran"> \
-<HBox line="top">\
-<DICT>\
-  DICT://__W_CNAME\
-</DICT>\
-<DICT>\
-  DICT://__W_ENAME\
-</DICT>\
-<BUTTON LABEL="保存">\
- <ACTION>event_make_tran_xml</ACTION>\
- <SERVICES>\
-  SERVICES://YSDBSDTSObjectConfigInsert\
-</SERVICES>\
- <ACTION>\
-    event_bus2window\
- </ACTION>\</BUTTON>\
-<BUTTON LABEL="清空">\
- <ACTION>event_clean_text</ACTION>\
-</BUTTON>\
-</HBox>\
-<HBox line="top">\
-<DICT>\
-  DICT://__DICT_USER_RTN\
-</DICT>\
-<DICT>\
-  DICT://__DICT_USER_RTNMSG\
-</DICT>\
-<DICT>\
-  DICT://__DICT_OUT\
-</DICT>\
-</HBox>\
-<event>\
- dragDrop\
- <ACTION>new_window</ACTION>\
-</event> \
-</pod>';
+
         private var show_save_xml_str:String = '<pod tilte="show xml">\
 <DATAGRID dragEnabled="true" editable="true" >\
 <DICT>DICT://__W_CNAME</DICT>\
@@ -119,103 +45,6 @@ new\
   xml window\
 </windows>\
 </pod>';
-        private var showtran_xml_str:String = '<POD title="show tran"> \
-<HBOX>\
-<BUTTON LABEL="refresh">\
- <ACTION>event_refresh_pool</ACTION>\
-</BUTTON>\
-</HBOX>\
-<DATAGRID dragEnabled="true" editable="true" >\
-<POOL> POOL\
-  <object> INFO\
-    <object att="array"> TRAN \
-        <object id="中文名字"> MEMO</object>\
-        <object id="英文名字"> NAME</object>\
-        <object id="DTS"> DTS</object>\
-        <object id="版本号"> VER</object>\
-   </object>\
-  </object>\
-</POOL>\
-</DATAGRID>\
-</POD>';
-        private var showdict_xml_str:String = '<POD title="show dict"> \
-<HBOX>\
-<BUTTON LABEL="refresh">\
- <ACTION>event_refresh_pool</ACTION>\
-</BUTTON>\
-</HBOX>\
-<DATAGRID dragEnabled="true" editable="true" >\
-<POOL> POOL\
-  <object> INFO\
-    <object att="array"> DICT \
-        <object id="中文名字"> MEMO</object>\
-        <object id="英文名字"> NAME</object>\
-        <object id="DTS">      DTS</object>\
-        <object id="版本号">      VER</object>\
-   </object>\
-  </object>\
-</POOL>\
-</DATAGRID>\
-</POD>';
-        private var showservices_xml_str:String = '<POD title="show services"> \
-<HBOX>\
-<BUTTON LABEL="refresh">\
- <ACTION>event_refresh_pool</ACTION>\
-</BUTTON>\
-</HBOX>\
-<DATAGRID dragEnabled="true" editable="true" >\
-<POOL> POOL\
-  <object> INFO\
-    <object att="array"> SERVICES \
-        <object id="中文名字"> MEMO</object>\
-        <object id="英文名字"> NAME</object>\
-        <object id="DTS">      DTS</object>\
-        <object id="版本号">      VER</object>\
-   </object>\
-  </object>\
-</POOL>\
-</DATAGRID>\
-</POD>';
-        private var showwindows_xml_str:String = '<POD title="show window"> \
-<HBOX>\
-<BUTTON LABEL="refresh">\
- <ACTION>event_refresh_pool</ACTION>\
-</BUTTON>\
-</HBOX>\
-<DATAGRID dragEnabled="true" editable="true" >\
-<POOL> POOL\
-  <object> INFO\
-    <object att="array"> WINDOWS \
-        <object id="中文名字"> MEMO</object>\
-        <object id="英文名字"> NAME</object>\
-        <object id="DTS">  DTS</object>\
-        <object id="版本号">  VER</object>\
-        <object id="建立日期">CDATE</object>\
-   </object>\
-  </object>\
-</POOL>\
-</DATAGRID>\
-</POD>';
-        private var showhbox_xml_str:String = '<POD title="show hbox"> \
-<HBOX>\
-<BUTTON LABEL="refresh">\
- <ACTION>event_refresh_pool</ACTION>\
-</BUTTON>\
-</HBOX>\
-<DATAGRID dragEnabled="true" editable="true" >\
-<POOL> POOL\
-  <object> INFO\
-    <object att="array"> HBOX \
-        <object id="中文名字"> MEMO</object>\
-        <object id="英文名字"> NAME</object>\
-        <object id="DTS">  DTS</object>\
-        <object id="版本号">  VER</object>\
-        <object id="建立日期">CDATE</object>\
-   </object>\
-  </object>\
-</POOL>\
-</DATAGRID>\
-</POD>';
 
         public function YsPodLayoutManager(pool:Pool)
         {
@@ -236,39 +65,10 @@ new\
                 DoNewPod(new type_obj[event.windows_type].type,
                          type_obj[event.windows_type].title);
             }
-            else if (event.windows_type == 'new window')
-            {
-                DoNewYsPod(new XML(newwindow_xml_str));
-            }
-            else if (event.windows_type == 'new tran')
-            {
-                DoNewYsPod(new XML(newtran_xml_str));
-            }
-            else if (event.windows_type == 'show tran')
-            {
-                DoNewYsPod(new XML(showtran_xml_str));
-            }
             else if (event.windows_type == 'show xml')
             {
                 DoNewYsPod(new XML(show_save_xml_str));
             }
-            else if (event.windows_type == 'show dict')
-            {
-                DoNewYsPod(new XML(showdict_xml_str));
-            }
-            else if (event.windows_type == 'show service')
-            {
-                DoNewYsPod(new XML(showservices_xml_str));
-            }
-            else if (event.windows_type == 'show window')
-            {
-                DoNewYsPod(new XML(showwindows_xml_str));
-            }
-            else if (event.windows_type == 'show hbox')
-            {
-                DoNewYsPod(new XML(showhbox_xml_str));
-            }
-
             else if (event.windows_type.toLocaleLowerCase().search(windows_pre_string) >= 0)
             {
                 // 'WINDOWS://testop'
@@ -301,8 +101,9 @@ new\
                     return;
                 }
                 pod_xml.appendChild("tran://" + tran_name);
+                pod_xml.@title = tran_name;
                 //pod_xml:
-                // <pod>
+                // <pod title="12">
                 //      tran://12
                 //</pod>
                 DoNewYsPod(pod_xml);

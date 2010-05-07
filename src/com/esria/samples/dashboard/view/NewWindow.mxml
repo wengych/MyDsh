@@ -9,6 +9,7 @@
                 close="this.parent.removeChild(this)">
     <mx:Script>
         <![CDATA[
+            import com.yspay.events.EventWindowShowXml;
             import mx.collections.ArrayCollection;
             import com.yspay.events.EventPodNewChild;
             import mx.controls.listClasses.ListBase;
@@ -34,7 +35,14 @@
             import com.esria.samples.dashboard.renderers.PopUpButtonPanel;
             import mx.core.Application;
 
-            public var _M_data:Object = Application.application.M_data; //xingj
+            public var _M_data:Object = Application.application.M_data;
+            public var _P_cont:int; //存放_M_data.TRAN.cont
+            public var _P_data:Object; //存放父类YSPOD的P_DATA
+
+            public var P_cont:int;
+            public var P_data:Object;
+
+            public var _YsPod:YsPod;
 
             [Bindable]
             private var arr_col:ArrayCollection;
@@ -45,8 +53,35 @@
 
             public function onInit():void
             {
+                var o:Object = this;
+                for (; ; )
+                {
+                    if (o.parent is YsPod)
+                    {
+                        _YsPod = o.parent;
+                        break;
+                    }
+                    else
+                        o = o.parent;
+                }
+                _P_cont = _YsPod.P_cont;
+                _P_data = _M_data.TRAN[_P_cont];
+
+                P_cont = _P_data.cont;
+                _P_data.cont++;
+
+                P_data = new Object;
+                _P_data[P_cont] = P_data;
+//M_DATA.TRAN.序列号.序列号
+                P_data = _YsPod.P_cont++;
                 _pool = Application.application._pool;
                 this.addEventListener((_pool.dts as DBTable).select_event_name, OnDtsQueryComplete);
+                this.addEventListener(EventWindowShowXml.EVENT_NAME, OnShow);
+            }
+
+            protected function OnShow(event:EventWindowShowXml):void
+            {
+
             }
 
             protected function dragEnterHandler(event:DragEvent):void
@@ -164,7 +199,7 @@
             {
                 //var formitem:MyFormItem = new MyFormItem;
                 var contentXml:XML = arg.showxml as XML;
-                
+
                 (this.parent as YsPod).ShowDict(form, contentXml);
 //
 //                formitem.descXml = contentXml;
