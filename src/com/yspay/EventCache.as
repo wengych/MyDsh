@@ -63,7 +63,10 @@ package com.yspay
                 //var dts_no:String = info[link_key][link_value].Get().DTS;
 
                 dts.AddQuery(dts_no, Query, dts_no, this);
-                dts.DoQuery(dts_no);
+                if (link_key == 'TRAN')
+                    dts.DoQuery(dts_no, true);
+                else
+                    dts.DoQuery(dts_no);
 
                 return 1;
             }
@@ -74,6 +77,11 @@ package com.yspay
         public function Cache(xml:XML):int
         {
             var rtn:int = 0;
+
+            if (xml == null)
+            {
+                return rtn;
+            }
 
             if (xml.children().length() == 0)
             {

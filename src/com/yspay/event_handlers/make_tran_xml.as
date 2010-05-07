@@ -2,12 +2,15 @@
 package com.yspay.event_handlers
 {
     import com.esria.samples.dashboard.view.NewWindow;
+    import com.yspay.YsPod;
     import com.yspay.util.DateUtil;
 
     import mx.core.Container;
+    import mx.core.UIComponent;
 
-    public function make_tran_xml(wnd:Object, event_container:Container):void
+    public function make_tran_xml(ui_comp:UIComponent):void
     {
+        var ys_pod:YsPod = EventHandlerFactory.GetParentYsPod(ui_comp.parent as Container);
         var win_per:String = "WINDOWS://";
         trace('event_make_windows_xml');
         var xml:XML = <L TYPE="TRAN" NAME="IDNUMBER" VER="20091120999999" ISUSED="0" APPNAME="MapServer" CUSER="xing">
@@ -16,7 +19,7 @@ package com.yspay.event_handlers
                 </L>
             </L>;
         var child_wnd:Container;
-        var P_data:Object = wnd._M_data.TRAN[wnd.P_cont];
+        var P_data:Object = ys_pod._M_data.TRAN[ys_pod.P_cont];
         var ename:Object = P_data.data[0]["__W_ENAME"]; // wnd.main_bus.GetFirst("__W_ENAME");
         var cname:Object = P_data.data[0]["__W_CNAME"]; // wnd.main_bus.GetFirst("__W_CNAME");
         var date:Date = new Date;
@@ -25,7 +28,7 @@ package com.yspay.event_handlers
         xml.L.A.@VALUE = cname;
         xml.@MEMO = cname;
         xml.@VER = date.fullYear + DateUtil.doubleString(date.month + 1) + DateUtil.doubleString(date.date) + DateUtil.doubleString(date.hours) + DateUtil.doubleString(date.minutes) + DateUtil.doubleString(date.seconds);
-        for each (child_wnd in wnd.getChildren())
+        for each (child_wnd in ys_pod.getChildren())
         {
             var new_wnd:NewWindow = child_wnd as NewWindow
             if (new_wnd == null)
@@ -36,10 +39,10 @@ package com.yspay.event_handlers
             xml.L.appendChild(win_xml);
         }
         var xml_head:String = '<?xml version="1.0" encoding="GBK"?>';
-        if (wnd.main_bus.GetVarArray('__DICT_XML') != null)
+        if (ys_pod.main_bus.GetVarArray('__DICT_XML') != null)
         {
-            wnd.main_bus.RemoveByKey('__DICT_XML');
+            ys_pod.main_bus.RemoveByKey('__DICT_XML');
         }
-        wnd.main_bus.Add('__DICT_XML', xml_head + xml.toXMLString());
+        ys_pod.main_bus.Add('__DICT_XML', xml_head + xml.toXMLString());
     }
 }
