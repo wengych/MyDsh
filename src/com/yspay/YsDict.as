@@ -2,41 +2,59 @@ package com.yspay
 {
     import com.yspay.util.GetParentByType;
 
+    import flash.display.DisplayObjectContainer;
     import flash.events.Event;
 
     import mx.controls.ComboBox;
+    import mx.controls.DataGrid;
     import mx.controls.Label;
     import mx.controls.TextInput;
     import mx.core.Container;
 
-    public class YsDict
+    public class YsDict implements YsControl
     {
         public var label:Label;
         public var text_input:TextInput;
         public var combo_box:YsComboBox;
         protected var P_data:Object;
+        protected var _parent:DisplayObjectContainer;
 
-        public function YsDict(dxml:XML)
+        public function YsDict(parent:DisplayObjectContainer)
         {
-            if (dxml.display.LABEL != undefined)
+            _parent = parent;
+        }
+
+        public function Init(xml:XML):void
+        {
+            if (_parent is DataGrid)
             {
-                label = new Label;
-                label.text = dxml.display.LABEL.@text;
+                // TODO:针对DataGrid的处理方法
             }
-            if (dxml.display.TEXTINPUT != undefined)
+            else
             {
-                text_input = CreateTextInput(dxml);
-            }
-            if (dxml.display.TEXTINPUT.list != undefined)
-            {
-                combo_box = CreateComboBox(dxml);
+                if (xml.display.LABEL != undefined)
+                {
+                    label = new Label;
+                    label.text = xml.display.LABEL.@text;
+                    _parent.addChild(label);
+                }
+                if (xml.display.TEXTINPUT != undefined)
+                {
+                    text_input = CreateTextInput(xml);
+                    _parent.addChild(text_input);
+                }
+                if (xml.display.TEXTINPUT.list != undefined)
+                {
+                    combo_box = CreateComboBox(xml);
+                    _parent.addChild(combo_box);
+                }
             }
         }
 
         private function tichange(evt:Event):void
         {
             var tt:TextInput = evt.target as TextInput;
-            var ys_pod:YsPod = GetParentByType(text_input.parent as Container, YsPod) as YsPod;
+            var ys_pod:YsPod = GetParentByType(text_input.parent, YsPod) as YsPod;
             var P_data:Object = ys_pod._M_data[ys_pod.P_cont];
             P_data.proxy[tt.data.index][tt.data.name] = tt.text;
             P_data.data.refresh();
@@ -86,7 +104,7 @@ package com.yspay
                 P_data[W_cont3] = new Object;
                 var W_data3:Object = P_data[W_cont3];
                 W_data3.XML = dxml;
-                W_data3.obj = coboBox;
+                W_data3.obj = combo_box;
                 W_data3.datacont = 10000;
                 var D_data:String = "data" + W_data3.datacont;
                 W_data3.datacont++;
@@ -161,7 +179,7 @@ package com.yspay
 
                     }
                 }
-                coboBox.dataProvider = W_data3[D_data];
+                combo_box.dataProvider = W_data3[D_data];
                 for (var i:int = 0; i <= P_data.ti.length; i++)
                 {
                     if (i == P_data.ti.length)
@@ -173,7 +191,7 @@ package com.yspay
                     if (P_data.ti[i][ti.data.name][ti.data.index] == null)
                     {
                         //ti ArrayCollection 的 i个Object的[英文名][索引号]
-                        P_data.ti[i][ti.data.name][ti.data.index] = coboBox;
+                        P_data.ti[i][ti.data.name][ti.data.index] = combo_box;
                         break;
                     }
                 }

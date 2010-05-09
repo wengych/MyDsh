@@ -5,6 +5,8 @@ package com.yspay
     import com.yspay.pool.*;
     import com.yspay.util.GetParentByType;
 
+    import flash.display.DisplayObjectContainer;
+
     import mx.collections.ArrayCollection;
     import mx.containers.Form;
     import mx.containers.TitleWindow;
@@ -18,7 +20,7 @@ package com.yspay
     import mx.managers.PopUpManager;
     import mx.utils.StringUtil;
 
-    public class YsTitleWindow extends TitleWindow
+    public class YsTitleWindow extends TitleWindow implements YsControl
     {
         public var form:Form;
         public var _M_data:Object = Application.application.M_data;
@@ -36,9 +38,12 @@ package com.yspay
         private var func_helper:FunctionHelper = new FunctionHelper;
         private var dts_event_listener:Function;
 
-        public function YsTitleWindow()
+        protected var _parent:DisplayObjectContainer;
+
+        public function YsTitleWindow(parent:DisplayObjectContainer)
         {
             super();
+            _parent = parent;
             this.percentHeight = 100;
             this.percentWidth = 100;
             this.setStyle("headerHeight", "10");
@@ -62,7 +67,9 @@ package com.yspay
 
         public function Init(xml:XML):void
         {
-            _YsPod = GetParentByType(this, YsPod) as YsPod;
+            _parent.addChild(this);
+
+            _YsPod = GetParentByType(_parent, YsPod) as YsPod;
 
             _P_cont = _YsPod.P_cont;
             _P_data = _M_data.TRAN[_P_cont]; //M_DATA.TRAN.序列号
@@ -90,32 +97,8 @@ package com.yspay
             for each (var kid:XML in xml.elements())
             {
                 child_name = kid.name().toString().toLowerCase();
-                if (child_name == 'dict')
-                {
-                    // TODO: 新建dict类型，处理dict节点
-                    //ShowDict(titleWindow.form, kid);
-                }
-                else if (child_name == 'button')
-                {
-                    // ShowButton(titleWindow.form, kid);
-                    var ys_btn:YsButton = new YsButton;
-                    ys_btn.Init(kid);
-                }
-                else if (child_name == 'hbox')
-                {
-                    //ShowWindow(titleWindow, kid);
-                }
-                else if (child_name == 'windows')
-                {
-                    // ShowWindow(titleWindow, kid);
-                    var titleWindow:YsTitleWindow = new YsTitleWindow;
-                    titleWindow.Init(kid);
-                }
-                else if (child_name == 'event')
-                {
-                    //var fhelper:FunctionDelegate = new FunctionDelegate;
-                    //addEventListener(kid.text().toString(), fhelper.create(onDragDropHandler, kid.ACTION.text()));
-                }
+                var child_ctrl:YsControl = new YsMaps.ys_type_map[child_name](this);
+                child_ctrl.Init(kid);
             }
         }
 
@@ -161,29 +144,12 @@ package com.yspay
 
         protected function dragDropNew(event:DragEvent):void
         {
-            /*
-               var arg:Object = new Object;
-               var o:Object = (event.dragInitiator as TileList).selectedItem;
-               arg.postion = event.localY;
-               var bus:UserBus = new UserBus;
-               var sc:ServiceCall = new ServiceCall;
-               bus.Add(ServiceCall.SCALL_NAME, "YSDBSDTSObjectSelect");
-               bus.Add("__DICT_IN", o.dts);
-               var fd:FunctionDelegate = new FunctionDelegate;
-               CursorManager.setBusyCursor();
-               sc.Send(bus, IP, PORT, fd.create(onServiceComplete, arg));
-             */
             var arg:Object = new Object;
             arg.postion = event.localY;
             var o:Object = (event.dragInitiator as ListBase).selectedItem;
             var dts:DBTable = _pool.dts as DBTable;
             dts.AddQuery(o.DTS, Query, o.DTS, this);
-            //dts_event_listener = func_helper.create(OnDtsQueryComplete, arg);
-            //this.addEventListener(dts.select_event_name, dts_event_listener);
-            //CursorManager.setBusyCursor();
             dts.DoQuery(o.DTS);
-
-
         }
 
         public function OnDtsQueryComplete(event:DBTableQueryEvent):void //, arg:Object):void
@@ -230,38 +196,13 @@ package com.yspay
             return;
         }
 
-        private function AddDict(arg:Object):void
+        // TODO:确认是否是通过事件驱动的方式显示节点
+        private function AddDict(xml:XML):void
         {
             //var formitem:MyFormItem = new MyFormItem;
-            var contentXml:XML = arg.showxml as XML;
 
-            (this.parent as YsPod).ShowDict(form, contentXml);
-//
-//                formitem.descXml = contentXml;
-//                formitem.label = contentXml.display.LABEL.@text;
-//
-//                var ti:TextInput = new TextInput;
-//                ti.width = 200;
-//
-//                if (contentXml.services.@TYPE == "DOUBLE" || contentXml.services.@TYPE == "FLOAT")
-//                {
-//                    ti.setStyle("textAlign", "right");
-//                }
-//                if (contentXml.display.TEXTINPUT.@displayAsPassword == "0")
-//                {
-//                    ti.displayAsPassword = false;
-//                }
-//                else
-//                {
-//                    ti.displayAsPassword = true;
-//                }
-//                if (contentXml.display.TEXTINPUT.@length != null)
-//                {
-//                    ti.maxChars = contentXml.display.TEXTINPUT.@length;
-//                    ti.toolTip = "最长输入" + ti.maxChars + "个字符";
-//                }
-//                formitem.addChild(ti);
-//                form.addChild(formitem);
+            var event:EventWindowShowXml = new EventWindowShowXml(xml);
+            this.dispatchEvent(event);
         }
 
         private function addFormItem(arg:Object):void
@@ -273,50 +214,8 @@ package com.yspay
             }
             else if (xml_name == 'dict')
             {
-                AddDict(arg);
+                AddDict(arg.showxml);
             }
-        /*
-           var formitem:MyFormItem = new MyFormItem;
-           var contentXml:XML = arg.showxml;
-           formitem.descXml = contentXml;
-           formitem.label = contentXml.display.LABEL.@text;
-           var ti:TextInput = new TextInput;
-           ti.width = 200;
-           if (contentXml.services.@TYPE == "DOUBLE" || contentXml.services.@TYPE == "FLOAT")
-           {
-           ti.setStyle("textAlign", "right");
-           }
-           if (contentXml.display.TEXTINPUT.@displayAsPassword == "0")
-           {
-           ti.displayAsPassword = false;
-           }
-           else
-           {
-           ti.displayAsPassword = true;
-           }
-           if (contentXml.display.TEXTINPUT.@length != null)
-           {
-           ti.maxChars = contentXml.display.TEXTINPUT.@length;
-           ti.toolTip = "最长输入" + ti.maxChars + "个字符";
-           }
-           formitem.addChild(ti);
-           form.addChild(formitem);
-         */ /*
-           var moveY:Number = arg.postion;
-           formitem.addChild(ti);
-           var length:int = form.getChildren().length;
-           for (var j:int = 0; j < length; j++)
-           {
-           if (form.getChildAt(j).y >= moveY)
-           break;
-           }
-           if (j >= length)
-           form.addChild(formitem);
-           else if (j >= 1)
-           form.addChildAt(formitem, j);
-           else
-           form.addChildAt(formitem, 0);
-         */
         }
 
         protected function dragDropHandler(event:DragEvent):void

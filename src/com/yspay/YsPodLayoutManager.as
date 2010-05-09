@@ -112,7 +112,7 @@ package com.yspay
 
         private function DoNewYsPod(pod_xml:XML):void
         {
-            var pod:YsPod = new YsPod(_pool);
+            var pod:YsPod = new YsPod(container);
             pod.title = pod_xml.@title;
             if (this.maximizedPod == null)
                 this.addItemAt(pod, this.items.length + 1, false);

@@ -3,6 +3,7 @@ package com.yspay.event_handlers
 {
     import com.esria.samples.dashboard.view.NewWindow;
     import com.yspay.YsPod;
+    import com.yspay.YsTitleWindow;
     import com.yspay.util.DateUtil;
     import com.yspay.util.GetParentByType;
 
@@ -31,7 +32,7 @@ package com.yspay.event_handlers
         xml.@VER = date.fullYear + DateUtil.doubleString(date.month + 1) + DateUtil.doubleString(date.date) + DateUtil.doubleString(date.hours) + DateUtil.doubleString(date.minutes) + DateUtil.doubleString(date.seconds);
         for each (child_wnd in ys_pod.getChildren())
         {
-            var new_wnd:NewWindow = child_wnd as NewWindow
+            var new_wnd:YsTitleWindow = child_wnd as YsTitleWindow;
             if (new_wnd == null)
                 continue;
             var win_xml:XML = <L KEY="windows" KEYNAME="windows"/>;

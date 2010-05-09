@@ -3,23 +3,27 @@ package com.yspay
     import com.yspay.event_handlers.EventHandlerFactory;
     import com.yspay.events.StackSendXmlEvent;
     import com.yspay.pool.Pool;
-    import com.yspay.util.GetParentByTyeName;
     import com.yspay.util.FunctionDelegate;
     import com.yspay.util.StackUtil;
+
+    import flash.display.DisplayObjectContainer;
     import flash.events.Event;
     import flash.events.MouseEvent;
+
     import mx.controls.Alert;
     import mx.controls.Button;
     import mx.core.Application;
 
     public class YsButton extends Button implements YsControl
     {
-        public function YsButton()
+        public function YsButton(parent:DisplayObjectContainer)
         {
             super();
             _pool = Application.application._pool;
+            _parent = parent;
         }
         protected var _pool:Pool;
+        protected var _parent:DisplayObjectContainer;
         protected var _xml:XML;
 
         public function Init(xml:XML):void
@@ -37,24 +41,24 @@ package com.yspay
             switch (type)
             {
                 case 'action':
-                {
-                    //if (event_obj.hasOwnProperty(action))
                     {
-                        var func:Function = EventHandlerFactory.get_handler(e.data.toString());
-                        func(this);
-                        e.stackUtil.dispatchEvent(new Event(StackUtil.EVENT_STACK_NEXT));
+                        //if (event_obj.hasOwnProperty(action))
+                        {
+                            var func:Function = EventHandlerFactory.get_handler(e.data.toString());
+                            func(this);
+                            e.stackUtil.dispatchEvent(new Event(StackUtil.EVENT_STACK_NEXT));
+                        }
+                        /*else
+                           {
+                           trace('no this function: ', action);
+                         }*/
+                        break;
                     }
-                    /*else
-                       {
-                       trace('no this function: ', action);
-                     }*/
-                    break;
-                }
                 case 'services':
-                {
-                    DoService(e, GetServiceXml(_xml));
-                    break;
-                }
+                    {
+                        DoService(e, GetServiceXml(_xml));
+                        break;
+                    }
             }
         }
 

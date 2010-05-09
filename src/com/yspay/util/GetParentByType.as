@@ -1,9 +1,11 @@
 // ActionScript file
 package com.yspay.util
 {
+    import flash.display.DisplayObjectContainer;
+    
     import mx.core.Container;
     
-    public function GetParentByType(container:Container, parent_type:Class):*
+    public function GetParentByType(container:DisplayObjectContainer, parent_type:Class):*
     {
         var parent:* = null;
         
