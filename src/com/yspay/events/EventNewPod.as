@@ -3,7 +3,7 @@ package com.yspay.events
     import flash.events.Event;
 
 
-    public class EventNewPod extends Event
+    public class EventNewPod extends YsEvent
     {
         public static var EVENT_NAME:String = 'Event_NewPod';
 
@@ -13,6 +13,7 @@ package com.yspay.events
         {
             windows_type = _windows_type;
             super(EVENT_NAME, bubbles, cancelable);
+            TraceEventName(EVENT_NAME);
         }
 
     }

@@ -1,36 +1,22 @@
 package com.yspay
 {
-    import com.esria.samples.dashboard.renderers.PopUpButtonPanel;
     import com.yspay.events.EventWindowShowXml;
     import com.yspay.pool.*;
-    import com.yspay.util.GetParentByType;
 
     import flash.display.DisplayObjectContainer;
 
     import mx.collections.ArrayCollection;
     import mx.containers.Form;
     import mx.containers.TitleWindow;
-    import mx.controls.Alert;
-    import mx.controls.Button;
-    import mx.controls.listClasses.ListBase;
     import mx.core.Application;
     import mx.core.UIComponent;
     import mx.events.*;
-    import mx.managers.DragManager;
-    import mx.managers.PopUpManager;
-    import mx.utils.StringUtil;
 
     public class YsTitleWindow extends TitleWindow implements YsControl
     {
         public var form:Form;
         public var _M_data:Object = Application.application.M_data;
-        public var _P_cont:int; //存放_M_data.TRAN.cont
-        public var _P_data:Object; //存放父类YSPOD的P_DATA
-
-        public var P_cont:int;
-        public var P_data:Object;
-
-        public var _YsPod:YsPod;
+        public var _xml:XML;
 
         [Bindable]
         private var arr_col:ArrayCollection;
@@ -48,6 +34,7 @@ package com.yspay
             this.percentWidth = 100;
             this.setStyle("headerHeight", "10");
             this.showCloseButton = true;
+            //this.setStyle("horizontalAlign", "center");
             this.addEventListener(CloseEvent.CLOSE, closeHandler);
 
             form = new Form;
@@ -57,31 +44,21 @@ package com.yspay
 
             _pool = Application.application._pool;
 
-            this.addEventListener((_pool.dts as DBTable).select_event_name, OnDtsQueryComplete);
             this.addEventListener(EventWindowShowXml.EVENT_NAME, OnShow);
-            // TODO: 拖拽事件的支持需要自定义
-            // TODO: 目前直接支持拖拽事件
-            form.addEventListener(DragEvent.DRAG_ENTER, dragEnterHandler);
-            form.addEventListener(DragEvent.DRAG_DROP, dragDropHandler);
         }
 
         public function Init(xml:XML):void
         {
             _parent.addChild(this);
 
-            _YsPod = GetParentByType(_parent, YsPod) as YsPod;
+            this.title = xml.@TITLE;
+            this.name = xml.text().toString();
 
-            _P_cont = _YsPod.P_cont;
-            _P_data = _M_data.TRAN[_P_cont]; //M_DATA.TRAN.序列号
-
-            P_cont = _P_data.cont;
-            _P_data.cont++;
-
-            P_data = new Object; //M_DATA.TRAN.序列号.序列号
-            _P_data[P_cont] = P_data;
-
-            var event:EventWindowShowXml = new EventWindowShowXml(xml);
-            this.dispatchEvent(event);
+            for each (var event_xml:XML in xml.elements())
+            {
+                var event:EventWindowShowXml = new EventWindowShowXml(event_xml);
+                this.dispatchEvent(event);
+            }
         }
 
         private function closeHandler(e:CloseEvent):void
@@ -92,22 +69,18 @@ package com.yspay
         protected function OnShow(event:EventWindowShowXml):void
         {
             var xml:XML = event.xml;
-            var child_name:String;
-            //xingj ..
-            for each (var kid:XML in xml.elements())
-            {
-                child_name = kid.name().toString().toLowerCase();
-                var child_ctrl:YsControl = new YsMaps.ys_type_map[child_name](this);
-                child_ctrl.Init(kid);
-            }
+            var node_name:String = xml.name().toString().toLowerCase();
+
+            // 查表未发现匹配类型
+            if (!YsMaps.ys_type_map.hasOwnProperty(node_name))
+                return;
+
+            var child_ctrl:YsControl = new YsMaps.ys_type_map[node_name](this);
+            child_ctrl.Init(xml);
+
         }
 
-        protected function dragEnterHandler(event:DragEvent):void
-        {
-            if (form == event.currentTarget)
-                DragManager.acceptDragDrop(form);
-        }
-
+        // TODO:暂时保留，拖拽事件需要参考此处部分代码
         protected function dragDropSelf(event:DragEvent):void
         {
             if ((event.dragInitiator as UIComponent).parent != this.form)
@@ -141,91 +114,6 @@ package com.yspay
             else
                 form.addChildAt(event.dragInitiator as UIComponent, i);
         }
-
-        protected function dragDropNew(event:DragEvent):void
-        {
-            var arg:Object = new Object;
-            arg.postion = event.localY;
-            var o:Object = (event.dragInitiator as ListBase).selectedItem;
-            var dts:DBTable = _pool.dts as DBTable;
-            dts.AddQuery(o.DTS, Query, o.DTS, this);
-            dts.DoQuery(o.DTS);
-        }
-
-        public function OnDtsQueryComplete(event:DBTableQueryEvent):void //, arg:Object):void
-        {
-            //CursorManager.removeBusyCursor();
-            var dts:DBTable = _pool.dts as DBTable;
-            var temp:String = dts[event.query_name][dts.arg_select];
-            temp = StringUtil.trim(temp);
-            var arg:Object = new Object;
-            arg.showxml = new XML(temp);
-            addFormItem(arg);
-            // this.removeEventListener(dts.select_event_name, dts_event_listener);
-        }
-
-        protected function onServiceComplete(bus:UserBus, arg:Object):void
-        {
-
-            if (bus)
-            {
-                var output_array:Array = bus.GetVarArray("__DICT_XML");
-                var temp:String;
-                for each (var output_arg:YsVar in output_array)
-                {
-                    temp += output_arg.getValue().toString();
-                }
-                temp = temp.replace("null", " ");
-                temp = StringUtil.trim(temp);
-                arg.showxml = new XML(temp);
-                addFormItem(arg);
-            }
-            else
-            {
-                Alert.show('网络连接失败!');
-            }
-        }
-
-        private function AddService(arg:Object):void
-        {
-            var pop:PopUpButtonPanel = PopUpManager.createPopUp(this, PopUpButtonPanel, true, null) as PopUpButtonPanel;
-            pop.parentWindow = this;
-            pop.arg = arg;
-            PopUpManager.centerPopUp(pop);
-            pop.txtName.setFocus();
-            return;
-        }
-
-        // TODO:确认是否是通过事件驱动的方式显示节点
-        private function AddDict(xml:XML):void
-        {
-            //var formitem:MyFormItem = new MyFormItem;
-
-            var event:EventWindowShowXml = new EventWindowShowXml(xml);
-            this.dispatchEvent(event);
-        }
-
-        private function addFormItem(arg:Object):void
-        {
-            var xml_name:String = (arg.showxml as XML).name().toString().toLocaleLowerCase();
-            if (xml_name == "services")
-            {
-                AddService(arg);
-            }
-            else if (xml_name == 'dict')
-            {
-                AddDict(arg.showxml);
-            }
-        }
-
-        protected function dragDropHandler(event:DragEvent):void
-        {
-            if (event.dragSource.hasFormat("self"))
-                dragDropSelf(event);
-            else
-                dragDropNew(event);
-        }
-
 
         public function save_windows_xml(p_cont:int):XML
         {
@@ -263,107 +151,7 @@ package com.yspay
                     rtn.appendChild(dict_xml);
                 }
             }
-
             return rtn;
         }
-
-        protected function submitHandler():void
-        {
-            var str:String = "";
-            //var nameOfWindow:String = StringUtil.trim(formname.text);
-            //if (nameOfWindow == "" || StringUtil.trim(englishName.text) == "")
-            {
-                Alert.show("请输入表单名!", "提示");
-                return;
-            }
-            //(this.parent as Pod).title = formname.text;
-            var length:int = form.getChildren().length;
-
-            var resultOfWindow:XML = <L TYPE="WINDOWS" NAME="IDNUMBER" VER="20091120999999" ISUSED="0" APPNAME="MapServer" CUSER="xing">
-                    <L KEY="windows" KEYNAME="windows IN" VALUE="windows IN">
-                        <A KEY="TITLE" KEYNAME="Title" />
-                    </L>
-                </L>;
-            resultOfWindow..A.(@KEY == "TITLE").@VALUE = nameOfWindow;
-            for (var i:int = 0; i < length; i++)
-            {
-                var temp:XML = (form.getChildAt(i) as MyFormItem).descXml;
-                if (temp.localName().toString() == "SERVICES")
-                {
-                    var labelXml:XML = <A KEY="LABEL" KEYNAME="按钮信息"/>;
-                    labelXml.@VALUE = temp.@LABEL;
-                    var serviceXml:XML = <L KEY="SERVICES" KEYNAME="按钮服务"/>;
-                    serviceXml.@VALUE = "SERVICES://" + temp.text();
-                    var buttonXml:XML = <L KEY="BUTTON" KEYNAME="按钮" VALUE=""/>;
-                    buttonXml.appendChild(labelXml);
-                    buttonXml.appendChild(serviceXml);
-                    resultOfWindow.L.appendChild(buttonXml);
-                }
-                else
-                {
-                    var inserted:XML = <L/>;
-                    inserted.@KEY = temp.localName();
-                    inserted.@KEYNAME = (form.getChildAt(i) as MyFormItem).label;
-                    inserted.@VALUE = temp.localName() + "://" + temp.services.@NAME;
-                    //resultOfWindow.@NAME = formname.text;
-                    //resultOfWindow.L.@VALUE = englishName.text;
-                    resultOfWindow.L.appendChild(inserted);
-                }
-            }
-            str += resultOfWindow.toXMLString();
-            //str = '<?xml version="1.0" encoding="gbk"?>' + str;
-            Alert.show(str);
-            var dts:DBTable = _pool.dts as DBTable;
-
-            this.addEventListener(dts.insert_event_name, OnDtsInsertComplete);
-            dts.Insert([dts.arg_insert], ['<?xml version="1.0" encoding="gbk"?>' + str], this);
-        }
-
-        public function OnDtsInsertComplete(event:DBTableInsertEvent):void
-        {
-            var dts:DBTable = _pool.dts as DBTable;
-            if (event.user_bus == null)
-            {
-                Alert.show("保存失败！！");
-                this.removeEventListener(dts.insert_event_name, OnDtsInsertComplete);
-                return;
-            }
-            var dts_no:String = event.user_bus.GetFirst('__DICT_OUT');
-            this.removeEventListener(dts.insert_event_name, OnDtsInsertComplete);
-            dts.AddQuery(dts_no, Query, dts_no, this);
-            this.addEventListener(dts.select_event_name, OnQueryNewDtsWindow);
-            dts.DoQuery(dts_no);
-        }
-
-        public function OnQueryNewDtsWindow(event:DBTableQueryEvent):void
-        {
-            var dts:DBTable = _pool.dts as DBTable;
-            this.removeEventListener(dts.insert_event_name, OnQueryNewDtsWindow);
-        }
-
-        public function OnSureClickToAddButton(arg:Object):void
-        {
-            var formitem:MyFormItem = new MyFormItem;
-            var contentXml:XML = arg.showxml;
-            contentXml.@LABEL = arg.buttonName;
-            formitem.descXml = contentXml;
-            var button:Button = new Button;
-            button.label = arg.buttonName;
-            formitem.addChild(button);
-            var moveY:Number = arg.postion;
-            var length:int = form.getChildren().length;
-            for (var j:int = 0; j < length; j++)
-            {
-                if (form.getChildAt(j).y >= moveY)
-                    break;
-            }
-            if (j >= length)
-                form.addChild(formitem);
-            else if (j >= 1)
-                form.addChildAt(formitem, j);
-            else
-                form.addChildAt(formitem, 0);
-        }
-
     }
 }

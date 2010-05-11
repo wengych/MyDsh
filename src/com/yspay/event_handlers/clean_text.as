@@ -2,8 +2,13 @@
 
 package com.yspay.event_handlers
 {
+    import com.yspay.YsData.PData;
+    import com.yspay.YsHBox;
     import com.yspay.YsPod;
+    import com.yspay.YsTitleWindow;
     import com.yspay.util.GetParentByType;
+
+    import flash.display.DisplayObjectContainer;
 
     import mx.controls.TextArea;
     import mx.controls.TextInput;
@@ -12,19 +17,16 @@ package com.yspay.event_handlers
 
     public function clean_text(ui_comp:UIComponent):void
     {
-        // wnd.clean_allti_ta(event_container);
-        var ys_pod:YsPod = GetParentByType(ui_comp.parent as Container, YsPod) as YsPod;
-
-        var func:Function = function(container:Container):void
+        var func:Function = function(container:Container, ys_pod:YsPod):void
             {
                 for each (var child:*in container.getChildren())
                 {
                     if (child is TextArea || child is TextInput)
                     {
-                        child.text = child.data.value = '';
+                        child.text = '';
 
-                        var Pod_data:Object = ys_pod._M_data.TRAN[ys_pod.P_cont];
-                        Pod_data.proxy[child.data.index][child.data.name] = '';
+                        var Pod_data:PData = ys_pod._M_data.TRAN[ys_pod.P_cont];
+                        Pod_data.data[child.data.index][child.data.name] = '';
                     }
                     else if (child is Container)
                     {
@@ -33,36 +35,20 @@ package com.yspay.event_handlers
                 }
             }
 
-        func(ys_pod);
+        var target:DisplayObjectContainer = ui_comp;
+        var pod:YsPod = GetParentByType(ui_comp.parent, YsPod) as YsPod;
 
-        //children = wnd.getChildren();
+        while (target != null)
+        {
+            if (target is YsHBox || target is YsTitleWindow || target is YsPod)
+                break;
 
+            target = target.parent;
+        }
+
+        if (target == null || pod == null)
+            return;
+
+        func(target, pod);
     }
-
-/*
-   protected function clean_allti_ta(obj:Object):void
-   {
-   var children:Array;
-   var o:Object;
-
-   children = obj.getChildren();
-   for each (o in children)
-   {
-   if ((o is HBox) || (o is Form) || o is NewWindow || o is FormItem)
-   clean_allti_ta(o);
-   else if (o is TextArea)
-   {
-   var ta:TextArea = o as TextArea;
-   ta.text = ta.data.value = '';
-   _M_data.TRAN[P_cont].proxy[ta.data.index][ta.data.name] = '';
-   }
-   else if (o is TextInput)
-   {
-   var ti:TextInput = o as TextInput;
-   ti.text = ti.data.value = '';
-   _M_data.TRAN[P_cont].proxy[ti.data.index][ti.data.name] = '';
-   }
-   }
-   }
- */
 }

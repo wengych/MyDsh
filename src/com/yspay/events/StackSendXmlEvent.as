@@ -1,28 +1,29 @@
 package com.yspay.events
 {
     import com.yspay.util.StackUtil;
-    
+
     import flash.events.Event;
 
 
-    public class StackSendXmlEvent extends Event
+    public class StackSendXmlEvent extends YsEvent
     {
-       
-        public static const EVENT_STACK_SENDXML:String = 'event_stack_sendxml';
+
+        public static const EVENT_NAME:String = 'event_stack_sendxml';
 
         public var data:Object;
         public var stackUtil:StackUtil;
 
-        public function StackSendXmlEvent(data:Object,stackUtil:StackUtil, bubbles:Boolean=false, cancelable:Boolean=false)
+        public function StackSendXmlEvent(data:Object, stackUtil:StackUtil, bubbles:Boolean=false, cancelable:Boolean=false)
         {
             this.data = data;
-            this.stackUtil=stackUtil;
-            super(EVENT_STACK_SENDXML, bubbles, cancelable);
+            this.stackUtil = stackUtil;
+            super(EVENT_NAME, bubbles, cancelable);
+            TraceEventName(EVENT_NAME);
         }
 
         override public function clone():Event
         {
-            var e:StackSendXmlEvent = new StackSendXmlEvent(this.data,this.stackUtil);
+            var e:StackSendXmlEvent = new StackSendXmlEvent(this.data, this.stackUtil);
             return e;
         }
     }

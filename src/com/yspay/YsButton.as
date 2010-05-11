@@ -4,13 +4,13 @@ package com.yspay
     import com.yspay.events.StackSendXmlEvent;
     import com.yspay.pool.Pool;
     import com.yspay.util.FunctionDelegate;
+    import com.yspay.util.GetParentByType;
     import com.yspay.util.StackUtil;
 
     import flash.display.DisplayObjectContainer;
     import flash.events.Event;
     import flash.events.MouseEvent;
 
-    import mx.controls.Alert;
     import mx.controls.Button;
     import mx.core.Application;
 
@@ -21,44 +21,63 @@ package com.yspay
             super();
             _pool = Application.application._pool;
             _parent = parent;
+
         }
         protected var _pool:Pool;
         protected var _parent:DisplayObjectContainer;
         protected var _xml:XML;
 
+        public var service_list:Array = new Array;
+        protected var curr_service:int = 0;
+
         public function Init(xml:XML):void
         {
+            _parent.addChild(this);
+
             this.setStyle('fontWeight', 'normal');
             this.label = xml.@LABEL;
             _xml = xml;
             this.addEventListener(MouseEvent.CLICK, OnBtnClick);
-            this.addEventListener(StackSendXmlEvent.EVENT_STACK_SENDXML, DoActions);
+            this.addEventListener(StackSendXmlEvent.EVENT_NAME, DoActions);
+
+
+            var child_name:String;
+            for each (var child:XML in xml.elements())
+            {
+                child_name = child.name().toString().toLowerCase();
+
+                // 查表未发现匹配类型
+                if (!YsMaps.ys_type_map.hasOwnProperty(child_name))
+                    return;
+
+                var child_ctrl:YsControl = new YsMaps.ys_type_map[child_name](this);
+                child_ctrl.Init(child);
+            }
         }
 
         protected function DoActions(e:StackSendXmlEvent):void
         {
+            var ys_pod:YsPod = GetParentByType(_parent, YsPod) as YsPod;
             var type:String = (e.data.localName().toString().toLocaleLowerCase());
+
             switch (type)
             {
                 case 'action':
-                    {
-                        //if (event_obj.hasOwnProperty(action))
-                        {
-                            var func:Function = EventHandlerFactory.get_handler(e.data.toString());
-                            func(this);
-                            e.stackUtil.dispatchEvent(new Event(StackUtil.EVENT_STACK_NEXT));
-                        }
-                        /*else
-                           {
-                           trace('no this function: ', action);
-                         }*/
-                        break;
-                    }
+                {
+                    var func:Function = EventHandlerFactory.get_handler(e.data.toString());
+                    func(this);
+                    e.stackUtil.dispatchEvent(new Event(StackUtil.EVENT_STACK_NEXT));
+                    break;
+                }
                 case 'services':
-                    {
-                        DoService(e, GetServiceXml(_xml));
-                        break;
-                    }
+                {
+                    //ys_pod.DoService(e, GetServiceXml(_xml.SERVICES[0]));
+                    var service:YsService = service_list[curr_service] as YsService;
+                    service.DoService(e);
+
+                    curr_service++;
+                    break;
+                }
             }
         }
 
@@ -67,6 +86,10 @@ package com.yspay
             var stackUtil:StackUtil = new StackUtil;
             var arr:Array = new Array;
             var serviceNum:int = 0;
+
+            // 初始化service列表的下标初值
+            curr_service = 0;
+
             for each (var kid:XML in _xml.children())
             {
                 var type:String = (kid.localName().toString().toLocaleLowerCase());
@@ -83,62 +106,6 @@ package com.yspay
             //驱动�
             stackUtil.stack(new Event(StackUtil.EVENT_STACK_NEXT), this, arr);
         }
-
-        private function CallBack(bus:UserBus):void
-        {
-            trace("service call callback");
-        }
-
-        private function DoService(e:StackSendXmlEvent, service:XML):void
-        {
-            var dict_str:String;
-            var dict_search:String = 'dict://';
-            var bus_in_name_args:Array = new Array;
-            var scall_name:String = service.SendPKG.HEAD.@active;
-            var dict_list:XMLList = service.SendPKG.BODY.DICT;
-
-            // service.@SENDBUS;
-            // service.@RECVBUS;
-
-            // 生成输入参数列表
-            for each (var dict_xml:XML in dict_list)
-            {
-                dict_str = dict_xml.toString();
-
-                if (dict_str.substr(0, dict_search.length).toLowerCase() == dict_search)
-                {
-                    bus_in_name_args.push(dict_str.substr(dict_search.length));
-                }
-            }
-            var scall:ServiceCall = new ServiceCall;
-            var bus:UserBus = new UserBus;
-            bus.Add(ServiceCall.SCALL_NAME, scall_name);
-            //var_name=dict名字
-            for each (var var_name:String in bus_in_name_args) //从本地P_data中取得所需数据
-            {
-                /*
-                   if (!P_data.data[0].hasOwnProperty(var_name))
-                   {
-                   var ys_var:YsVar = main_bus[var_name];
-                   bus.Add(var_name, ys_var);
-                   }
-                   else
-                   {
-                   for (var i:int = 0; i < P_data.data.length; i++)
-                   {
-                   if (P_data.data[i][var_name] == null)
-                   break;
-                   bus.Add(var_name, P_data.data[i][var_name]);
-                   }
-                 }*/
-            }
-            var ip:String = this.parentApplication.GetServiceIp(scall_name);
-            var port:String = this.parentApplication.GetServicePort(scall_name);
-            var func_dele:FunctionDelegate = new FunctionDelegate;
-            Alert.show(bus.toString());
-            scall.Send(bus, ip, port, func_dele.create(CallBack, service, e));
-        }
-
 
         private function GetServiceXml(service_desc:XML):XML
         {

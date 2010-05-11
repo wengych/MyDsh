@@ -1,0 +1,60 @@
+// ActionScript file
+
+package com.yspay.event_handlers
+{
+    import com.yspay.EventCache;
+    import com.yspay.YsPod;
+    import com.yspay.YsTitleWindow;
+    import com.yspay.events.EventCacheComplete;
+    import com.yspay.events.EventPodShowXml;
+    import com.yspay.events.EventWindowShowXml;
+    import com.yspay.pool.DBTable;
+    import com.yspay.pool.DBTableQueryEvent;
+    import com.yspay.pool.Query;
+
+    import flash.events.Event;
+    import flash.utils.getQualifiedClassName;
+
+    import mx.controls.listClasses.ListBase;
+    import mx.core.Application;
+    import mx.core.UIComponent;
+    import mx.events.DragEvent;
+
+    public function drag_drop(e:DragEvent, ui_comp:UIComponent):void
+    {
+        var get_dts_func:Function = function(event:DBTableQueryEvent):void
+            {
+                var dts:DBTable = Application.application._pool.dts as DBTable;
+                ui_comp.removeEventListener(dts.select_event_name, get_dts_func);
+
+                var dts_xml:String = dts[event.query_name][dts.arg_select];
+
+                // addFormItem(arg);
+                ui_comp.addEventListener(EventCacheComplete.EVENT_NAME, cache_xml_func);
+                var event_cache:EventCache = new EventCache(Application.application._pool);
+                event_cache.DoCache(dts_xml, ui_comp);
+            };
+
+        var cache_xml_func:Function = function(event:EventCacheComplete):void
+            {
+                ui_comp.removeEventListener(EventCacheComplete.EVENT_NAME, cache_xml_func);
+
+                // var event:Event = YsMaps.ys_event_map[];
+                var new_event:Event;
+                if (ui_comp is YsPod)
+                    new_event = new EventPodShowXml(event.cache_xml);
+                else if (ui_comp is YsTitleWindow)
+                    new_event = new EventWindowShowXml(event.cache_xml);
+
+                ui_comp.dispatchEvent(new_event);
+            }
+
+        var o:Object = (e.dragInitiator as ListBase).selectedItem;
+        var dts:DBTable = Application.application._pool.dts as DBTable;
+
+
+        dts.AddQuery(o.DTS, Query, o.DTS, ui_comp);
+        ui_comp.addEventListener(dts.select_event_name, get_dts_func);
+        dts.DoQuery(o.DTS);
+    }
+}

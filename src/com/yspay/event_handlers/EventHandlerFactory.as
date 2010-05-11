@@ -11,7 +11,8 @@ package com.yspay.event_handlers
         public function EventHandlerFactory()
         {
             var event_arr:Array = [clean_text, make_windows_xml, make_tran_xml,
-                                   bus2window, new_window, show_xml, refresh_pool];
+                                   bus2window, drag_drop, show_xml, refresh_pool,
+                                   drag_enter];
 
         /*
            clean_text(null, null);

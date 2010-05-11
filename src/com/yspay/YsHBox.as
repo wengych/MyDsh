@@ -23,7 +23,23 @@ package com.yspay
 
         public function Init(xml:XML):void
         {
-            _parent.addChild(this);
+            if (xml.@line != undefined)
+            {
+                if (xml.@line == "bottom")
+                {
+                    _parent.addChild(this);
+                }
+                else
+                {
+                    _parent.addChildAt(this, 0);
+                }
+            }
+            else
+            {
+                _parent.addChild(this);
+            }
+
+
             percentWidth = 100;
             setStyle('borderStyle', 'solid');
             setStyle('fontSize', '12');
@@ -32,37 +48,13 @@ package com.yspay
             for each (var child:XML in xml.elements())
             {
                 child_name = child.name().toString().toLowerCase();
+
+                // 查表未发现匹配类型
+                if (!YsMaps.ys_type_map.hasOwnProperty(child_name))
+                    return;
+
                 var child_ctrl:YsControl = new YsMaps.ys_type_map[child_name](this);
-                child_ctrl.Init(dxml);
-
-                if (child_name == 'dict')
-                {
-                    // ShowDict(hbox, childs);
-                    var dict:YsDict = new YsDict(child);
-
-                    if (dict.label != null)
-                        this.addChild(dict.label);
-                    if (dict.text_input != null)
-                        this.addChild(dict.text_input);
-                    if (dict.combo_box != null)
-                        this.addChild(dict.combo_box);
-                }
-                else if (child_name == 'button')
-                {
-                    var ys_btn:YsButton = new YsButton;
-                    ys_btn.Init(child);
-                }
-                else if (child_name == 'event')
-                {
-                    /*
-                       <event>
-                       dragDrop
-                       <ACTION>new_window</ACTION>
-                       </event>
-                     */
-                    addEventListener(child.text().toString(),
-                                     EventHandlerFactory.get_handler(child.ACTION.text()));
-                }
+                child_ctrl.Init(child);
             }
         }
 

@@ -1,7 +1,6 @@
 // ActionScript file
 package com.yspay.event_handlers
 {
-    import com.esria.samples.dashboard.view.NewWindow;
     import com.yspay.YsPod;
     import com.yspay.YsTitleWindow;
     import com.yspay.util.DateUtil;
@@ -22,8 +21,8 @@ package com.yspay.event_handlers
             </L>;
         var child_wnd:Container;
         var P_data:Object = ys_pod._M_data.TRAN[ys_pod.P_cont];
-        var ename:Object = P_data.data[0]["__W_ENAME"]; // wnd.main_bus.GetFirst("__W_ENAME");
-        var cname:Object = P_data.data[0]["__W_CNAME"]; // wnd.main_bus.GetFirst("__W_CNAME");
+        var ename:Object = P_data._data[0]["__W_ENAME"]; // wnd.main_bus.GetFirst("__W_ENAME");
+        var cname:Object = P_data._data[0]["__W_CNAME"]; // wnd.main_bus.GetFirst("__W_CNAME");
         var date:Date = new Date;
         xml.@NAME = ename;
         xml.L.@VALUE = ename;
@@ -37,7 +36,7 @@ package com.yspay.event_handlers
                 continue;
             var win_xml:XML = <L KEY="windows" KEYNAME="windows"/>;
             var postion:int = new_wnd.title.search(":");
-            win_xml.@VALUE = (win_per + new_wnd.title.substr(0, postion));
+            win_xml.@VALUE = win_per + new_wnd.name; // (win_per + new_wnd.title.substr(0, postion));
             xml.L.appendChild(win_xml);
         }
         var xml_head:String = '<?xml version="1.0" encoding="GBK"?>';

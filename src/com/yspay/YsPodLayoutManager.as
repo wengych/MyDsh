@@ -3,9 +3,11 @@ package com.yspay
 
     import com.esria.samples.dashboard.managers.PodLayoutManager;
     import com.esria.samples.dashboard.view.*;
+    import com.yspay.events.EventCacheComplete;
     import com.yspay.events.EventNewPod;
     import com.yspay.events.EventPodShowXml;
     import com.yspay.pool.Pool;
+    import com.yspay.util.UtilFunc;
 
     import flash.display.DisplayObject;
     import flash.events.MouseEvent;
@@ -16,6 +18,7 @@ package com.yspay
     public class YsPodLayoutManager extends PodLayoutManager
     {
         public var _pool:Pool;
+        protected var _cache:EventCache;
 
         private var show_save_xml_str:String = '<pod tilte="show xml">\
 <DATAGRID dragEnabled="true" editable="true" >\
@@ -50,7 +53,9 @@ package com.yspay
         {
             super();
             _pool = pool;
+            _cache = new EventCache(_pool);
             this.addEventListener(EventNewPod.EVENT_NAME, OnNewPod);
+            this.addEventListener(EventCacheComplete.EVENT_NAME, OnEventCacheComplete);
         }
 
         //相当于入口
@@ -59,7 +64,7 @@ package com.yspay
             var windows_pre_string:String = 'windows://';
             var type_obj:Object = {'new service': {'title': 'newService', 'type': NewService},
                     'show memory bus': {'title': 'memory bus', 'type': MemoryBusContent}};
-
+            var pod_xml:XML;
             if (type_obj.hasOwnProperty(event.windows_type))
             {
                 DoNewPod(new type_obj[event.windows_type].type,
@@ -78,40 +83,44 @@ package com.yspay
                     Alert.show("无此窗口!!");
                     return;
                 }
-                var podxml:XML = <pod>
-                        <windows/>
-                    </pod>;
-                podxml.@title = windows_name;
-                podxml.windows = event.windows_type;
+                pod_xml = new XML('<pod><windows/></pod>');
+                pod_xml.@title = windows_name;
+                pod_xml.windows = event.windows_type;
 //                <pod title="TT5">
 //                      <windows>
 //                            windows://TT5
 //                      </windows>
 //                </pod>
-                DoNewYsPod(podxml);
+                //DoNewYsPod(podxml);
+                _cache.DoCache(pod_xml, this);
             }
             else
             {
                 var tran_name:String = event.windows_type;
-                var pod_xml:XML = <pod>
-                    </pod>;
+                pod_xml = new XML('<pod></pod>');
                 if (_pool.info.TRAN[tran_name] == null)
                 {
                     Alert.show("无此交易!!");
                     return;
                 }
                 pod_xml.appendChild("tran://" + tran_name);
-                pod_xml.@title = tran_name;
+
                 //pod_xml:
-                // <pod title="12">
+                // <pod>
                 //      tran://12
                 //</pod>
-                DoNewYsPod(pod_xml);
+                _cache.DoCache(pod_xml.toXMLString(), this);
             }
+        }
+
+        private function OnEventCacheComplete(event:EventCacheComplete):void
+        {
+            DoNewYsPod(event.cache_xml);
         }
 
         private function DoNewYsPod(pod_xml:XML):void
         {
+            pod_xml = UtilFunc.FullXml(pod_xml);
             var pod:YsPod = new YsPod(container);
             pod.title = pod_xml.@title;
             if (this.maximizedPod == null)
@@ -122,8 +131,13 @@ package com.yspay
                 this.addItemAt(pod, this.items.length + 1, true);
             }
             pod.addEventListener(FlexEvent.UPDATE_COMPLETE, onCreationCompletePod);
-            var evt:EventPodShowXml = new EventPodShowXml(pod_xml);
-            pod.dispatchEvent(evt);
+
+
+            for each (var child:XML in pod_xml.elements())
+            {
+                var evt:EventPodShowXml = new EventPodShowXml(child);
+                pod.dispatchEvent(evt);
+            }
         }
 
         private function DoNewPod(setupContent:DisplayObject, title:String):void

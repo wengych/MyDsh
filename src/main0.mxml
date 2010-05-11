@@ -32,7 +32,6 @@
             import com.esria.samples.dashboard.view.MemoryBusContent;
             import com.esria.samples.dashboard.view.NewService;
             import com.esria.samples.dashboard.view.DeployedWindow;
-            import com.esria.samples.dashboard.view.NewWindow;
             import com.esria.samples.dashboard.view.SetupContent;
             import com.yspay.util.FunctionDelegate;
             import com.esria.samples.dashboard.events.*;
@@ -46,12 +45,12 @@
             import com.yspay.UserBus;
             import com.yspay.event_handlers.EventHandlerFactory;
             import com.yspay.*;
+            import com.yspay.YsData.MData;
 
             // Array of PodLayoutManagers
             private var podLayoutManagers:Array = new Array();
             public var _pool:Pool;
-            public var M_data:Object = new Object; //xingj
-
+            public var M_data:MData = new MData; //xingj
 
             private function onEnterState():void
             {
@@ -90,14 +89,15 @@
                 var arr:Array = ['DICT', 'WINDOWS', 'BUTTON', 'SERVICES', 'TRAN', 'ACTION', 'HBOX', 'EVENT'];
                 this.addEventListener(info.select_event_name, InfoQueryComplete);
                 CursorManager.setBusyCursor();
-                M_data.POOL = new Object; // xingj
-                M_data.POOL.INFO = new Object; // xingj
-                M_data.BUS = new Object;
-                M_data.BUS.MAIN = new Object;
-                M_data.BUS.RECV = new Object;
-                M_data.TRAN = new Object;
-                M_data.TRAN.cont = new int;
-                M_data.TRAN.cont = 10000;
+
+                //M_data.POOL = new Object; // xingj
+                //M_data.POOL.INFO = new Object; // xingj
+                //M_data.BUS = new Object;
+                //M_data.BUS.MAIN = new Object;
+                //M_data.BUS.RECV = new Object;
+                //M_data.TRAN = new Object;
+                //M_data.TRAN.cont = new int;
+                //M_data.TRAN.cont = 10000;
                 for each (var str:String in arr)
                 {
                     var info_query:String = str;

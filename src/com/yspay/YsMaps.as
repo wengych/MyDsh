@@ -1,5 +1,8 @@
 package com.yspay
 {
+    import com.yspay.events.*;
+
+    import flash.events.Event;
 
     public class YsMaps
     {
@@ -12,6 +15,8 @@ package com.yspay
                 'datagrid': YsDataGrid,
                 'dict': YsDict,
                 'button': YsButton,
-                'event': YsXmlEvent};
+                'pool': YsDictPool,
+                'event': YsXmlEvent,
+                'services': YsService};
     }
 }
