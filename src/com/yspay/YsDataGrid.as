@@ -116,13 +116,9 @@ package com.yspay
                     return;
 
                 child_ctrl = new YsMaps.ys_type_map[node_name](this);
-
                 child_ctrl.Init(child);
             }
-
-
         }
-
 
         private function itemEditEndHandler(e:DataGridEvent):void
         {

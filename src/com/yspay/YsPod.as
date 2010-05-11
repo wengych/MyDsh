@@ -59,7 +59,7 @@ package com.yspay
             var dict_search:String = 'dict://';
             var bus_out_name_args:Array = new Array;
             var dict_list:XMLList = service_info.RecvPKG.BODY.DICT;
-            var o:Object;
+            var key_name:String;
 
             if (bus == null)
                 return; //?错误处理！
@@ -117,16 +117,29 @@ package com.yspay
                     {
                         if (P_data.data[i][key_name] == null)
                             break;
-                        //P_data.data[i][key_name] = null;
-                        delete P_data.data[i][key_name];
+                        P_data.data[i][key_name] = null;
+                            //delete P_data._data[i][key_name];
                     }
 
-                    for (i = P_data.data.length; i >= 0; i--)
+                    for (i = P_data._data.length - 1; i >= 0; i--)
                     {
-
-                        trace(o);
-                            //delete P_data.data[i];
-
+                        flg = 0;
+                        for (key_name in P_data._data[i])
+                        {
+                            if (key_name != "DictNum")
+                                if (P_data._data[i][key_name] != null)
+                                {
+                                    var flg:int = 1;
+                                    break;
+                                }
+                        }
+                        if (flg == 0)
+                        {
+                            //delete P_data.data[i] & P_data._data;
+                            P_data.data[i] = null;
+                            P_data.data.removeItemAt(i);
+                            P_data._data.removeItemAt(i);
+                        }
                     }
                 }
 //                if (bus[key_name][0].value is String || bus[key_name][0].value is int)
@@ -246,6 +259,26 @@ package com.yspay
                     if (P_data[datad].length <= j)
                         P_data[datad].addItem(new Object);
                     P_data[datad][j][dictname] = P_data._data[j][dictname];
+                }
+                //P_data[datad].refresh();
+
+                for (i = P_data[datad].length - 1; i > 0; i--)
+                {
+                    j = 0;
+                    for (var name:String in P_data[datad][i])
+                    {
+                        if (name == "mx_internal_uid")
+                            continue;
+                        if (P_data[datad][i][name] != null)
+                        {
+                            j = 1;
+                            break;
+                        }
+                    }
+                    if (j == 0)
+                    {
+                        P_data[datad].removeItemAt(i);
+                    }
                 }
                 P_data[datad].refresh();
             }

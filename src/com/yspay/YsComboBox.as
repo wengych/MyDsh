@@ -3,38 +3,43 @@ package com.yspay
     import com.yspay.YsData.PData;
     import com.yspay.util.GetParentByType;
 
+    import flash.display.DisplayObjectContainer;
+
     import mx.collections.ArrayCollection;
     import mx.controls.ComboBox;
 
     public class YsComboBox extends ComboBox implements YsControl
     {
-        protected var P_data:Object;
-        protected var bus_key_name:String;
-        protected var bus_key_index:int;
-        protected var _xml:XML;
-        public var data_count:String;
-        public var D_data:ArrayCollection = new ArrayCollection;
 
-        public function YsComboBox(xml:XML, key_name:String, key_index:int=0)
+        protected var _parent:DisplayObjectContainer;
+        protected var data_count:String;
+        protected var D_data:ArrayCollection = new ArrayCollection;
+
+        public function YsComboBox(parent:DisplayObjectContainer) //)xml:XML, key_name:String, key_index:int=0)
         {
             super();
-            _xml = xml;
-            bus_key_name = key_name;
-            bus_key_index = key_index;
-
-
+            _parent = parent;
+        /*
+           _xml = xml;
+           bus_key_name = key_name;
+           bus_key_index = key_index;
+         */
         }
 
-        public function Init(xml:XML):void
+        public function Init(dxml:XML):void
         {
-            var parent_pod:YsPod = GetParentByType(this.parent, YsPod) as YsPod;
+            var parent_pod:YsPod = GetParentByType(_parent, YsPod) as YsPod;
             var P_data:PData = parent_pod._M_data.TRAN[parent_pod.P_cont];
             var data_cont:int = P_data.datacont++;
             var i:int = 0;
             var x:XML;
+            data = new Object;
+            data.name = dxml.services.@NAME.toString();
+            data.index = 0;
+            data.xml = dxml;
             data_count = "data" + data_cont.toString();
             P_data[data_count] = D_data;
-            if (xml.display.TEXTINPUT.list.listarg != undefined)
+            if (dxml.display.TEXTINPUT.list.listarg != undefined)
                 //                            <list labelField="GENDER">
                 //                                <listarg>
                 //                                    <GENDER> 女 </GENDER>
@@ -45,7 +50,7 @@ package com.yspay
                 //                                    <GENDER_ID> 1 </GENDER_ID>
                 //                                </listarg>
                 //                            </list>
-                for each (x in xml.display.TEXTINPUT.list.*)
+                for each (x in dxml.display.TEXTINPUT.list.*)
                 {
                     D_data.addItem(new Object);
                     for each (var xx:XML in x.*)
@@ -53,7 +58,7 @@ package com.yspay
                         D_data[D_data.length - 1][xx.name().toString()] = xx.text().toString();
                     }
                 }
-            else if (xml.display.TEXTINPUT.list.action != undefined)
+            else if (dxml.display.TEXTINPUT.list.action != undefined)
             {
                 //功能：
                 //                            <list labelField="NAME">
@@ -75,9 +80,9 @@ package com.yspay
                 //                           Services返回的BUS
                 //                           将BUS内容放到指定的W_data中
             }
-            else if (xml.display.TEXTINPUT.list.DICT != undefined)
+            else if (dxml.display.TEXTINPUT.list.DICT != undefined)
             {
-                for each (x in xml.display.TEXTINPUT.list.DICT)
+                for each (x in dxml.display.TEXTINPUT.list.DICT)
                 {
                     var en_name:String = x.text().toString();
                     en_name = en_name.substr(en_name.search("://") + 3);
@@ -104,18 +109,18 @@ package com.yspay
                 }
             }
             dataProvider = D_data;
-            for (i = 0; i <= P_data.ti.length; i++)
+            for (i = 0; i <= P_data.ctrls_proxy.length; i++)
             {
                 if (i == P_data.ctrls_proxy.length)
                 {
                     P_data.ctrls_proxy.addItem(new Object);
                 }
-                if (P_data.ctrls_proxy[i][bus_key_name] == null)
-                    P_data.ctrls_proxy[i][bus_key_name] = new Object;
-                if (P_data.ctrls_proxy[i][bus_key_name][bus_key_index] == null)
+                if (P_data.ctrls_proxy[i][data.name] == null)
+                    P_data.ctrls_proxy[i][data.name] = new Object;
+                if (P_data.ctrls_proxy[i][data.name][data.index] == null)
                 {
                     //ti ArrayCollection 的 i个Object的[英文名][索引号]
-                    P_data.ti[i][bus_key_name][bus_key_index] = this;
+                    P_data.ctrls_proxy[i][data.name][data.index] = this;
                     break;
                 }
             }

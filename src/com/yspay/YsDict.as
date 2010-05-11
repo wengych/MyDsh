@@ -236,7 +236,7 @@ package com.yspay
 
         private function CreateComboBox(dxml:XML):YsComboBox
         {
-            var coboBox:YsComboBox = new YsComboBox(dxml, dxml.services.@NAME);
+            var coboBox:YsComboBox = new YsComboBox(_parent);
             if (dxml.display.TEXTINPUT.list.attribute('labelField').length() == 0)
                 coboBox.labelFunction = comboboxshowlabel; //if (xml.display.TEXTINPUT.list.@labelField != null)
             else
@@ -246,6 +246,8 @@ package com.yspay
             coboBox.prompt = "请选择...";
 
             // TODO:ComboBox和YsPod.P_data.ctrls_proxy[index][name]
+
+            coboBox.Init(dxml);
 
             return coboBox;
         }
@@ -409,7 +411,7 @@ package com.yspay
 
         private function comboboxchange(evt:Event):void
         {
-            var tmpcobox:ComboBox = evt.target as ComboBox;
+            var tmpcobox:YsComboBox = evt.target as YsComboBox;
 
             var o:Object = (evt.target as ComboBox).selectedItem;
             if (o == null)
