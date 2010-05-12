@@ -1,25 +1,52 @@
 package com.yspay
 {
-    import com.yspay.event_handlers.EventHandlerFactory;
-    import com.yspay.util.FunctionDelegate;
+    import com.yspay.events.StackEvent;
 
     import flash.display.DisplayObjectContainer;
+    import flash.events.Event;
 
-    public class YsXmlEvent implements YsControl
+    import mx.core.UIComponent;
+
+    public class YsXmlEvent extends YsButton implements YsControl
     {
-        protected var _parent:DisplayObjectContainer;
+        protected var need_save:Boolean;
 
         public function YsXmlEvent(parent:DisplayObjectContainer)
         {
-            _parent = parent;
+            super(parent);
         }
 
-        public function Init(xml:XML):void
+        public override function Init(xml:XML):void
         {
-            // TODO: 针对button的事件需要重新定义,携带事件对象
-            var fd:FunctionDelegate = new FunctionDelegate;
-            var func:Function = EventHandlerFactory.get_handler(xml.ACTION.text());
-            _parent.addEventListener(xml.text().toString(), fd.create(func, _parent));
+            super.Init(xml);
+            var event_name:String = _xml.text().toString();
+            // 默认不显示
+            //this.visible = xml.@VISABLE;
+            this.enabled = false;
+            this.height = 0;
+            this.visible = false;
+            this.label = event_name;
+
+            need_save = false;
+
+            _parent.addEventListener(event_name, EventActived); //fd.create(func, _parent));
+        }
+
+        public override function GetXml():XML
+        {
+            if (need_save)
+                return _xml;
+
+            return null;
+        }
+
+        protected function EventActived(event:Event):void
+        {
+            var stack_event:StackEvent = new StackEvent(action_list.concat());
+            stack_event.target_component = _parent as UIComponent;
+            stack_event.source = event;
+
+            this.dispatchEvent(stack_event);
         }
 
     }

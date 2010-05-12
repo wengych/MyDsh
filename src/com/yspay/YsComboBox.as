@@ -19,6 +19,7 @@ package com.yspay
         {
             super();
             _parent = parent;
+            prompt = "请选择...";
         /*
            _xml = xml;
            bus_key_name = key_name;
@@ -63,8 +64,8 @@ package com.yspay
                 //功能：
                 //                            <list labelField="NAME">
                 //                                <DICT>DICT://ACNO</DICT>
-                //                                <DICT>this:P_data:ACNO</listdict>
-                //                                <DICT>this:P_data:NAME</listdict>
+//                //                                <DICT>this:P_data:ACNO</listdict>
+//                //                                <DICT>this:P_data:NAME</listdict>
                 //                            </list>
                 //                            <process>\
                 //                                <Services sendbus="YsPod:P_data" recvbus="this:P_data">YsUserAdd</Services>
@@ -103,28 +104,34 @@ package com.yspay
                         if (D_data.length <= i)
                             D_data.addItem(new Object);
                         D_data[i][en_name] = P_data._data[i][en_name];
-
                     }
-
                 }
             }
             dataProvider = D_data;
-            for (i = 0; i <= P_data.ctrls_proxy.length; i++)
-            {
-                if (i == P_data.ctrls_proxy.length)
-                {
-                    P_data.ctrls_proxy.addItem(new Object);
-                }
-                if (P_data.ctrls_proxy[i][data.name] == null)
-                    P_data.ctrls_proxy[i][data.name] = new Object;
-                if (P_data.ctrls_proxy[i][data.name][data.index] == null)
-                {
-                    //ti ArrayCollection 的 i个Object的[英文名][索引号]
-                    P_data.ctrls_proxy[i][data.name][data.index] = this;
-                    break;
-                }
-            }
+        /*
+           for (i = 0; i <= P_data.ctrls_proxy.length; i++)
+           {
+           if (i == P_data.ctrls_proxy.length)
+           {
+           P_data.ctrls_proxy.addItem(new Object);
+           }
+           if (P_data.ctrls_proxy[i][data.name] == null)
+           P_data.ctrls_proxy[i][data.name] = new Object;
+           if (P_data.ctrls_proxy[i][data.name][data.index] == null)
+           {
+           //ti ArrayCollection 的 i个Object的[英文名][索引号]
+           P_data.ctrls_proxy[i][data.name][data.index] = this;
+           break;
+           }
+           }
+         */
         }
 
+        public function GetXml():XML
+        {
+            trace('ComboBox不生成XML,由YsDict产生XMl');
+
+            return null;
+        }
     }
 }

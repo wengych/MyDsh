@@ -1,9 +1,10 @@
 package com.yspay.util
 {
-    import com.yspay.pool.Pool;
     import com.yspay.pool.DBTable;
-    import mx.core.Application;
+    import com.yspay.pool.Pool;
+
     import mx.controls.Alert;
+    import mx.core.Application;
 
     public class UtilFunc
     {
@@ -14,7 +15,7 @@ package com.yspay.util
         // 替换链接为完整xml
         public static function FullXml(xml:XML):XML
         {
-            var rtn:XML = xml;
+            var rtn:XML = new XML(xml);
             var pool:Pool = Application.application._pool;
 
             var search_str:String = '://';
@@ -33,10 +34,10 @@ package com.yspay.util
                 var dts:DBTable = pool.dts as DBTable;
                 //var temp:XML = new XML(dts[dts_no].__DICT_XML);
                 rtn = new XML(dts[dts_no].__DICT_XML);
-                
+
                 for each (var attr:XML in xml.attributes())
                 {
-                    trace (attr);
+                    trace(attr);
                     rtn.@[attr.name().toString()] = attr.toString();
                 }
             }

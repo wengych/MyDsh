@@ -8,8 +8,9 @@ package com.yspay.event_handlers
 
     import mx.core.Container;
     import mx.core.UIComponent;
+    import flash.events.Event;
 
-    public function make_tran_xml(ui_comp:UIComponent):void
+    public function make_tran_xml(ui_comp:UIComponent, source_event:Event):void
     {
         var ys_pod:YsPod = GetParentByType(ui_comp.parent as Container, YsPod) as YsPod;
         var win_per:String = "WINDOWS://";

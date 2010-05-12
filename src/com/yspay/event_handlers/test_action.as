@@ -1,5 +1,4 @@
 // ActionScript file
-
 package com.yspay.event_handlers
 {
     import com.yspay.EventCache;
@@ -9,17 +8,16 @@ package com.yspay.event_handlers
     import com.yspay.events.EventPodShowXml;
     import com.yspay.events.EventWindowShowXml;
     import com.yspay.pool.DBTable;
-    import com.yspay.pool.DBTableQueryEvent;
     import com.yspay.pool.Query;
+    import com.yspay.pool.DBTableQueryEvent;
+    import com.yspay.util.GetParentByType;
 
     import flash.events.Event;
 
-    import mx.controls.listClasses.ListBase;
     import mx.core.Application;
     import mx.core.UIComponent;
-    import mx.events.DragEvent;
 
-    public function drag_drop(ui_comp:UIComponent, source_event:Event):void
+    public function test_action(ui_comp:UIComponent, event:Event):void
     {
         var get_dts_func:Function = function(event:DBTableQueryEvent):void
             {
@@ -48,19 +46,16 @@ package com.yspay.event_handlers
                 ui_comp.dispatchEvent(new_event);
             }
 
-        var drag_event:DragEvent = source_event as DragEvent;
-        if (drag_event == null)
-        {
-            trace("事件类型不匹配");
-            return;
-        }
+        var ys_pod:YsPod = GetParentByType(ui_comp.parent, YsPod) as YsPod;
 
-        var o:Object = (drag_event.dragInitiator as ListBase).selectedItem;
-        var dts:DBTable = Application.application._pool.dts as DBTable;
+        var new_dict_xml:XML = new XML('<DICT>DICT://GENDERListTest</DICT>');
 
+        var info:DBTable = Application.application._pool.info;
+        var dts_no:String = info.DICT['GENDERListTest'].Get().DTS;
+        var dts:DBTable = Application.application._pool.dts;
 
-        dts.AddQuery(o.DTS, Query, o.DTS, ui_comp);
+        dts.AddQuery(dts_no, Query, dts_no, ui_comp);
         ui_comp.addEventListener(dts.select_event_name, get_dts_func);
-        dts.DoQuery(o.DTS);
+        dts.DoQuery(dts_no);
     }
 }

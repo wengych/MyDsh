@@ -17,6 +17,7 @@ package com.yspay
                 'button': YsButton,
                 'pool': YsDictPool,
                 'event': YsXmlEvent,
+                'action': YsAction,
                 'services': YsService};
     }
 }

@@ -31,6 +31,11 @@ package com.yspay
             setStyle('fontSize', '12');
         }
 
+        public function GetXml():XML
+        {
+            return _xml;
+        }
+
         public function Init(xml:XML):void
         {
             var data_provider_arr:ArrayCollection;

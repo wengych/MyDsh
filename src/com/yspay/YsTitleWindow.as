@@ -6,15 +6,12 @@ package com.yspay
     import flash.display.DisplayObjectContainer;
 
     import mx.collections.ArrayCollection;
-    import mx.containers.Form;
     import mx.containers.TitleWindow;
     import mx.core.Application;
-    import mx.core.UIComponent;
     import mx.events.*;
 
     public class YsTitleWindow extends TitleWindow implements YsControl
     {
-        public var form:Form;
         public var _M_data:Object = Application.application.M_data;
         public var _xml:XML;
 
@@ -37,14 +34,15 @@ package com.yspay
             //this.setStyle("horizontalAlign", "center");
             this.addEventListener(CloseEvent.CLOSE, closeHandler);
 
-            form = new Form;
-            form.percentHeight = 100;
-            form.percentWidth = 100;
-            this.addChild(form);
 
             _pool = Application.application._pool;
 
             this.addEventListener(EventWindowShowXml.EVENT_NAME, OnShow);
+        }
+
+        public function GetXml():XML
+        {
+            return _xml;
         }
 
         public function Init(xml:XML):void
@@ -80,41 +78,6 @@ package com.yspay
 
         }
 
-        // TODO:暂时保留，拖拽事件需要参考此处部分代码
-        protected function dragDropSelf(event:DragEvent):void
-        {
-            if ((event.dragInitiator as UIComponent).parent != this.form)
-            {
-                return;
-            }
-            var moveYSelf:Number = event.localY;
-            var length:int = form.getChildren().length;
-            var position:int = form.getChildIndex(event.dragInitiator as UIComponent);
-            if (length <= 1)
-                return;
-
-            for (var i:int = 0; i < length; i++)
-            {
-                if (form.getChildAt(i).y >= moveYSelf)
-                    break;
-            }
-            form.removeChild(event.dragInitiator as UIComponent);
-
-            if (i >= length)
-            {
-                form.addChild(event.dragInitiator as UIComponent);
-            }
-            else if (i >= 1)
-            {
-                if (i >= position)
-                    form.addChildAt(event.dragInitiator as UIComponent, i - 1);
-                else
-                    form.addChildAt(event.dragInitiator as UIComponent, i);
-            }
-            else
-                form.addChildAt(event.dragInitiator as UIComponent, i);
-        }
-
         public function save_windows_xml(p_cont:int):XML
         {
 
@@ -124,34 +87,54 @@ package com.yspay
             var rtn:XML = <L KEY="windows" KEYNAME="windows" VALUE="windows IN">
                     <A KEY="TITLE" KEYNAME="Title" />
                 </L>;
+            var xml_line:XML = <L KEY="" KEYNAME="" VALUE="" />;
             // var tb_xml_args:Object = {'TITLE': 'ENAME'};
             //  rtn.A.(@KEY == 'TITLE').@VALUE = (args_obj[tb_xml_args['TITLE']].text);
             rtn.@VALUE = ename;
             rtn.A.(@KEY == 'TITLE').@VALUE = cname;
-            for each (var form_item:MyFormItem in form.getChildren())
+            for each (var ctrl:YsControl in this.getChildren())
             {
-                var form_xml:XML = form_item.descXml;
-                if (form_xml.name() == 'SERVICES')
-                {
-                    var labelXml:XML = <A KEY="LABEL" KEYNAME="按钮信息"/>;
-                    labelXml.@VALUE = form_xml.@LABEL;
-                    var serviceXml:XML = <L KEY="SERVICES" KEYNAME="按钮服务"/>;
-                    serviceXml.@VALUE = "SERVICES://" + form_xml.text();
-                    var button_xml:XML = <L KEY="BUTTON" KEYNAME="按钮" VALUE=""/>;
-                    button_xml.appendChild(labelXml);
-                    button_xml.appendChild(serviceXml);
-                    rtn.appendChild(button_xml);
-                }
+
+                var child_xml:XML = ctrl.GetXml();
+                if (child_xml == null)
+                    continue;
+
+                var newxml:XML = xml_line;
+                newxml.@KEY = child_xml.name().toString();
+                if (child_xml.name().toString() == "DICT")
+                    newxml.@KEYNAME = child_xml.display.LABEL.@text.toString();
                 else
-                {
-                    var dict_xml:XML = <L/>;
-                    dict_xml.@KEY = form_xml.localName();
-                    dict_xml.@KEYNAME = form_item.label;
-                    dict_xml.@VALUE = form_xml.localName() + "://" + form_xml.services.@NAME;
-                    rtn.appendChild(dict_xml);
-                }
+                    newxml.@KEYNAME = child_xml.text().toString();
+
+                newxml.@VALUE = child_xml.name().toString() + "://" + child_xml.text().toString();
+
+                rtn.appendChild(newxml);
             }
             return rtn;
+        /*
+           for each (var form_item:MyFormItem in this.getChildren())
+           {
+           var form_xml:XML = form_item.descXml;
+           if (form_xml.name() == 'SERVICES')
+           {
+           var labelXml:XML = <A KEY="LABEL" KEYNAME="按钮信息"/>;
+           labelXml.@VALUE = form_xml.@LABEL;
+           var serviceXml:XML = <L KEY="SERVICES" KEYNAME="按钮服务"/>;
+           serviceXml.@VALUE = "SERVICES://" + form_xml.text();
+           var button_xml:XML = <L KEY="BUTTON" KEYNAME="按钮" VALUE=""/>;
+           button_xml.appendChild(labelXml);
+           button_xml.appendChild(serviceXml);
+           rtn.appendChild(button_xml);
+           }
+           else
+           {
+           var dict_xml:XML = <L/>;
+           dict_xml.@KEY = form_xml.localName();
+           dict_xml.@KEYNAME = form_item.label;
+           dict_xml.@VALUE = form_xml.localName() + "://" + form_xml.services.@NAME;
+           rtn.appendChild(dict_xml);
+           }
+         }*/
         }
     }
 }

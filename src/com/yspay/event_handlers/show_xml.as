@@ -10,10 +10,11 @@ package com.yspay.event_handlers
     import mx.controls.Alert;
     import mx.core.Container;
     import mx.core.UIComponent;
+    import flash.events.Event;
 
-    public function show_xml(ui_comp:UIComponent):void
+    public function show_xml(ui_comp:UIComponent, source_event:Event):void
     {
-        var ys_pod:YsPod = GetParentByType(ui_comp.parent as Container, YsPod) as YsPod;
+        var ys_pod:YsPod = GetParentByType(ui_comp.parent, YsPod) as YsPod;
         trace('show_xml');
         var xml:XML = <L TYPE="WINDOWS" NAME="IDNUMBER" VER="20091120999999" ISUSED="0" APPNAME="MapServer" CUSER="xing" MEMO=""></L>;
         var child_wnd:Container;

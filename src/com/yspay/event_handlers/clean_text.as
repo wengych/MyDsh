@@ -9,15 +9,16 @@ package com.yspay.event_handlers
     import com.yspay.util.GetParentByType;
 
     import flash.display.DisplayObjectContainer;
+    import flash.events.Event;
 
     import mx.controls.TextArea;
     import mx.controls.TextInput;
     import mx.core.Container;
     import mx.core.UIComponent;
 
-    public function clean_text(ui_comp:UIComponent):void
+    public function clean_text(ui_comp:UIComponent, source_event:Event):void
     {
-        var func:Function = function(container:Container, ys_pod:YsPod):void
+        var clean_all_child_text:Function = function(container:Container, ys_pod:YsPod):void
             {
                 for each (var child:*in container.getChildren())
                 {
@@ -30,7 +31,7 @@ package com.yspay.event_handlers
                     }
                     else if (child is Container)
                     {
-                        func(child);
+                        clean_all_child_text(child, pod);
                     }
                 }
             }
@@ -49,6 +50,6 @@ package com.yspay.event_handlers
         if (target == null || pod == null)
             return;
 
-        func(target, pod);
+        clean_all_child_text(target, pod);
     }
 }

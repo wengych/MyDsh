@@ -2,11 +2,12 @@ package com.yspay
 {
     import com.yspay.pool.Pool;
 
-    import mx.core.Application;
     import flash.display.DisplayObjectContainer;
-    import mx.controls.dataGridClasses.DataGridColumn;
 
-    public class YsDictPool implements YsControl
+    import mx.controls.dataGridClasses.DataGridColumn;
+    import mx.core.Application;
+
+    public class YsDictPool extends YsInvisible implements YsControl
     {
         protected var _pool:Pool;
         protected var _parent:DisplayObjectContainer;
@@ -19,8 +20,15 @@ package com.yspay
             _parent = parent;
         }
 
-        public function Init(xml:XML):void
+        public override function GetXml():XML
         {
+            return _xml;
+        }
+
+        public override function Init(xml:XML):void
+        {
+            super.Init(xml);
+
             _xml = xml;
             var dg:YsDataGrid = _parent as YsDataGrid;
 

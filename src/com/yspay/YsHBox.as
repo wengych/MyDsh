@@ -1,9 +1,7 @@
 package com.yspay
 {
-    import com.yspay.event_handlers.EventHandlerFactory;
     import com.yspay.pool.Pool;
 
-    import flash.display.DisplayObject;
     import flash.display.DisplayObjectContainer;
 
     import mx.containers.HBox;
@@ -13,6 +11,7 @@ package com.yspay
     {
         protected var _pool:Pool;
         protected var _parent:DisplayObjectContainer;
+        protected var _xml:XML;
 
         public function YsHBox(parent:DisplayObjectContainer)
         {
@@ -21,11 +20,17 @@ package com.yspay
             _parent = parent;
         }
 
+        public function GetXml():XML
+        {
+            return _xml;
+        }
+
         public function Init(xml:XML):void
         {
-            if (xml.@line != undefined)
+            _xml = xml;
+            if (_xml.@line != undefined)
             {
-                if (xml.@line == "bottom")
+                if (_xml.@line == "bottom")
                 {
                     _parent.addChild(this);
                 }
@@ -45,7 +50,7 @@ package com.yspay
             setStyle('fontSize', '12');
 
             var child_name:String;
-            for each (var child:XML in xml.elements())
+            for each (var child:XML in _xml.elements())
             {
                 child_name = child.name().toString().toLowerCase();
 

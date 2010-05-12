@@ -4,13 +4,10 @@ package com.yspay
     import com.yspay.YsData.MData;
     import com.yspay.YsData.PData;
     import com.yspay.events.EventPodShowXml;
-    import com.yspay.events.StackSendXmlEvent;
     import com.yspay.pool.*;
-    import com.yspay.util.StackUtil;
     import com.yspay.util.UtilFunc;
 
     import flash.display.DisplayObjectContainer;
-    import flash.events.Event;
 
     import mx.controls.ComboBox;
     import mx.controls.TextInput;
@@ -48,22 +45,13 @@ package com.yspay
         protected var _pool:Pool;
         protected var parent_container:DisplayObjectContainer;
 
-        // ServiceCall回调函数
-        public function CallBack(bus:UserBus, service_info:XML, e:StackSendXmlEvent):void
+
+        private function GetBusArgs(search_str:String, xml:XML):Array
         {
-            trace('callback');
-            trace(service_info.toXMLString());
-            trace(bus);
-
-            var dict_str:String
-            var dict_search:String = 'dict://';
-            var bus_out_name_args:Array = new Array;
-            var dict_list:XMLList = service_info.RecvPKG.BODY.DICT;
-            var key_name:String;
-
-            if (bus == null)
-                return; //?错误处理！
-
+            var dict_str:String;
+            var arr:Array = new Array;
+            var dict_search:String = search_str;
+            var dict_list:XMLList = xml.RecvPKG.BODY.DICT;
             // 生成输出参数列表
             for each (var dict_xml:XML in dict_list)
             {
@@ -71,13 +59,29 @@ package com.yspay
 
                 if (dict_str.substr(0, dict_search.length).toLowerCase() == dict_search)
                 {
-                    bus_out_name_args.push(dict_str.substr(dict_search.length));
+                    arr.push(dict_str.substr(dict_search.length));
                 }
             }
-            bus_out_name_args.push("__DICT_USER_RTNMSG");
-            bus_out_name_args.push("__DICT_USER_RTN");
-            bus_out_name_args.push("__YSAPP_SESSION_ATTRS");
-            bus_out_name_args.push("__YSAPP_SESSION_SID");
+            arr.push("__DICT_USER_RTNMSG");
+            arr.push("__DICT_USER_RTN");
+            arr.push("__YSAPP_SESSION_ATTRS");
+            arr.push("__YSAPP_SESSION_SID");
+            return arr;
+        }
+
+        // ServiceCall回调函数
+        public function CallBack(bus:UserBus, service_info:XML):void
+        {
+            service_info = UtilFunc.FullXml(service_info);
+            trace('callback');
+            trace(service_info.toXMLString());
+            trace(bus);
+            if (bus == null)
+                return; //?错误处理！
+
+            var bus_out_name_args:Array = GetBusArgs('dict://', service_info);
+            var key_name:String;
+
             /* xingjun add roolback
                if(bus.GetFirst("RTN") != "0" && bus.GetFirst("SESSION")!= Null)
                {
@@ -101,7 +105,7 @@ package com.yspay
                 main_bus.Add(var_name, ys_var);
             }
 
-            for each (var key_name:String in bus.GetKeyArray())
+            for each (key_name in bus.GetKeyArray())
             {
                 if (bus[key_name][0].value is String || bus[key_name][0].value is int)
                 {
@@ -145,7 +149,6 @@ package com.yspay
 //                if (bus[key_name][0].value is String || bus[key_name][0].value is int)
 //                    P_data.proxy[0][key_name] = bus[key_name][0].value.toString();
             }
-            e.stackUtil.dispatchEvent(new Event(StackUtil.EVENT_STACK_NEXT));
         }
 
         public function _YsInfoQueryComplete(event:DBTableQueryEvent):void
@@ -179,21 +182,6 @@ package com.yspay
             //xingj ..
         }
 
-        private function GetServiceXml(service_desc:XML):XML
-        {
-            var service_value:String = service_desc.toString();
-            var link_head:String = 'services://';
-            if (service_value.substr(0, link_head.length).toLowerCase() == link_head.toLowerCase())
-            {
-                var service_name:String = service_value.substr(link_head.length);
-                var dts_no:String = _pool.info.SERVICES[service_name].Get().DTS;
-                var service_xml:String = _pool.dts[dts_no].__DICT_XML;
-                return new XML(service_xml);
-            }
-
-            return service_desc;
-        }
-
         private function OnShow(event:EventPodShowXml):void
         {
             //_cache.DoCache(event.xml.toXMLString(), this);
@@ -217,24 +205,31 @@ package com.yspay
             var i:int;
             var j:int;
 
-            for (i = 0; i < P_data.ctrls_proxy.length; i++)
+            for each (var dict_proxy:Object in P_data.dict_proxy)
             {
-                if (P_data.ctrls_proxy[i][dictname] == null)
+
+            }
+
+            for (i = 0; i < P_data.dict_proxy.length; i++)
+            {
+                if (P_data.dict_proxy[i][dictname] == null)
                     break;
-                if (P_data.ctrls_proxy[i][dictname][dictNum] == null)
+                if (P_data.dict_proxy[i][dictname][dictNum] == null)
                     break;
-                if (P_data.ctrls_proxy[i][dictname][dictNum] is TextInput)
-                    P_data.ctrls_proxy[i][dictname][dictNum].text = dictvalue;
-                else if (P_data.ctrls_proxy[i][dictname][dictNum] is ComboBox)
-                {
-                    for each (var O:Object in P_data.ctrls_proxy[i][dictname][dictNum].dataProvider)
-                    {
-//                        if (O[P_data.ti[i][dictname][dictNum].data.xml.text().toString()] == dictvalue)
-//                            P_data.ti[i][dictname][dictNum].selectedItem = O;
-                        if (O[dictname] == dictvalue)
-                            P_data.ctrls_proxy[i][dictname][dictNum].selectedItem = O;
-                    }
-                }
+                //if (P_data.dict_proxy[i][dictname][dictNum] is TextInput)
+                //    P_data.dict_proxy[i][dictname][dictNum].text = dictvalue;
+                P_data.dict_proxy[i][dictname][dictNum].text = dictvalue;
+                /*
+                   else if (P_data.dict_proxy[i][dictname][dictNum] is ComboBox)
+                   {
+                   for each (var O:Object in P_data.dict_proxy[i][dictname][dictNum].dataProvider)
+                   {
+                   //                        if (O[P_data.ti[i][dictname][dictNum].data.xml.text().toString()] == dictvalue)
+                   //                            P_data.ti[i][dictname][dictNum].selectedItem = O;
+                   if (O[dictname] == dictvalue)
+                   P_data.dict_proxy[i][dictname][dictNum].selectedItem = O;
+                   }
+                 }*/
             }
 
 

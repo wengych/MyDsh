@@ -26,7 +26,7 @@ package com.yspay.YsData
             datacont = 1000;
             _data = new ArrayCollection;
             data = new ArrayCollection;
-            ctrls_proxy = new ArrayCollection;
+            dict_proxy = new ArrayCollection;
             data_grid = new ArrayCollection;
 
             CheckCount(1);
@@ -62,34 +62,35 @@ package com.yspay.YsData
          * 若循环至Array结尾，则新增元素存储ctrl
          * @param disp_obj
          */
-        public function AddCtrlProxy(ctrl:Object, default_value:*):void
+        public function AddDict(dict:Object, default_value:*):void
         {
-            for (var i:int = 0; i <= ctrls_proxy.length; i++)
+
+            for (var i:int = 0; i <= dict_proxy.length; i++)
             {
-                if (i == ctrls_proxy.length)
+                if (i == dict_proxy.length)
                 {
-                    ctrls_proxy.addItem(new Object);
+                    dict_proxy.addItem(new Object);
                 }
-                if (ctrls_proxy[i][ctrl.data.name] == null)
-                    ctrls_proxy[i][ctrl.data.name] = new Object;
-                if (ctrls_proxy[i][ctrl.data.name][ctrl.data.index] == null)
+                if (dict_proxy[i][dict.name] == null)
+                    dict_proxy[i][dict.name] = new Object;
+                if (dict_proxy[i][dict.name][dict.index] == null)
                 {
                     //ti ArrayCollection 的 i个Object的[英文名][索引号]
-                    ctrls_proxy[i][ctrl.data.name][ctrl.data.index] = ctrl;
+                    dict_proxy[i][dict.name][dict.index] = dict;
                     break;
                 }
             }
 
-            if (_data[0][ctrl.data.name] == undefined)
+            if (_data[0][dict.name] == undefined)
             {
                 // 如节点不存在,创建新节点
-                _data[0][ctrl.data.name] = '';
-                data[0][ctrl.data.name] = (default_value == null) ? '' : default_value.toString();
+                _data[0][dict.name] = '';
+                data[0][dict.name] = (default_value == null) ? '' : default_value.toString();
             }
             else
             {
                 // 节点存在,为控件赋值
-                ctrl.text = data[0][ctrl.data.name];
+                dict.text = data[0][dict.name];
             }
         }
 
@@ -147,7 +148,7 @@ package com.yspay.YsData
          *
          * @default
          */
-        public var ctrls_proxy:ArrayCollection; // 控件更新用的proxy
+        public var dict_proxy:ArrayCollection; // 控件更新用的proxy
         /**
          *
          * @default

@@ -2,11 +2,11 @@
 
 package com.yspay.event_handlers
 {
-    import mx.core.UIComponent;
-    import mx.controls.Alert;
-    import mx.controls.TextInput;
+    import flash.events.Event;
 
-    public function bus2window(ui_comp:UIComponent):void
+    import mx.core.UIComponent;
+
+    public function bus2window(ui_comp:UIComponent, source_event:Event):void
     {
     /*
        for each (var obj:Object in children)

@@ -1,50 +1,45 @@
 package com.yspay
 {
     import com.yspay.YsData.PData;
-    import com.yspay.events.StackSendXmlEvent;
+    import com.yspay.events.StackEvent;
     import com.yspay.pool.*;
-    import com.yspay.util.FunctionDelegate;
     import com.yspay.util.GetParentByType;
     import com.yspay.util.UtilFunc;
 
     import flash.display.DisplayObjectContainer;
+    import flash.events.Event;
 
-    import mx.controls.Alert;
-    import mx.controls.TextArea;
-    import mx.controls.TextInput;
     import mx.core.Application;
     import mx.core.Container;
 
-    public class YsService implements YsControl
+    public class YsService extends YsAction
     {
-        protected var _parent:DisplayObjectContainer;
-        protected var service_info:XML;
         protected var _pool:Pool;
         public var main_bus:UserBus;
 
         public function YsService(parent:DisplayObjectContainer)
         {
-            _parent = parent;
+            super(parent);
             _pool = Application.application._pool;
             main_bus = _pool.MAIN_BUS as UserBus;
         }
 
-        public function Init(xml:XML):void
+        public override function Init(xml:XML):void
         {
-            service_info = new XML(xml);
-            (_parent as Object).service_list.push(this);
+            super.Init(xml);
         }
 
         protected function AddDDataToBus(container:Object, var_name:String, bus:UserBus):Boolean
         {
             for each (var child:Object in container.getChildren())
             {
-                if (child is TextArea || child is TextInput)
+                //if (child is TextArea || child is TextInput)
+                if (child is YsDict)
                 {
-                    if (child.data.From == "D_data" && child.data.To == "D_data") //纯私有数据
-                        if (child.data.name == var_name)
+                    if (child.dict.From == "D_data" && child.dict.To == "D_data") //纯私有数据
+                        if (child.dict.name == var_name)
                         {
-                            bus.Add(child.data.name, child.text);
+                            bus.Add(child.dict.name, child.text);
                             return true;
                         }
                 }
@@ -59,14 +54,27 @@ package com.yspay
         }
 
         // 调用ServiceCall
-        public function DoService(e:StackSendXmlEvent):void
+        public override function Do(stack_event:StackEvent, source_event:Event):void
         {
             var dict_str:String;
             var dict_search:String = 'dict://';
             var bus_in_name_args:Array = new Array;
-            service_info = UtilFunc.FullXml(service_info);
-            var scall_name:String = service_info.SendPKG.HEAD.@active;
-            var dict_list:XMLList = service_info.SendPKG.BODY.DICT;
+            var bus_in_const_args:Array = new Array;
+            var full_xml:XML = UtilFunc.FullXml(action_info);
+            if (full_xml == null)
+            {
+                _parent.dispatchEvent(source_event);
+                return;
+            }
+
+            for each (var action_item:XML in action_info.elements())
+            {
+                full_xml.appendChild(action_item);
+                    //bus_in_const_args.push(action_item.text().toString());
+            }
+
+            var scall_name:String = full_xml.SendPKG.HEAD.@active;
+            var dict_list:XMLList = full_xml.SendPKG.BODY.DICT;
             var ys_pod:YsPod = GetParentByType(_parent, YsPod) as YsPod;
             var P_data:PData = ys_pod._M_data.TRAN[ys_pod.P_cont];
 
@@ -80,14 +88,28 @@ package com.yspay
                     bus_in_name_args.push(dict_str.substr(dict_search.length));
                 }
             }
+
             var scall:ServiceCall = new ServiceCall;
             var bus:UserBus = new UserBus;
             bus.Add(ServiceCall.SCALL_NAME, scall_name);
+
+            for each (var const_item_xml:XML in full_xml["CONST"])
+            {
+                var const_item_key:String = const_item_xml.text().toString();
+                for each (var const_value_xml:XML in const_item_xml["VALUE"])
+                {
+                    var const_value:String = const_value_xml.text().toString();
+                    bus.Add(const_item_key, const_value);
+                }
+            }
+
             //var_name=dict名字
             for each (var var_name:String in bus_in_name_args) //从本地P_data中取得所需数据
             {
-                //首先从Textinput中的data.From是D_data，data.To也是D_data 中取得数据   ??????????????????
+                if (bus[var_name] != null)
+                    continue;
 
+                //首先从Textinput中的data.From是D_data，data.To也是D_data 中取得数据   ??????????????????       
                 var O:Object = this._parent;
 
                 while (O != null)
@@ -115,11 +137,23 @@ package com.yspay
                     }
                 }
             }
-            var ip:String = ys_pod.parentApplication.GetServiceIp(scall_name);
-            var port:String = ys_pod.parentApplication.GetServicePort(scall_name);
-            var func_dele:FunctionDelegate = new FunctionDelegate;
-            Alert.show(bus.toString());
-            scall.Send(bus, ip, port, func_dele.create(ys_pod.CallBack, service_info, e));
+            var ip:String = Application.application.GetServiceIp(scall_name);
+            var port:String = Application.application.GetServicePort(scall_name);
+
+            var func:Function = function(new_bus:UserBus):void
+                {
+                    ServiceCallBack(new_bus, stack_event);
+                }
+            //Alert.show(bus.toString());
+            scall.Send(bus, ip, port, func);
+        }
+
+        protected function ServiceCallBack(bus:UserBus, event:StackEvent):void
+        {
+            var ys_pod:YsPod = GetParentByType(_parent, YsPod) as YsPod;
+            ys_pod.CallBack(bus, action_info);
+
+            _parent.dispatchEvent(event);
         }
     }
 }
