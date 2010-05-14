@@ -2,8 +2,7 @@
 
 package com.yspay.event_handlers
 {
-    import com.yspay.YsPod;
-    import com.yspay.YsTitleWindow;
+    import com.yspay.YsControls.*;
     import com.yspay.util.DateUtil;
     import com.yspay.util.GetParentByType;
 
@@ -12,7 +11,7 @@ package com.yspay.event_handlers
     import mx.core.UIComponent;
     import flash.events.Event;
 
-    public function show_xml(ui_comp:UIComponent, source_event:Event):void
+    public function show_xml(ui_comp:UIComponent, source_event:Event, action_info:XML):void
     {
         var ys_pod:YsPod = GetParentByType(ui_comp.parent, YsPod) as YsPod;
         trace('show_xml');

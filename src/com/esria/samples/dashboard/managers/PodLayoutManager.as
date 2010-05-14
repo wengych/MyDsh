@@ -9,6 +9,7 @@ package com.esria.samples.dashboard.managers
     import com.esria.samples.dashboard.view.DragHighlight;
     import com.esria.samples.dashboard.view.Pod;
     import com.yspay.*;
+    import com.yspay.YsControls.YsPod;
 
     import flash.events.EventDispatcher;
     import flash.events.MouseEvent;
@@ -258,7 +259,7 @@ package com.esria.samples.dashboard.managers
             if (pod is YsPod)
             {
                 var _pod:YsPod = pod as YsPod;
-                if(_M_data.TRAN[_pod.P_cont] != null)
+                if (_M_data.TRAN[_pod.P_cont] != null)
                     delete _M_data.TRAN[_pod.P_cont];
             }
         }

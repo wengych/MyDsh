@@ -1,6 +1,6 @@
 package com.yspay.YsData
 {
-    import com.yspay.YsPod;
+    import com.yspay.YsControls.YsPod;
 
 
     public dynamic class Tran
@@ -14,7 +14,7 @@ package com.yspay.YsData
 
         public function CreatePData(pod:YsPod):int
         {
-            var obj:Object = new PData(pod);
+            var obj:Object = new PData;
             this[cont] = obj;
             cont++;
 

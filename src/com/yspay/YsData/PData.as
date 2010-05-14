@@ -1,59 +1,54 @@
 package com.yspay.YsData
 {
-    import com.yspay.YsPod;
+    import com.yspay.UserBus;
+    import com.yspay.YsControls.YsPod;
+    import com.yspay.YsVar;
+    import com.yspay.util.YsObjectProxy;
 
-    import flash.display.DisplayObject;
-
-    import mx.collections.ArrayCollection;
     import mx.events.PropertyChangeEvent;
-    import mx.utils.ObjectProxy;
 
-    /**
-     *
-     * @author Administrator
-     */
     public dynamic class PData
     {
-        /**
-         *
-         * @param pod
-         */
-        public function PData(pod:YsPod)
+        public function PData()
         {
-            ys_pod = pod;
-
             cont = 10000;
             datacont = 1000;
-            _data = new ArrayCollection;
-            data = new ArrayCollection;
-            dict_proxy = new ArrayCollection;
-            data_grid = new ArrayCollection;
+            _data = new Object;
+            data = new YsObjectProxy(_data);
+            dict_proxy = new Object;
 
-            CheckCount(1);
+            data.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE,
+                                  UpdateChange);
+
+            //CheckCount(1);
         }
 
-        // 如果数据字典项下标超出现在的data的最大范围，则新增一个
-        /**
-         *
-         * @param data_count
-         */
-        public function CheckCount(data_count:int):void
+        protected function UpdateChange(event:PropertyChangeEvent):void
         {
-            var curr:int = _data.length;
-            if (data_count <= curr)
+
+            var dict_proxy_item:Object;
+            var source_obj:Object = event.source.object;
+
+            if (source_obj is Array)
             {
-                return;
+                // 某一项被更新，需要从_data查找key
+                var dict_key:String = GetKeyByObject(source_obj)
+                if (dict_key == '')
+                    return;
+                for each (dict_proxy_item in dict_proxy[dict_key])
+                {
+                    dict_proxy_item.Notify(dict_key, event.property);
+                }
             }
-
-            _data.addItem(new Object);
-
-            var proxy:ObjectProxy = new ObjectProxy(_data[curr]);
-            proxy.DictNum = curr;
-            proxy.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE,
-                                   ys_pod.updateChange);
-            data.addItem(proxy);
+            else
+            {
+                // 某一数组被更新
+                for each (dict_proxy_item in dict_proxy[event.property])
+                {
+                    dict_proxy_item.Notify(event.property, -1);
+                }
+            }
         }
-
 
         /**
          * 在ctrls_proxy中新加控件索引
@@ -62,97 +57,97 @@ package com.yspay.YsData
          * 若循环至Array结尾，则新增元素存储ctrl
          * @param disp_obj
          */
-        public function AddDict(dict:Object, default_value:*):void
+        public function AddToNotifiers(obj:Object, name:String, default_value:*=null):void
         {
-
-            for (var i:int = 0; i <= dict_proxy.length; i++)
+            if (!dict_proxy.hasOwnProperty(name))
             {
-                if (i == dict_proxy.length)
+                dict_proxy[name] = new Array;
+
+                if (!_data.hasOwnProperty(name))
                 {
-                    dict_proxy.addItem(new Object);
-                }
-                if (dict_proxy[i][dict.name] == null)
-                    dict_proxy[i][dict.name] = new Object;
-                if (dict_proxy[i][dict.name][dict.index] == null)
-                {
-                    //ti ArrayCollection 的 i个Object的[英文名][索引号]
-                    dict_proxy[i][dict.name][dict.index] = dict;
-                    break;
+                    _data[name] = new Array;
+                    var def_v:* = (default_value == null) ? '' : default_value;
+                    _data[name].push(def_v);
                 }
             }
 
-            if (_data[0][dict.name] == undefined)
-            {
-                // 如节点不存在,创建新节点
-                _data[0][dict.name] = '';
-                data[0][dict.name] = (default_value == null) ? '' : default_value.toString();
-            }
-            else
-            {
-                // 节点存在,为控件赋值
-                dict.text = data[0][dict.name];
-            }
+            dict_proxy[name].push(obj);
         }
 
-        /**
-         *
-         * @param disp
-         * @return
-         */
-        public function Create(disp:DisplayObject):int
+        public function GetKeyByObject(obj:Object):String
         {
-            var obj:Object = new Object();
-            this[cont] = obj;
-            cont++;
+            for (var key:String in _data)
+            {
+                if (obj == _data[key])
+                    return key;
+            }
 
-            return (cont - 1);
+            return '';
         }
 
-        /**
-         *
-         * @param index
-         * @return
-         */
+        public function GetKeyNameByArrayItem(obj:Object):String
+        {
+            for (var key:String in _data)
+            {
+                if (obj == _data[key])
+                    return key;
+
+                for (var arr_obj:Object in _data[key])
+                {
+                    if (arr_obj == obj)
+                        return key;
+                }
+            }
+
+            return '';
+        }
+
+        public function HasChild(obj:Object):Boolean
+        {
+            for each (var child_arr:Array in _data)
+            {
+                if (obj == child_arr)
+                    return true;
+
+                for (var arr_obj:Object in child_arr)
+                {
+                    if (arr_obj == obj)
+                        return true;
+                }
+            }
+
+            return false;
+        }
+
         public function getPData(index:int):PData
         {
             return this[index];
         }
 
-        /**
-         *
-         * @default
-         */
+        public function Update(bus:UserBus):void
+        {
+            for each (var key_name:String in bus.GetKeyArray())
+            {
+                if (bus[key_name][0].value is String || bus[key_name][0].value is int)
+                {
+                    var arr:Array = new Array;
+                    for each (var ys_var:YsVar in bus.GetVarArray(key_name))
+                    {
+                        arr.push(ys_var.value);
+                    }
+                    data[key_name] = arr;
+                }
+            }
+        }
+
         public var xml:XML;
-        /**
-         *
-         * @default
-         */
         public var cont:int;
         public var datacont:int;
-        /**
-         *
-         * @default
-         */
         public var ys_pod:YsPod;
-        /**
-         *
-         * @default
-         */
-        public var _data:ArrayCollection; // 实际存放数据对象
-        /**
-         *
-         * @default
-         */
-        public var data:ArrayCollection; // 数据访问proxy
-        /**
-         *
-         * @default
-         */
-        public var dict_proxy:ArrayCollection; // 控件更新用的proxy
-        /**
-         *
-         * @default
-         */
-        public var data_grid:ArrayCollection; // 反向查找序列号，数据更新使用(DataGrid)
+        public var _data:Object; // 实际存放数据对象
+        public var data:YsObjectProxy; // 数据访问proxy
+
+        //  YsDict或YsDataGrid列表，数据更新时通知对应数据字典名列表中的每一个对象
+        public var dict_proxy:Object;
     }
 }

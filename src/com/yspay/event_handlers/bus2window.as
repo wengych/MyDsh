@@ -6,7 +6,7 @@ package com.yspay.event_handlers
 
     import mx.core.UIComponent;
 
-    public function bus2window(ui_comp:UIComponent, source_event:Event):void
+    public function bus2window(ui_comp:UIComponent, source_event:Event, action_info:XML):void
     {
     /*
        for each (var obj:Object in children)

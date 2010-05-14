@@ -2,22 +2,21 @@
 package com.yspay.event_handlers
 {
     import com.yspay.EventCache;
-    import com.yspay.YsPod;
-    import com.yspay.YsTitleWindow;
+    import com.yspay.YsControls.*;
     import com.yspay.events.EventCacheComplete;
     import com.yspay.events.EventPodShowXml;
     import com.yspay.events.EventWindowShowXml;
     import com.yspay.pool.DBTable;
-    import com.yspay.pool.Query;
     import com.yspay.pool.DBTableQueryEvent;
+    import com.yspay.pool.Query;
     import com.yspay.util.GetParentByType;
-
+    
     import flash.events.Event;
-
+    
     import mx.core.Application;
     import mx.core.UIComponent;
 
-    public function test_action(ui_comp:UIComponent, event:Event):void
+    public function test_action(ui_comp:UIComponent, event:Event, action_info:XML):void
     {
         var get_dts_func:Function = function(event:DBTableQueryEvent):void
             {
@@ -48,6 +47,8 @@ package com.yspay.event_handlers
 
         var ys_pod:YsPod = GetParentByType(ui_comp.parent, YsPod) as YsPod;
 
+        var _xml:XML = action_info ;
+        
         var new_dict_xml:XML = new XML('<DICT>DICT://GENDERListTest</DICT>');
 
         var info:DBTable = Application.application._pool.info;

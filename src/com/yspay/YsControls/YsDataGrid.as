@@ -1,4 +1,4 @@
-package com.yspay
+package com.yspay.YsControls
 {
     import com.yspay.YsData.MData;
     import com.yspay.YsData.PData;
@@ -8,16 +8,16 @@ package com.yspay
 
     import mx.collections.ArrayCollection;
     import mx.controls.DataGrid;
+    import mx.controls.dataGridClasses.DataGridColumn;
     import mx.core.Application;
     import mx.events.DataGridEvent;
 
     public class YsDataGrid extends DataGrid implements YsControl
     {
         protected var _xml:XML;
-        protected var P_data:Object;
         protected var _parent:DisplayObjectContainer;
         public var data_count:String;
-
+        public var D_data:PData = new PData;
 
         public function YsDataGrid(parent:DisplayObjectContainer)
         {
@@ -29,6 +29,94 @@ package com.yspay
             percentHeight = 100;
             setStyle('borderStyle', 'solid');
             setStyle('fontSize', '12');
+        }
+
+        protected function Refresh(field_name:String):void
+        {
+            var ys_pod:YsPod = GetParentByType(_parent, YsPod) as YsPod;
+            var P_data:PData = ys_pod._M_data.TRAN[ys_pod.P_cont];
+            var j:int = int(dataProvider.length - 1);
+            var i:int = 0;
+
+            for each (var dgc:DataGridColumn in columns)
+            {
+                if (field_name == dgc.dataField)
+                {
+                    for (; i < P_data.data[field_name].length; ++i)
+                    {
+                        if (i >= dataProvider.length)
+                        {
+                            dataProvider.addItem(new Object);
+                            dataProvider[i][field_name] = P_data.data[field_name][i];
+                        }
+                        else
+                        {
+                            dataProvider[i][field_name] = P_data.data[field_name][i];
+                        }
+                    }
+
+                    // 清空后续元素的对应节点
+                    for (; i < dataProvider.length; ++i)
+                    {
+                        if (!dataProvider[i].hasOwnProperty(field_name))
+                            continue;
+                        dataProvider[i][field_name] = null;
+                    }
+
+                    // 删除空行
+                    for (; j >= 0; --j)
+                    {
+                        var empty_item:Boolean = true;
+                        for (var arr_key:String in dataProvider[j])
+                        {
+                            if (arr_key == 'mx_internal_uid')
+                                continue;
+
+                            if (dataProvider[j][arr_key] == null)
+                                continue;
+
+                            empty_item = false;
+                            break;
+                        }
+
+                        if (empty_item)
+                            dataProvider.removeItemAt(j);
+                    }
+
+                    dataProvider.refresh();
+                }
+            }
+        }
+
+        public function Notify(dict_name:String, index:int):void
+        {
+            var has_key:Boolean = false;
+            for each (var col:DataGridColumn in columns)
+            {
+                if (col.dataField == dict_name)
+                {
+                    has_key = true;
+                    break;
+                }
+            }
+            if (!has_key)
+                return;
+
+            if (index == -1)
+            {
+                Refresh(dict_name);
+            }
+            else
+            {
+                var ys_pod:YsPod = GetParentByType(_parent, YsPod) as YsPod;
+                var P_data:PData = ys_pod._M_data.TRAN[ys_pod.P_cont];
+                if (dataProvider.length <= index)
+                {
+                    dataProvider.addItem(new Object);
+                }
+
+                dataProvider[index][dict_name] = P_data.data[dict_name][index];
+            }
         }
 
         public function GetXml():XML
@@ -102,9 +190,10 @@ package com.yspay
                 var P_data:PData = parent_pod._M_data.TRAN[parent_pod.P_cont];
                 var data_cont:int = P_data.datacont++;
                 data_count = "data" + data_cont.toString();
-                P_data[data_count] = new ArrayCollection;
+                dataProvider = new ArrayCollection;
                 //xingj ..
-                dataProvider = P_data[data_count];
+                P_data[data_count] = dataProvider;
+                trace(dataProvider.length);
             }
             else
                 return;

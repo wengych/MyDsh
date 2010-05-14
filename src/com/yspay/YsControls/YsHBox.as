@@ -1,4 +1,4 @@
-package com.yspay
+package com.yspay.YsControls
 {
     import com.yspay.pool.Pool;
 
@@ -12,6 +12,7 @@ package com.yspay
         protected var _pool:Pool;
         protected var _parent:DisplayObjectContainer;
         protected var _xml:XML;
+        public var D_data:Object = new Object;
 
         public function YsHBox(parent:DisplayObjectContainer)
         {

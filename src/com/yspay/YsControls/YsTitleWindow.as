@@ -1,7 +1,9 @@
-package com.yspay
+package com.yspay.YsControls
 {
+    import com.yspay.YsData.PData;
     import com.yspay.events.EventWindowShowXml;
     import com.yspay.pool.*;
+    import com.yspay.util.FunctionDelegate;
 
     import flash.display.DisplayObjectContainer;
 
@@ -15,10 +17,12 @@ package com.yspay
         public var _M_data:Object = Application.application.M_data;
         public var _xml:XML;
 
+        public var D_data:PData = new PData;
+
         [Bindable]
         private var arr_col:ArrayCollection;
         private var _pool:Pool;
-        private var func_helper:FunctionHelper = new FunctionHelper;
+        private var func_helper:FunctionDelegate = new FunctionDelegate;
         private var dts_event_listener:Function;
 
         protected var _parent:DisplayObjectContainer;
@@ -30,6 +34,7 @@ package com.yspay
             this.percentHeight = 100;
             this.percentWidth = 100;
             this.setStyle("headerHeight", "10");
+            this.setStyle("fontSize", "12");
             this.showCloseButton = true;
             //this.setStyle("horizontalAlign", "center");
             this.addEventListener(CloseEvent.CLOSE, closeHandler);
@@ -47,6 +52,7 @@ package com.yspay
 
         public function Init(xml:XML):void
         {
+            _xml = xml;
             _parent.addChild(this);
 
             this.title = xml.@TITLE;

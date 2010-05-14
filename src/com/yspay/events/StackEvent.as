@@ -1,7 +1,7 @@
 package com.yspay.events
 {
     import flash.events.Event;
-
+    
     import mx.core.UIComponent;
 
 
@@ -10,25 +10,28 @@ package com.yspay.events
 
         public static const EVENT_NAME:String = 'event_stack_event';
 
-        protected var _data:Array;
+        protected var _event_list:Array;
         protected var _target:UIComponent;
         protected var _source:Event;
+        
+        public var event_data:Object;
 
         public function StackEvent(data:Array, bubbles:Boolean=false, cancelable:Boolean=false)
         {
             super(EVENT_NAME, bubbles, cancelable);
 
-            this._data = data;
+            this._event_list = data;
+            this.event_data = new Object;
 
-            TraceEventName(EVENT_NAME + '事件长度 ' + _data.length.toString());
+            TraceEventName(EVENT_NAME + '事件长度 ' + _event_list.length.toString());
         }
 
         public function NextEvent():Object
         {
             var rtn:Object = null;
-            if (_data.length > 0)
+            if (_event_list.length > 0)
             {
-                rtn = _data.shift();
+                rtn = _event_list.shift();
             }
 
             return rtn;
@@ -56,7 +59,7 @@ package com.yspay.events
 
         override public function clone():Event
         {
-            var e:StackEvent = new StackEvent(_data);
+            var e:StackEvent = new StackEvent(_event_list);
             e.source = _source;
             e.target_component = _target;
             return e;

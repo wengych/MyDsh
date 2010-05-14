@@ -3,14 +3,13 @@ package com.yspay.event_handlers
 {
     import com.yspay.util.DateUtil;
     import com.yspay.util.GetParentByType;
-    import com.yspay.YsTitleWindow;
-    import com.yspay.YsPod;
+    import com.yspay.YsControls.*;
 
     import mx.core.Container;
     import mx.core.UIComponent;
     import flash.events.Event;
 
-    public function make_windows_xml(ui_comp:UIComponent, source_event:Event):void
+    public function make_windows_xml(ui_comp:UIComponent, source_event:Event, action_info:XML):void
     {
         var ys_pod:YsPod = GetParentByType(ui_comp.parent as Container, YsPod) as YsPod;
 

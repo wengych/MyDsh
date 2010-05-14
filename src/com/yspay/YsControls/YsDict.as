@@ -1,6 +1,7 @@
-package com.yspay
+package com.yspay.YsControls
 {
     import com.yspay.YsData.PData;
+    import com.yspay.events.EventNextDict;
     import com.yspay.util.GetParentByType;
     import com.yspay.util.UtilFunc;
 
@@ -8,7 +9,6 @@ package com.yspay
     import flash.events.Event;
 
     import mx.collections.ArrayCollection;
-    import mx.containers.FormItem;
     import mx.containers.HBox;
     import mx.controls.Label;
     import mx.controls.TextInput;
@@ -21,6 +21,7 @@ package com.yspay
     {
         protected var dict_object:Object;
         public var dict:ObjectProxy;
+        public var D_data:PData = new PData;
 
         protected var _label:Label;
         protected var _text:TextInput;
@@ -28,22 +29,36 @@ package com.yspay
         protected var _parent:DisplayObjectContainer;
         protected var _xml:XML;
 
+        public override function get name():String
+        {
+            return dict.name;
+        }
+
+        public override function set name(new_name:String):void
+        {
+            dict.name = new_name;
+        }
+
+        public function get text():String
+        {
+            return dict.text;
+        }
+
+        public function set text(new_text:String):void
+        {
+            dict.text = new_text;
+        }
+
         public function YsDict(parent:DisplayObjectContainer)
         {
-            //if (parent is YsHBox || parent is DataGrid)
-            {
-                _parent = parent;
-            }
-            /*else
-               {
-               _parent = new MyFormItem;
-               parent.addChild(_parent);
-             }*/
+            _parent = parent;
+
             dict_object = {'text': '',
                     'To': 'P_data',
                     'From': 'P_data',
                     'index': 0,
-                    'name': ''};
+                    'name': '',
+                    'delimiter': 80};
             dict = new ObjectProxy(dict_object);
 
             dict.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, DictChange);
@@ -59,6 +74,13 @@ package com.yspay
             var ys_pod:YsPod = GetParentByType(_parent, YsPod) as YsPod;
             var P_data:PData = ys_pod._M_data.TRAN[ys_pod.P_cont];
             _xml = UtilFunc.FullXml(xml);
+
+            if (_xml.@From != undefined)
+                dict.From = _xml.@From.toString();
+            if (_xml.@To != undefined)
+                dict.To = _xml.@To.toString();
+            if (_xml.services.@NAME != undefined)
+                dict.name = _xml.services.@NAME.toString();
 
             if (_parent is YsDataGrid) //DATAGRID
             {
@@ -76,39 +98,9 @@ package com.yspay
                 var en_name:String = _xml.services.@NAME;
                 dgc.headerText = ch_name;
                 dgc.dataField = en_name;
-                if (!P_data._data[0].hasOwnProperty(en_name)) //赋初值。
-                {
-                    P_data._data[0][en_name] = new String;
-                    //Set DEFAULT VALUE
-                    if (_xml.services.@DEFAULT == null)
-                        P_data.data[0][en_name] = '';
-                    else
-                    {
-                        var str:String = _xml.services.@DEFAULT;
-                        P_data.data[0][en_name] = str;
-                    }
-                }
-                var i:int = new int;
 
-                // 为当前dict项添加一个默认值，第0项
-                for (i = 0; i < P_data._data.length; i++)
-                {
-                    if (!P_data._data[i].hasOwnProperty(en_name))
-                        break;
-                    if (data.length <= i)
-                        data.addItem(new Object);
-                    data[i][en_name] = P_data._data[i][en_name];
-                }
+                P_data.AddToNotifiers(_parent, dict.name, _xml.services.@DEFAULT.toString());
 
-                for (i = 0; i <= P_data.data_grid.length; i++)
-                {
-                    if (P_data.data_grid.length == i)
-                        P_data.data_grid.addItem(new Object);
-                    if (P_data.data_grid[i][en_name] != undefined)
-                        continue;
-                    P_data.data_grid[i][en_name] = dg.data_count;
-                    break;
-                }
                 dg.columns = dg.columns.concat(dgc);
                     // TODO:针对DataGrid的处理方法
                     //(_parent as DataGrid); // 添加列
@@ -119,23 +111,20 @@ package com.yspay
                 //       TextInputVisible="true" 
                 //       ComboBoxVisible="true" 
                 //       OutputOnly="true"
-                //       from="P_data" 
+                //       from="P_data"
                 //       from="D_data"
                 //       to="P_data"
                 //       to="D_data"
                 //>
 
                 // 初始化dict_object
-                if (_xml.@From != undefined)
-                    dict.From = _xml.@From.toString();
-                if (_xml.@To != undefined)
-                    dict.To = _xml.@To.toString();
-                if (_xml.services.@NAME != undefined)
-                    dict.name = _xml.services.@NAME.toString();
 
                 if (dict.From == "P_data")
-                    P_data.AddDict(dict, _xml.services.@DEFAULT);
+                    P_data.AddToNotifiers(this, dict.name, _xml.services.@DEFAULT.toString());
+                else if (dict.From == "D_data")
+                    D_data.AddToNotifiers(this, dict.name, _xml.services.@DEFAULT.toString());
 
+                _parent.addChild(this);
 
                 if (_xml.display.LABEL != undefined)
                 {
@@ -146,6 +135,7 @@ package com.yspay
 
                     _label = new Label;
                     _label.text = dict.label;
+                    _label.width = dict.delimiter;
                     if (_xml.@LabelVisible != undefined)
                         if (_xml.@LabelVisible == "false")
                             _label.visible = false;
@@ -160,7 +150,6 @@ package com.yspay
                     if (_xml.@TextInputVisible != undefined)
                         if (_xml.@TextInputVisible == "false")
                             _text.visible = false;
-
                     this.addChild(_text);
                 }
                 if (_xml.display.TEXTINPUT.list != undefined)
@@ -175,38 +164,63 @@ package com.yspay
                     this.addChild(_combo);
                 }
 
-                _parent.addChild(this);
-            }
-        }
-
-        protected function SetComboBox(key:String, value:String):void
-        {
-            var arr_col:ArrayCollection = _combo.dataProvider as ArrayCollection;
-
-            for each (var obj:Object in arr_col)
-            {
-                if (obj[key] == value)
+                if (_xml.event != undefined)
                 {
-                    _combo.selectedItem = obj;
-                    break;
+                    for each (var event_xml:XML in _xml.event)
+                    {
+                        var ys_event:YsXmlEvent = new YsXmlEvent(this);
+                        ys_event.Init(event_xml);
+                    }
                 }
+
+                    //??????        this.addEventListener(EventNextDict.EVENT_NAME, MoveToNextDict);
             }
         }
+
+        public function Notify(dict_name:String, index:int):void
+        {
+            if (dict_name != dict.name)
+            {
+                trace('error: ', '数据字典名不匹配');
+                return;
+            }
+
+            var ys_pod:YsPod = GetParentByType(_parent, YsPod) as YsPod;
+            var P_data:PData = ys_pod._M_data.TRAN[ys_pod.P_cont];
+
+            if (index == -1 && P_data.data[dict_name].length > dict.index)
+            {
+                dict.text = P_data.data[dict_name][dict.index];
+            }
+            else if (index == dict.index)
+            {
+                dict.text = P_data.data[dict_name][index];
+            }
+        }
+
 
         protected function DictChange(event:PropertyChangeEvent):void
         {
+            trace("DictChange")
             if (event.property == 'text')
             {
                 var ys_pod:YsPod = GetParentByType(_parent, YsPod) as YsPod;
-                var P_data:Object = ys_pod._M_data.TRAN[ys_pod.P_cont];
-                if (dict.To == "P_data" && P_data.data[dict.index][dict.name] != dict.text)
-                    P_data.data[dict.index][dict.name] = dict.text;
-                P_data._data.refresh();
+                var P_data:PData = ys_pod._M_data.TRAN[ys_pod.P_cont];
+                if (dict.To == "P_data" && P_data.data[dict.name][dict.index] != dict.text)
+                    P_data.data[dict.name][dict.index] = dict.text;
+                //P_data._data[dict.name].refresh();
 
                 if (_text != null)
                     _text.text = dict.text;
                 if (_combo != null)
-                    SetComboBox(dict.name, dict.text);
+                    _combo.SetComboBox(dict.name, dict.text);
+            }
+            if (event.property == 'delimiter')
+            {
+                if (_label != null)
+                {
+                    _label.width = dict.delimiter;
+                }
             }
         }
 
@@ -214,55 +228,52 @@ package com.yspay
         {
             var tt:TextInput = evt.target as TextInput;
 
-            if (_combo == null)
+            //if (_combo == null)
             {
                 dict.text = tt.text;
             }
+            //else
+            //    _combo.SetComboBox(dict.name, dict.text);
         }
 
         private function EnterHandler(event:FlexEvent):void
         {
-            var current:TextInput = event.target as TextInput; // == text_input
-            var ti_parent:Object = _text.parent; // os: HBox, FormItem
-            var arr:Array = new Array;
-            var ti:TextInput;
+            //MoveToNextDict();
+            this.dispatchEvent(new EventNextDict);
+        }
 
-            if (ti_parent is FormItem)
-            {
-                // 处理输入框的父窗体为FormItem的情况
-                for each (var form_item:FormItem in ti_parent.parent.getChildren())
-                {
-                    if (form_item == null)
-                        continue;
+        protected function MoveToNextDict(event:EventNextDict):void
+        {
+            var title_wnd:YsTitleWindow = GetParentByType(_parent, YsTitleWindow) as YsTitleWindow;
+            var dict_arr:Array = new Array;
 
-                    for each (ti in form_item.getChildren())
-                    {
-                        if (ti != null)
-                        {
-                            arr.push(ti);
-                        }
-                    }
-                }
-            }
-            else // if (ti_parent is YsHBox)
+            for each (var wnd_child:Object in title_wnd.getChildren())
             {
-                // 处理其他情况
-                for each (ti in ti_parent.getChildren())
-                {
-                    if (ti != null)
-                        arr.push(ti);
-                }
+                // 找YsDict
+                if (!(wnd_child is YsDict))
+                    continue;
+
+                // 略过不可输入的YsDict.TextInput
+                if (wnd_child._text != null && wnd_child._text.editable == false)
+                    continue;
+
+                // 略过不可选择的YsDict.ComboBox
+                if (wnd_child._combo != null && wnd_child._combo.enabled == false)
+                    continue;
+
+                // 增加符合条件的Dict进array;
+                if (wnd_child._text != null || wnd_child._combo != null)
+                    dict_arr.push(wnd_child);
             }
-            for (var i:int = 0; i < arr.length; i++)
-            {
-                if (arr[i] == current)
-                {
-                    if (i != arr.length - 1)
-                        (arr[i + 1] as TextInput).setFocus();
-                    else
-                        (arr[0] as TextInput).setFocus();
-                }
-            }
+
+            var curr_index:int = dict_arr.indexOf(this);
+            if (++curr_index >= dict_arr.length)
+                curr_index = 0;
+
+            if (dict_arr[curr_index]._text != null)
+                dict_arr[curr_index]._text.setFocus();
+            else
+                dict_arr[curr_index]._combo.setFocus();
         }
 
         private function CreateTextInput(dxml:XML):TextInput
@@ -270,7 +281,13 @@ package com.yspay
             var ti:TextInput = new TextInput;
             ti.text = '';
             ti.maxChars = int(dxml.services.@LEN);
-            ti.width = (dxml.display.TEXTINPUT.@length * 50 > 200) ? 200 : (dxml.display.TEXTINPUT.@length) * 50;
+            if (ti.maxChars > 80)
+                ti.width = 200;
+            else if (int(dxml.display.TEXTINPUT.@length) < 10 && ti.maxChars < 10)
+                ti.width = int(dxml.display.TEXTINPUT.@length) * 12;
+            else
+                ti.width = 200;
+            //ti.width = (dxml.display.TEXTINPUT.@length * 50 > 200) ? 200 : (dxml.display.TEXTINPUT.@length) * 50;
             ti.displayAsPassword = (dxml.display.TEXTINPUT.@displayAsPassword == 0 ? false : true);
             ti.text = dict.text;
 
@@ -282,34 +299,15 @@ package com.yspay
 
         private function CreateComboBox(dxml:XML):YsComboBox
         {
-            var coboBox:YsComboBox = new YsComboBox(_parent);
-            if (dxml.display.TEXTINPUT.list.attribute('labelField').length() == 0)
-                coboBox.labelFunction = ComboBoxShowLabel; //if (xml.display.TEXTINPUT.list.@labelField != null)
-            else
-                coboBox.labelField = dxml.display.TEXTINPUT.list.@labelField;
+            var coboBox:YsComboBox = new YsComboBox(this);
 
             coboBox.addEventListener("close", ComboChange);
-            coboBox.prompt = "请选择...";
 
             // TODO:ComboBox和YsPod.P_data.ctrls_proxy[index][name]
 
             coboBox.Init(dxml);
 
             return coboBox;
-        }
-
-        private function ComboBoxShowLabel(item:Object):String
-        {
-            var returnvalue:String = new String;
-            if (item.hasOwnProperty("mx_internal_uid"))
-                item.setPropertyIsEnumerable('mx_internal_uid', false);
-
-            for (var o:Object in item)
-            {
-                returnvalue += item[o].toString() + ' - ';
-            }
-
-            return (returnvalue.substring(0, returnvalue.length - 3));
         }
 
         private function ComboChange(evt:Event):void
@@ -319,6 +317,8 @@ package com.yspay
                 return;
 
             dict.text = sel_item[dict.name];
+
+            _text.dispatchEvent(new FlexEvent(FlexEvent.ENTER));
         }
     }
 }

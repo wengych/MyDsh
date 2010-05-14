@@ -3,6 +3,7 @@ package com.yspay.util
     import com.yspay.pool.DBTable;
     import com.yspay.pool.Pool;
 
+    import mx.collections.ArrayCollection;
     import mx.controls.Alert;
     import mx.core.Application;
 
@@ -10,6 +11,17 @@ package com.yspay.util
     {
         public function UtilFunc()
         {
+        }
+
+        public static function ArrayColAddEmptyItems(arr:ArrayCollection, count:int):void
+        {
+            if (count <= 0)
+                return;
+
+            for (var i:int = 0; i <= count; ++i)
+            {
+                arr.addItem(new Object);
+            }
         }
 
         // 替换链接为完整xml
@@ -39,6 +51,10 @@ package com.yspay.util
                 {
                     trace(attr);
                     rtn.@[attr.name().toString()] = attr.toString();
+                }
+                for each (var val:XML in xml.elements())
+                {
+                    rtn.appendChild(val);
                 }
             }
 

@@ -8,6 +8,7 @@ package com.yspay
     import com.yspay.events.EventPodShowXml;
     import com.yspay.pool.Pool;
     import com.yspay.util.UtilFunc;
+    import com.yspay.YsControls.YsPod;
 
     import flash.display.DisplayObject;
     import flash.events.MouseEvent;

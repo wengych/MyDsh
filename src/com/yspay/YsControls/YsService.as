@@ -1,5 +1,6 @@
-package com.yspay
+package com.yspay.YsControls
 {
+    import com.yspay.*;
     import com.yspay.YsData.PData;
     import com.yspay.events.StackEvent;
     import com.yspay.pool.*;
@@ -39,7 +40,7 @@ package com.yspay
                     if (child.dict.From == "D_data" && child.dict.To == "D_data") //纯私有数据
                         if (child.dict.name == var_name)
                         {
-                            bus.Add(child.dict.name, child.text);
+                            bus.Add(child.dict.name, child.dict.text);
                             return true;
                         }
                 }
@@ -122,7 +123,7 @@ package com.yspay
                 if (AddDDataToBus(O, var_name, bus) == true)
                     continue;
 
-                if (!P_data._data[0].hasOwnProperty(var_name)) //如果P_data中没有改数据，从MAIN BUS中取得
+                if (!P_data._data.hasOwnProperty(var_name)) //如果P_data中没有改数据，从MAIN BUS中取得
                 {
                     var ys_var:YsVar = main_bus[var_name];
                     bus.Add(var_name, ys_var);
@@ -148,12 +149,113 @@ package com.yspay
             scall.Send(bus, ip, port, func);
         }
 
+        protected var To_Map:Object = {'pod': YsPod, 'windows': YsTitleWindow,
+                'dict': YsDict, 'event': YsXmlEvent};
+
+        protected function GetDData(obj:Object):Object
+        {
+            if (obj.hasOwnProperty('D_data'))
+                return obj.D_data;
+            else
+                return null;
+        }
+
+        protected function GetToObject(to_item_name:String):Object
+        {
+            if (To_Map.hasOwnProperty(to_item_name))
+            {
+                var ys_ctrl:Object;
+
+                var parent_type:Class = To_Map[to_item_name];
+                ys_ctrl = GetParentByType(_parent, parent_type);
+
+                return GetDData(ys_ctrl);
+            }
+            else if (to_item_name == 'MAINBUS')
+            {
+                return Application.application._pool.MAIN_BUS;
+            }
+            else if (to_item_name.search('parent') == 0)
+            {
+                return GetDData(_parent);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         protected function ServiceCallBack(bus:UserBus, event:StackEvent):void
         {
-            var ys_pod:YsPod = GetParentByType(_parent, YsPod) as YsPod;
-            ys_pod.CallBack(bus, action_info);
+            if (bus == null)
+                return; //?错误处理！
+
+            var rtn:int = bus.__DICT_USER_RTN[0].value;
+
+            if (rtn != 0)
+                return;
+
+
+            // action_info
+            //        <To>pod</To>
+            //        <To>windows</To>
+            //        <To>dict</To>
+            //        <To>event</To>
+            //        <To>parent</To>
+            //        <To>parent.parent...</To>
+            //        <To>MAINBUS</To>
+            var to_arr:Array = new Array;
+            var to_obj:Object = null;
+
+            for each (var action_to_item:XML in action_info.To)
+            {
+                to_obj = GetToObject(action_to_item.text().toString());
+                if (to_obj != null)
+                    to_arr.push(to_obj);
+            }
+
+            for each (to_obj in to_arr)
+            {
+                if (to_obj is PData)
+                    to_obj.Update(bus);
+                else if (to_obj is UserBus)
+                {
+                    var bus_out_name_args:Array = GetBusArgs('dict://', action_info);
+                    for each (var var_name:String in bus_out_name_args)
+                    {
+                        if (bus[var_name] == null)
+                            continue;
+                        main_bus.RemoveByKey(var_name);
+                        main_bus.Add(var_name, bus[var_name]);
+                    }
+                }
+            }
 
             _parent.dispatchEvent(event);
+        }
+
+
+        private function GetBusArgs(search_str:String, xml:XML):Array
+        {
+            var dict_str:String;
+            var arr:Array = new Array;
+            var dict_search:String = search_str;
+            var dict_list:XMLList = xml.RecvPKG.BODY.DICT;
+            // 生成输出参数列表
+            for each (var dict_xml:XML in dict_list)
+            {
+                dict_str = dict_xml.toString();
+
+                if (dict_str.substr(0, dict_search.length).toLowerCase() == dict_search)
+                {
+                    arr.push(dict_str.substr(dict_search.length));
+                }
+            }
+            arr.push("__DICT_USER_RTNMSG");
+            arr.push("__DICT_USER_RTN");
+            arr.push("__YSAPP_SESSION_ATTRS");
+            arr.push("__YSAPP_SESSION_SID");
+            return arr;
         }
     }
 }

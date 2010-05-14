@@ -3,6 +3,7 @@ package com.yspay.event_handlers
 {
     import com.yspay.*;
     import com.yspay.pool.*;
+    import com.yspay.YsControls.*;
     import com.yspay.util.GetParentByType;
 
     import flash.events.EventDispatcher;
@@ -13,7 +14,7 @@ package com.yspay.event_handlers
     import mx.core.UIComponent;
     import mx.managers.CursorManager;
 
-    public function refresh_pool(ui_comp:UIComponent, source_event:Event):void
+    public function refresh_pool(ui_comp:UIComponent, source_event:Event, action_info:XML):void
     {
         var ys_pod:YsPod = GetParentByType(ui_comp.parent as Container, YsPod) as YsPod;
         var _pool:Pool = Application.application._pool;

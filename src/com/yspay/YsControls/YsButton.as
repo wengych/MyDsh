@@ -1,5 +1,6 @@
-package com.yspay
+package com.yspay.YsControls
 {
+    import com.yspay.YsData.PData;
     import com.yspay.events.StackEvent;
     import com.yspay.pool.Pool;
 
@@ -23,7 +24,7 @@ package com.yspay
         protected var _xml:XML;
 
         public var action_list:Array = new Array;
-        protected var curr_action:int = 0;
+        public var D_data:PData = new PData;
 
         public function Init(xml:XML):void
         {

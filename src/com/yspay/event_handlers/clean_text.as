@@ -3,9 +3,7 @@
 package com.yspay.event_handlers
 {
     import com.yspay.YsData.PData;
-    import com.yspay.YsHBox;
-    import com.yspay.YsPod;
-    import com.yspay.YsTitleWindow;
+    import com.yspay.YsControls.*;
     import com.yspay.util.GetParentByType;
 
     import flash.display.DisplayObjectContainer;
@@ -16,7 +14,7 @@ package com.yspay.event_handlers
     import mx.core.Container;
     import mx.core.UIComponent;
 
-    public function clean_text(ui_comp:UIComponent, source_event:Event):void
+    public function clean_text(ui_comp:UIComponent, source_event:Event, action_info:XML):void
     {
         var clean_all_child_text:Function = function(container:Container, ys_pod:YsPod):void
             {

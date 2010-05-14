@@ -7,7 +7,7 @@ package com.yspay.event_handlers
     import mx.core.UIComponent;
     import mx.managers.DragManager;
 
-    public function drag_enter(ui_comp:UIComponent, source_event:Event):void
+    public function drag_enter(ui_comp:UIComponent, source_event:Event, action_info:XML):void
     {
         if (ui_comp == source_event.currentTarget)
             DragManager.acceptDragDrop(ui_comp);

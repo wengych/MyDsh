@@ -1,4 +1,4 @@
-package com.yspay
+package com.yspay.YsControls
 {
     import com.yspay.events.StackEvent;
 
@@ -19,6 +19,9 @@ package com.yspay
         public override function Init(xml:XML):void
         {
             super.Init(xml);
+
+            // TODO: event描述存入dts表
+            //       event_name从xml属性"event_name"获取
             var event_name:String = _xml.text().toString();
             // 默认不显示
             //this.visible = xml.@VISABLE;

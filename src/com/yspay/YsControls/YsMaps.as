@@ -1,4 +1,4 @@
-package com.yspay
+package com.yspay.YsControls
 {
     import com.yspay.events.*;
 

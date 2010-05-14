@@ -215,7 +215,9 @@
         <![CDATA[
             //longin handler 
             [Bindable]
-            private var comboboxDP:ArrayCollection = new ArrayCollection([{name: "请选择"}, {name: "show memory bus"},
+            private var comboboxDP:ArrayCollection = new ArrayCollection([{name: "请选择"},
+                                                                          {name: "cxbm_tran"},
+                                                                          {name: "show memory bus"},
                                                                           {name: "show_dict"},
                                                                           {name: "show_window"},
                                                                           {name: "show_service"},
