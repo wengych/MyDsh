@@ -1,7 +1,7 @@
 package com.yspay.events
 {
     import flash.events.Event;
-    
+
     import mx.core.UIComponent;
 
 
@@ -13,7 +13,7 @@ package com.yspay.events
         protected var _event_list:Array;
         protected var _target:UIComponent;
         protected var _source:Event;
-        
+
         public var event_data:Object;
 
         public function StackEvent(data:Array, bubbles:Boolean=false, cancelable:Boolean=false)

@@ -24,7 +24,7 @@ package com.yspay.YsControls
         public var D_data:PData = new PData;
 
         protected var _label:Label;
-        protected var _text:TextInput;
+        protected var _text:YsTextInput;
         protected var _combo:YsComboBox;
         protected var _parent:DisplayObjectContainer;
         protected var _xml:XML;
@@ -58,6 +58,7 @@ package com.yspay.YsControls
                     'From': 'P_data',
                     'index': 0,
                     'name': '',
+                    'source': null,
                     'delimiter': 80};
             dict = new ObjectProxy(dict_object);
 
@@ -179,6 +180,8 @@ package com.yspay.YsControls
 
         public function Notify(dict_name:String, index:int):void
         {
+            if (dict.From == 'D_data')
+                return;
             if (dict_name != dict.name)
             {
                 trace('error: ', '数据字典名不匹配');
@@ -201,7 +204,7 @@ package com.yspay.YsControls
 
         protected function DictChange(event:PropertyChangeEvent):void
         {
-            trace("DictChange")
+            trace("DictChange", event.property)
             if (event.property == 'text')
             {
                 var ys_pod:YsPod = GetParentByType(_parent, YsPod) as YsPod;
@@ -210,10 +213,12 @@ package com.yspay.YsControls
                     P_data.data[dict.name][dict.index] = dict.text;
                 //P_data._data[dict.name].refresh();
 
-                if (_text != null)
+                if (_text != null && _text != dict.source)
                     _text.text = dict.text;
-                if (_combo != null)
+                if (_combo != null) //&& _combo != dict.source)
                     _combo.SetComboBox(dict.name, dict.text);
+
+                dict.source = null;
             }
             if (event.property == 'delimiter')
             {
@@ -230,6 +235,7 @@ package com.yspay.YsControls
 
             //if (_combo == null)
             {
+                dict.source = _text;
                 dict.text = tt.text;
             }
             //else
@@ -276,11 +282,17 @@ package com.yspay.YsControls
                 dict_arr[curr_index]._combo.setFocus();
         }
 
-        private function CreateTextInput(dxml:XML):TextInput
+        private function CreateTextInput(dxml:XML):YsTextInput
         {
-            var ti:TextInput = new TextInput;
+            var ti:YsTextInput = new YsTextInput;
             ti.text = '';
             ti.maxChars = int(dxml.services.@LEN);
+            var mask:String = '';
+            for (var j:int = 0; j < ti.maxChars; j++)
+            {
+                mask = mask + "*";
+            }
+            ti.inputMask = mask;
             if (ti.maxChars > 80)
                 ti.width = 200;
             else if (int(dxml.display.TEXTINPUT.@length) < 10 && ti.maxChars < 10)
@@ -316,6 +328,7 @@ package com.yspay.YsControls
             if (sel_item == null)
                 return;
 
+            dict.source = _combo;
             dict.text = sel_item[dict.name];
 
             _text.dispatchEvent(new FlexEvent(FlexEvent.ENTER));

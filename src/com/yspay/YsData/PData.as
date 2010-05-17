@@ -6,6 +6,11 @@ package com.yspay.YsData
     import com.yspay.util.YsObjectProxy;
 
     import mx.events.PropertyChangeEvent;
+    import flash.utils.flash_proxy;
+    import mx.utils.object_proxy;
+
+    use namespace flash_proxy;
+    use namespace object_proxy;
 
     public dynamic class PData
     {

@@ -214,9 +214,17 @@ package com.yspay.YsControls
 
                 combo_data[index][dict_name] = P_data.data[dict_name][index];
             }
-//            selectedIndex = -1;
-//            validateNow();
-            //open();
+            selectedIndex = 0;
+            validateNow();
+
+            selectedIndex = -1;
+            validateNow();
+            open();
+
+            dropdown.selectedIndex = 0;
+            dropdown.validateNow();
+            dropdown.selectedIndex = -1;
+            dropdown.validateNow();
         }
 
         public function GetXml():XML
