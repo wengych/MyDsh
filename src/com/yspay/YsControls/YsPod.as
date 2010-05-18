@@ -24,7 +24,7 @@ package com.yspay.YsControls
         {
             super();
             _pool = Application.application._pool;
-            parent_container = parent;
+            _parent = parent;
             this.addEventListener(EventPodShowXml.EVENT_NAME, OnShow);
             //this.addEventListener(EventCacheComplete.EVENT_NAME, OnEventCacheComplete);
             //this.addEventListener(DragEvent.DRAG_ENTER, OnDragEnter);
@@ -42,13 +42,13 @@ package com.yspay.YsControls
         public var D_data:PData;
         public var P_cont:int; //xingj
         public var _M_data:MData = Application.application.M_data; //xingj
+        public var _parent:DisplayObjectContainer;
         public var main_bus:UserBus;
         protected var P_data:PData; // = new Object; //xingj
         protected var _bus_ctrl_arr:Array = new Array;
         // protected var _cache:EventCache;
 
         protected var _pool:Pool;
-        protected var parent_container:DisplayObjectContainer;
 
         // TODO: CallBack的职责由YsService负责
         // ServiceCall回调函数

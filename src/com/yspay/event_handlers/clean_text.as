@@ -4,7 +4,7 @@ package com.yspay.event_handlers
 {
     import com.yspay.YsData.PData;
     import com.yspay.YsControls.*;
-    import com.yspay.util.GetParentByType;
+    import com.yspay.util.UtilFunc;
 
     import flash.display.DisplayObjectContainer;
     import flash.events.Event;
@@ -35,7 +35,7 @@ package com.yspay.event_handlers
             }
 
         var target:DisplayObjectContainer = ui_comp;
-        var pod:YsPod = GetParentByType(ui_comp.parent, YsPod) as YsPod;
+        var pod:YsPod = UtilFunc.GetParentByType(ui_comp.parent, YsPod) as YsPod;
 
         while (target != null)
         {

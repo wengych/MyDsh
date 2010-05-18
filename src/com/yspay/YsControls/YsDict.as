@@ -1,8 +1,8 @@
 package com.yspay.YsControls
 {
     import com.yspay.YsData.PData;
+    import com.yspay.YsData.TargetList;
     import com.yspay.events.EventNextDict;
-    import com.yspay.util.GetParentByType;
     import com.yspay.util.UtilFunc;
 
     import flash.display.DisplayObjectContainer;
@@ -22,11 +22,11 @@ package com.yspay.YsControls
         protected var dict_object:Object;
         public var dict:ObjectProxy;
         public var D_data:PData = new PData;
+        public var _parent:DisplayObjectContainer;
 
         protected var _label:Label;
         protected var _text:YsTextInput;
         protected var _combo:YsComboBox;
-        protected var _parent:DisplayObjectContainer;
         protected var _xml:XML;
 
         public override function get name():String
@@ -54,8 +54,8 @@ package com.yspay.YsControls
             _parent = parent;
 
             dict_object = {'text': '',
-                    'To': 'P_data',
-                    'From': 'P_data',
+                    'To': new TargetList,
+                    'From': new TargetList,
                     'index': 0,
                     'name': '',
                     'source': null,
@@ -72,14 +72,16 @@ package com.yspay.YsControls
 
         public function Init(xml:XML):void
         {
-            var ys_pod:YsPod = GetParentByType(_parent, YsPod) as YsPod;
+            var ys_pod:YsPod = UtilFunc.GetParentByType(_parent, YsPod) as YsPod;
             var P_data:PData = ys_pod._M_data.TRAN[ys_pod.P_cont];
             _xml = UtilFunc.FullXml(xml);
 
-            if (_xml.@From != undefined)
-                dict.From = _xml.@From.toString();
-            if (_xml.@To != undefined)
-                dict.To = _xml.@To.toString();
+            // if (_xml.From != undefined)
+            dict.From.Init(this, _xml.From);
+
+            // if (_xml.To != undefined)
+            dict.To.Init(this, _xml.To);
+
             if (_xml.services.@NAME != undefined)
                 dict.name = _xml.services.@NAME.toString();
 
@@ -112,18 +114,22 @@ package com.yspay.YsControls
                 //       TextInputVisible="true" 
                 //       ComboBoxVisible="true" 
                 //       OutputOnly="true"
-                //       from="P_data"
-                //       from="D_data"
-                //       to="P_data"
-                //       to="D_data"
+                //       from="pod"
+                //       from="windows"
+                //       from="dict"
+                //       from="parent"
+                //       to="pod"
+                //       to="windows"
+                //       to="dict"
+                //       to="parent"
                 //>
 
                 // 初始化dict_object
 
-                if (dict.From == "P_data")
-                    P_data.AddToNotifiers(this, dict.name, _xml.services.@DEFAULT.toString());
-                else if (dict.From == "D_data")
-                    D_data.AddToNotifiers(this, dict.name, _xml.services.@DEFAULT.toString());
+                for each (var from_data:PData in dict.From.GetAllTarget())
+                {
+                    from_data.AddToNotifiers(this, dict.name, _xml.services.@DEFAULT.toString());
+                }
 
                 _parent.addChild(this);
 
@@ -174,30 +180,34 @@ package com.yspay.YsControls
                     }
                 }
 
+                if (_xml.BUTTON != undefined)
+                {
+                    for each (var btn_xml:XML in _xml.BUTTON)
+                    {
+                        var ys_btn:YsButton = new YsButton(this);
+                        ys_btn.Init(btn_xml);
+                    }
+                }
+
                     //??????        this.addEventListener(EventNextDict.EVENT_NAME, MoveToNextDict);
             }
         }
 
-        public function Notify(dict_name:String, index:int):void
+        public function Notify(p_data:PData, dict_name:String, index:int):void
         {
-            if (dict.From == 'D_data')
-                return;
             if (dict_name != dict.name)
             {
                 trace('error: ', '数据字典名不匹配');
                 return;
             }
 
-            var ys_pod:YsPod = GetParentByType(_parent, YsPod) as YsPod;
-            var P_data:PData = ys_pod._M_data.TRAN[ys_pod.P_cont];
-
-            if (index == -1 && P_data.data[dict_name].length > dict.index)
+            if (index == -1 && p_data.data[dict_name].length > dict.index)
             {
-                dict.text = P_data.data[dict_name][dict.index];
+                dict.text = p_data.data[dict_name][dict.index];
             }
             else if (index == dict.index)
             {
-                dict.text = P_data.data[dict_name][index];
+                dict.text = p_data.data[dict_name][index];
             }
         }
 
@@ -207,11 +217,12 @@ package com.yspay.YsControls
             trace("DictChange", event.property)
             if (event.property == 'text')
             {
-                var ys_pod:YsPod = GetParentByType(_parent, YsPod) as YsPod;
-                var P_data:PData = ys_pod._M_data.TRAN[ys_pod.P_cont];
-                if (dict.To == "P_data" && P_data.data[dict.name][dict.index] != dict.text)
-                    P_data.data[dict.name][dict.index] = dict.text;
-                //P_data._data[dict.name].refresh();
+                for each (var p_data:PData in dict.To.GetAllTarget())
+                {
+                    if (p_data.data[dict.name] == null)
+                        p_data.data[dict.name] = [''];
+                    p_data.data[dict.name][dict.index] = dict.text;
+                }
 
                 if (_text != null && _text != dict.source)
                     _text.text = dict.text;
@@ -250,7 +261,7 @@ package com.yspay.YsControls
 
         protected function MoveToNextDict(event:EventNextDict):void
         {
-            var title_wnd:YsTitleWindow = GetParentByType(_parent, YsTitleWindow) as YsTitleWindow;
+            var title_wnd:YsTitleWindow = UtilFunc.GetParentByType(_parent, YsTitleWindow) as YsTitleWindow;
             var dict_arr:Array = new Array;
 
             for each (var wnd_child:Object in title_wnd.getChildren())

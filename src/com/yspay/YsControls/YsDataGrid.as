@@ -2,7 +2,7 @@ package com.yspay.YsControls
 {
     import com.yspay.YsData.MData;
     import com.yspay.YsData.PData;
-    import com.yspay.util.GetParentByType;
+    import com.yspay.util.UtilFunc;
 
     import flash.display.DisplayObjectContainer;
 
@@ -15,7 +15,7 @@ package com.yspay.YsControls
     public class YsDataGrid extends DataGrid implements YsControl
     {
         protected var _xml:XML;
-        protected var _parent:DisplayObjectContainer;
+        public var _parent:DisplayObjectContainer;
         public var data_count:String;
         public var D_data:PData = new PData;
 
@@ -31,10 +31,8 @@ package com.yspay.YsControls
             setStyle('fontSize', '12');
         }
 
-        protected function Refresh(field_name:String):void
+        protected function RefreshColumn(P_data:PData, field_name:String):void
         {
-            var ys_pod:YsPod = GetParentByType(_parent, YsPod) as YsPod;
-            var P_data:PData = ys_pod._M_data.TRAN[ys_pod.P_cont];
             var j:int = int(dataProvider.length - 1);
             var i:int = 0;
 
@@ -88,7 +86,7 @@ package com.yspay.YsControls
             }
         }
 
-        public function Notify(dict_name:String, index:int):void
+        public function Notify(p_data:PData, dict_name:String, index:int):void
         {
             var has_key:Boolean = false;
             for each (var col:DataGridColumn in columns)
@@ -104,18 +102,18 @@ package com.yspay.YsControls
 
             if (index == -1)
             {
-                Refresh(dict_name);
+                RefreshColumn(p_data, dict_name);
             }
             else
             {
-                var ys_pod:YsPod = GetParentByType(_parent, YsPod) as YsPod;
-                var P_data:PData = ys_pod._M_data.TRAN[ys_pod.P_cont];
+                //var ys_pod:YsPod = UtilFunc.GetParentByType(_parent, YsPod) as YsPod;
+                //var P_data:PData = ys_pod._M_data.TRAN[ys_pod.P_cont];
                 if (dataProvider.length <= index)
                 {
                     dataProvider.addItem(new Object);
                 }
 
-                dataProvider[index][dict_name] = P_data.data[dict_name][index];
+                dataProvider[index][dict_name] = p_data.data[dict_name][index];
             }
         }
 
@@ -186,7 +184,7 @@ package com.yspay.YsControls
                  </datagrid>*/
                 //arr = P_data.data;
                 //arr = P_data.proxy;
-                var parent_pod:YsPod = GetParentByType(this.parent, YsPod) as YsPod;
+                var parent_pod:YsPod = UtilFunc.GetParentByType(this.parent, YsPod) as YsPod;
                 var P_data:PData = parent_pod._M_data.TRAN[parent_pod.P_cont];
                 var data_cont:int = P_data.datacont++;
                 data_count = "data" + data_cont.toString();

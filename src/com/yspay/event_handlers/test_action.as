@@ -9,10 +9,10 @@ package com.yspay.event_handlers
     import com.yspay.pool.DBTable;
     import com.yspay.pool.DBTableQueryEvent;
     import com.yspay.pool.Query;
-    import com.yspay.util.GetParentByType;
-    
+    import com.yspay.util.UtilFunc;
+
     import flash.events.Event;
-    
+
     import mx.core.Application;
     import mx.core.UIComponent;
 
@@ -45,10 +45,10 @@ package com.yspay.event_handlers
                 ui_comp.dispatchEvent(new_event);
             }
 
-        var ys_pod:YsPod = GetParentByType(ui_comp.parent, YsPod) as YsPod;
+        var ys_pod:YsPod = UtilFunc.GetParentByType(ui_comp.parent, YsPod) as YsPod;
 
-        var _xml:XML = action_info ;
-        
+        var _xml:XML = action_info;
+
         var new_dict_xml:XML = new XML('<DICT>DICT://GENDERListTest</DICT>');
 
         var info:DBTable = Application.application._pool.info;

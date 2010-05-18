@@ -4,7 +4,7 @@ package com.yspay.event_handlers
 {
     import com.yspay.YsControls.*;
     import com.yspay.util.DateUtil;
-    import com.yspay.util.GetParentByType;
+    import com.yspay.util.UtilFunc;
 
     import mx.controls.Alert;
     import mx.core.Container;
@@ -13,7 +13,7 @@ package com.yspay.event_handlers
 
     public function show_xml(ui_comp:UIComponent, source_event:Event, action_info:XML):void
     {
-        var ys_pod:YsPod = GetParentByType(ui_comp.parent, YsPod) as YsPod;
+        var ys_pod:YsPod = UtilFunc.GetParentByType(ui_comp.parent, YsPod) as YsPod;
         trace('show_xml');
         var xml:XML = <L TYPE="WINDOWS" NAME="IDNUMBER" VER="20091120999999" ISUSED="0" APPNAME="MapServer" CUSER="xing" MEMO=""></L>;
         var child_wnd:Container;

@@ -3,6 +3,7 @@ package com.yspay.YsControls
     import com.yspay.YsData.PData;
     import com.yspay.event_handlers.EventHandlerFactory;
     import com.yspay.events.StackEvent;
+    import com.yspay.util.UtilFunc;
 
     import flash.display.DisplayObjectContainer;
     import flash.events.Event;
@@ -12,7 +13,7 @@ package com.yspay.YsControls
         protected var action_name:String;
         protected var action_info:XML;
         protected var action_arg_list:Array;
-        protected var _parent:DisplayObjectContainer;
+        public var _parent:DisplayObjectContainer;
 
         public var D_data:PData = new PData;
 
@@ -25,7 +26,7 @@ package com.yspay.YsControls
         {
             super.Init(xml);
 
-            action_info = new XML(xml);
+            action_info = UtilFunc.FullXml(xml);
             action_name = xml.text().toString();
 
             (_parent as Object).action_list.push(this);

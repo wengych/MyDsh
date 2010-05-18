@@ -6,11 +6,54 @@ package com.yspay.util
     import mx.collections.ArrayCollection;
     import mx.controls.Alert;
     import mx.core.Application;
+    import flash.display.DisplayObjectContainer;
+    import mx.core.Container;
+    import flash.utils.getDefinitionByName;
 
     public class UtilFunc
     {
         public function UtilFunc()
         {
+        }
+
+        public static function GetParentByTypeName(container:Container, type_name:String):*
+        {
+            var parent:* = null;
+
+            var parent_type:Class = getDefinitionByName(type_name) as Class;
+            if (parent_type == null)
+                return parent;
+
+            while (container != null)
+            {
+                if (container is parent_type)
+                {
+                    parent = container as parent_type;
+                    break;
+                }
+
+                container = container.parent as Container;
+            }
+
+            return parent;
+        }
+
+        public static function GetParentByType(container:DisplayObjectContainer, parent_type:Class):*
+        {
+            var parent:* = null;
+
+            while (container != null)
+            {
+                if (container is parent_type)
+                {
+                    parent = container as parent_type;
+                    break;
+                }
+
+                container = container.parent as Container;
+            }
+
+            return parent;
         }
 
         public static function ArrayColAddEmptyItems(arr:ArrayCollection, count:int):void

@@ -1,7 +1,8 @@
 package com.yspay.YsControls
 {
     import com.yspay.YsData.PData;
-    import com.yspay.util.GetParentByType;
+    import com.yspay.YsData.TargetList;
+    import com.yspay.util.UtilFunc;
 
     import flash.display.DisplayObjectContainer;
 
@@ -11,7 +12,7 @@ package com.yspay.YsControls
     public class YsComboBox extends ComboBox implements YsControl
     {
 
-        protected var _parent:DisplayObjectContainer;
+        public var _parent:DisplayObjectContainer;
         protected var data_count:String;
         protected var combo_data:ArrayCollection = new ArrayCollection; //存放本作用域的数据
 
@@ -27,8 +28,8 @@ package com.yspay.YsControls
         public function Init(dxml:XML):void
         {
             var parent_dict:YsDict = _parent as YsDict;
-            var parent_wnd:YsTitleWindow = GetParentByType(_parent, YsTitleWindow) as YsTitleWindow;
-            var parent_pod:YsPod = GetParentByType(_parent, YsPod) as YsPod;
+            var parent_wnd:YsTitleWindow = UtilFunc.GetParentByType(_parent, YsTitleWindow) as YsTitleWindow;
+            var parent_pod:YsPod = UtilFunc.GetParentByType(_parent, YsPod) as YsPod;
 
             var P_data:PData = parent_pod.D_data;
             var W_data:PData = parent_wnd.D_data;
@@ -75,16 +76,21 @@ package com.yspay.YsControls
                     var en_name:String = x.text().toString();
                     en_name = en_name.substr(en_name.search("://") + 3);
 
-                    var D_data:PData;
-                    if (x.@From == undefined || x.@From == "pod")
-                        D_data = P_data;
-                    else if (x.@From == 'dict')
-                        D_data = parent_dict.D_data;
-                    else if (x.@From == 'windows')
-                        D_data = W_data;
+                    var from_list:TargetList = new TargetList;
+                    from_list.Init(this, x.From);
 
-                    D_data.AddToNotifiers(this, en_name);
-                    column_p_data[en_name] = D_data;
+                    column_p_data[en_name] = new Array;
+
+                    for each (var from_item:PData in from_list.GetAllTarget())
+                    {
+                        from_item.AddToNotifiers(this, en_name);
+                        column_p_data[en_name].push(from_item);
+                    }
+
+                    if (column_p_data[en_name].length == 0)
+                        continue;
+
+                    var D_data:PData = column_p_data[en_name][0];
 
                     combo_data.addItem(new Object); //选中项目？
 
@@ -131,12 +137,8 @@ package com.yspay.YsControls
         }
 
 
-        protected function YsRefresh(field_name:String):void
+        protected function RefreshColumn(P_data:PData, field_name:String):void
         {
-            if (!column_p_data.hasOwnProperty(field_name))
-                return;
-            // var P_data:PData = ys_pod._M_data.TRAN[ys_pod.P_cont];
-            var P_data:PData = column_p_data[field_name];
             var j:int;
             var i:int = 0;
 
@@ -182,7 +184,7 @@ package com.yspay.YsControls
             }
         }
 
-        public function Notify(dict_name:String, index:int):void
+        public function Notify(p_data:PData, dict_name:String, index:int):void
         {
             var has_key:Boolean = false;
             for (var item_key:String in combo_data[0])
@@ -201,18 +203,16 @@ package com.yspay.YsControls
 
             if (index == -1)
             {
-                YsRefresh(dict_name);
+                RefreshColumn(p_data, dict_name);
             }
             else
             {
-                var ys_pod:YsPod = GetParentByType(_parent, YsPod) as YsPod;
-                var P_data:PData = ys_pod._M_data.TRAN[ys_pod.P_cont];
                 if (dataProvider.length <= index)
                 {
                     dataProvider.addItem(new Object);
                 }
 
-                combo_data[index][dict_name] = P_data.data[dict_name][index];
+                combo_data[index][dict_name] = p_data.data[dict_name][index];
             }
             selectedIndex = 0;
             validateNow();
@@ -270,7 +270,7 @@ package com.yspay.YsControls
 //            dropdown.validateNow();
             dropdown.selectedIndex = -1;
             dropdown.verticalScrollPosition = 0;
-            open();
+            //open();
 
         }
 

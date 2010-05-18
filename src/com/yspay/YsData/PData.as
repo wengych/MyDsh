@@ -42,7 +42,7 @@ package com.yspay.YsData
                     return;
                 for each (dict_proxy_item in dict_proxy[dict_key])
                 {
-                    dict_proxy_item.Notify(dict_key, event.property);
+                    dict_proxy_item.Notify(this, dict_key, event.property);
                 }
             }
             else
@@ -50,7 +50,7 @@ package com.yspay.YsData
                 // 某一数组被更新
                 for each (dict_proxy_item in dict_proxy[event.property])
                 {
-                    dict_proxy_item.Notify(event.property, -1);
+                    dict_proxy_item.Notify(this, event.property, -1);
                 }
             }
         }

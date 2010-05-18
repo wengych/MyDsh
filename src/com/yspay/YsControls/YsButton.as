@@ -20,7 +20,7 @@ package com.yspay.YsControls
 
         }
         protected var _pool:Pool;
-        protected var _parent:DisplayObjectContainer;
+        public var _parent:DisplayObjectContainer;
         protected var _xml:XML;
 
         public var action_list:Array = new Array;

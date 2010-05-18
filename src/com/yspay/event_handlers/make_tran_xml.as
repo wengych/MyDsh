@@ -3,7 +3,7 @@ package com.yspay.event_handlers
 {
     import com.yspay.YsControls.*;
     import com.yspay.util.DateUtil;
-    import com.yspay.util.GetParentByType;
+    import com.yspay.util.UtilFunc;
 
     import mx.core.Container;
     import mx.core.UIComponent;
@@ -11,7 +11,7 @@ package com.yspay.event_handlers
 
     public function make_tran_xml(ui_comp:UIComponent, source_event:Event, action_info:XML):void
     {
-        var ys_pod:YsPod = GetParentByType(ui_comp.parent as Container, YsPod) as YsPod;
+        var ys_pod:YsPod = UtilFunc.GetParentByType(ui_comp.parent as Container, YsPod) as YsPod;
         var win_per:String = "WINDOWS://";
         trace('event_make_windows_xml');
         var xml:XML = <L TYPE="TRAN" NAME="IDNUMBER" VER="20091120999999" ISUSED="0" APPNAME="MapServer" CUSER="xing">

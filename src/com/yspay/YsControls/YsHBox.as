@@ -10,8 +10,8 @@ package com.yspay.YsControls
     public class YsHBox extends HBox implements YsControl
     {
         protected var _pool:Pool;
-        protected var _parent:DisplayObjectContainer;
         protected var _xml:XML;
+        public var _parent:DisplayObjectContainer;
         public var D_data:Object = new Object;
 
         public function YsHBox(parent:DisplayObjectContainer)

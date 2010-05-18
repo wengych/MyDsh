@@ -25,7 +25,7 @@ package com.yspay.YsControls
         private var func_helper:FunctionDelegate = new FunctionDelegate;
         private var dts_event_listener:Function;
 
-        protected var _parent:DisplayObjectContainer;
+        public var _parent:DisplayObjectContainer;
 
         public function YsTitleWindow(parent:DisplayObjectContainer)
         {

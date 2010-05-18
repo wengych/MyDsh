@@ -2,9 +2,9 @@ package com.yspay.YsControls
 {
     import com.yspay.*;
     import com.yspay.YsData.PData;
+    import com.yspay.YsData.TargetList;
     import com.yspay.events.StackEvent;
     import com.yspay.pool.*;
-    import com.yspay.util.GetParentByType;
     import com.yspay.util.UtilFunc;
 
     import flash.display.DisplayObjectContainer;
@@ -16,6 +16,8 @@ package com.yspay.YsControls
     public class YsService extends YsAction
     {
         protected var _pool:Pool;
+        protected var _to:TargetList = new TargetList;
+        protected var _from:TargetList = new TargetList;
         public var main_bus:UserBus;
 
         public function YsService(parent:DisplayObjectContainer)
@@ -28,26 +30,22 @@ package com.yspay.YsControls
         public override function Init(xml:XML):void
         {
             super.Init(xml);
+            _to.Init(this, xml.To);
+            _from.Init(this, xml.From);
         }
 
-        protected function AddDDataToBus(container:Object, var_name:String, bus:UserBus):Boolean
+        // 从_from中取得所有输入数据源，逐一查找对应key，找到后将值加入bus并返回true
+        // 未找到对应key则返回false
+        public function AddBusDataFromPData(bus:UserBus, key:String):Boolean
         {
-            for each (var child:Object in container.getChildren())
+
+            for each (var from_item:PData in _from.GetAllTarget())
             {
-                //if (child is TextArea || child is TextInput)
-                if (child is YsDict)
+                if (from_item.data.hasOwnProperty(key))
                 {
-                    if (child.dict.From == "D_data" && child.dict.To == "D_data") //纯私有数据
-                        if (child.dict.name == var_name)
-                        {
-                            bus.Add(child.dict.name, child.dict.text);
-                            return true;
-                        }
-                }
-                else if (child is Container)
-                {
-                    if (true == AddDDataToBus(child, var_name, bus))
-                        return true;
+                    for each (var data_item:*in from_item.data[key])
+                        bus.Add(key, data_item);
+                    return true;
                 }
             }
 
@@ -61,23 +59,9 @@ package com.yspay.YsControls
             var dict_search:String = 'dict://';
             var bus_in_name_args:Array = new Array;
             var bus_in_const_args:Array = new Array;
-            var full_xml:XML = UtilFunc.FullXml(action_info);
-            if (full_xml == null)
-            {
-                _parent.dispatchEvent(source_event);
-                return;
-            }
 
-            for each (var action_item:XML in action_info.elements())
-            {
-                full_xml.appendChild(action_item);
-                    //bus_in_const_args.push(action_item.text().toString());
-            }
-
-            var scall_name:String = full_xml.SendPKG.HEAD.@active;
-            var dict_list:XMLList = full_xml.SendPKG.BODY.DICT;
-            var ys_pod:YsPod = GetParentByType(_parent, YsPod) as YsPod;
-            var P_data:PData = ys_pod._M_data.TRAN[ys_pod.P_cont];
+            var scall_name:String = action_info.SendPKG.HEAD.@active;
+            var dict_list:XMLList = action_info.SendPKG.BODY.DICT;
 
             // 生成输入参数列表
             for each (var dict_xml:XML in dict_list)
@@ -94,7 +78,8 @@ package com.yspay.YsControls
             var bus:UserBus = new UserBus;
             bus.Add(ServiceCall.SCALL_NAME, scall_name);
 
-            for each (var const_item_xml:XML in full_xml["CONST"])
+            // 向bus中添加const项
+            for each (var const_item_xml:XML in action_info["CONST"])
             {
                 var const_item_key:String = const_item_xml.text().toString();
                 for each (var const_value_xml:XML in const_item_xml["VALUE"])
@@ -105,39 +90,22 @@ package com.yspay.YsControls
             }
 
             //var_name=dict名字
+            // 向bus中添加所有输入项
             for each (var var_name:String in bus_in_name_args) //从本地P_data中取得所需数据
             {
                 if (bus[var_name] != null)
                     continue;
 
-                //首先从Textinput中的data.From是D_data，data.To也是D_data 中取得数据   ??????????????????       
-                var O:Object = this._parent;
-
-                while (O != null)
-                {
-                    if (O is YsHBox || O is YsPod || O is YsTitleWindow)
-                        break;
-                    O = O.parent;
-                }
-
-                if (AddDDataToBus(O, var_name, bus) == true)
+                if (AddBusDataFromPData(bus, var_name) == true)
                     continue;
 
-                if (!P_data._data.hasOwnProperty(var_name)) //如果P_data中没有改数据，从MAIN BUS中取得
-                {
-                    var ys_var:YsVar = main_bus[var_name];
-                    bus.Add(var_name, ys_var);
-                }
-                else
-                {
-                    for (var i:int = 0; i < P_data._data.length; i++)
-                    {
-                        if (P_data._data[i][var_name] == null)
-                            break;
-                        bus.Add(var_name, P_data._data[i][var_name]);
-                    }
-                }
+                var ys_var:YsVar = main_bus[var_name];
+                if (ys_var == null)
+                    continue;
+
+                bus.Add(var_name, ys_var);
             }
+
             var ip:String = Application.application.GetServiceIp(scall_name);
             var port:String = Application.application.GetServicePort(scall_name);
 
@@ -167,7 +135,7 @@ package com.yspay.YsControls
                 var ys_ctrl:Object;
 
                 var parent_type:Class = To_Map[to_item_name];
-                ys_ctrl = GetParentByType(_parent, parent_type);
+                ys_ctrl = UtilFunc.GetParentByType(_parent, parent_type);
 
                 return GetDData(ys_ctrl);
             }
