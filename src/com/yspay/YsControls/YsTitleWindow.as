@@ -88,12 +88,15 @@ package com.yspay.YsControls
         {
 
             var P_data:Object = _M_data.TRAN[p_cont];
-            var ename:String = P_data.data[0]["__W_ENAME"];
-            var cname:String = P_data.data[0]["__W_CNAME"];
+            var ename:String = P_data.data["__W_ENAME"][0];
+            var cname:String = P_data.data["__W_CNAME"][0];
             var rtn:XML = <L KEY="windows" KEYNAME="windows" VALUE="windows IN">
                     <A KEY="TITLE" KEYNAME="Title" />
                 </L>;
-            var xml_line:XML = <L KEY="" KEYNAME="" VALUE="" />;
+            var xml_line:XML = <L KEY="" KEYNAME="" VALUE="" >
+                    <L KEY="From" KEYNAME="From" VALUE="pod"/>
+                    <L KEY="To" KEYNAME="To" VALUE="pod"/>
+                </L>;
             // var tb_xml_args:Object = {'TITLE': 'ENAME'};
             //  rtn.A.(@KEY == 'TITLE').@VALUE = (args_obj[tb_xml_args['TITLE']].text);
             rtn.@VALUE = ename;
@@ -105,7 +108,7 @@ package com.yspay.YsControls
                 if (child_xml == null)
                     continue;
 
-                var newxml:XML = xml_line;
+                var newxml:XML = new XML(xml_line);
                 newxml.@KEY = child_xml.name().toString();
                 if (child_xml.name().toString() == "DICT")
                     newxml.@KEYNAME = child_xml.display.LABEL.@text.toString();
@@ -115,6 +118,7 @@ package com.yspay.YsControls
                 newxml.@VALUE = child_xml.name().toString() + "://" + child_xml.text().toString();
 
                 rtn.appendChild(newxml);
+                newxml = null;
             }
             return rtn;
         /*

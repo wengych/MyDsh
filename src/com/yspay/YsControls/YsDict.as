@@ -15,6 +15,8 @@ package com.yspay.YsControls
     import mx.controls.dataGridClasses.DataGridColumn;
     import mx.events.FlexEvent;
     import mx.events.PropertyChangeEvent;
+    import mx.managers.FocusManager;
+    import mx.managers.IFocusManagerContainer;
     import mx.utils.ObjectProxy;
 
     public class YsDict extends HBox implements YsControl
@@ -23,6 +25,7 @@ package com.yspay.YsControls
         public var dict:ObjectProxy;
         public var D_data:PData = new PData;
         public var _parent:DisplayObjectContainer;
+        public var _focusManager:FocusManager = new FocusManager(this as IFocusManagerContainer);
 
         protected var _label:Label;
         protected var _text:YsTextInput;
@@ -76,11 +79,6 @@ package com.yspay.YsControls
             var P_data:PData = ys_pod._M_data.TRAN[ys_pod.P_cont];
             _xml = UtilFunc.FullXml(xml);
 
-            // if (_xml.From != undefined)
-            dict.From.Init(this, _xml.From);
-
-            // if (_xml.To != undefined)
-            dict.To.Init(this, _xml.To);
 
             if (_xml.services.@NAME != undefined)
                 dict.name = _xml.services.@NAME.toString();
@@ -124,6 +122,11 @@ package com.yspay.YsControls
                 //       to="parent"
                 //>
 
+                // if (_xml.From != undefined)
+                dict.From.Init(this, _xml.From);
+
+                // if (_xml.To != undefined)
+                dict.To.Init(this, _xml.To);
                 // 初始化dict_object
 
                 for each (var from_data:PData in dict.From.GetAllTarget())
@@ -226,7 +229,8 @@ package com.yspay.YsControls
 
                 if (_text != null && _text != dict.source)
                     _text.text = dict.text;
-                if (_combo != null) //&& _combo != dict.source)
+                //if (_combo != null && _combo != dict.source)
+                if (_combo != null) //无论是输入还是选单，都需要修改COMBOBOX，如果是选单，需要修改PROMPT
                     _combo.SetComboBox(dict.name, dict.text);
 
                 dict.source = null;
@@ -298,18 +302,22 @@ package com.yspay.YsControls
             var ti:YsTextInput = new YsTextInput;
             ti.text = '';
             ti.maxChars = int(dxml.services.@LEN);
+            if (ti.maxChars > 40)
+                ti.maxChars = 40;
             var mask:String = '';
             for (var j:int = 0; j < ti.maxChars; j++)
             {
                 mask = mask + "*";
             }
             ti.inputMask = mask;
-            if (ti.maxChars > 80)
-                ti.width = 200;
-            else if (int(dxml.display.TEXTINPUT.@length) < 10 && ti.maxChars < 10)
-                ti.width = int(dxml.display.TEXTINPUT.@length) * 12;
+            if (ti.maxChars > 40)
+                ti.width = 40;
             else
-                ti.width = 200;
+                ti.width = ti.maxChars;
+//            else if (int(dxml.display.TEXTINPUT.@length) < 10 && ti.maxChars < 10)
+//                ti.width = int(dxml.display.TEXTINPUT.@length) * 12;
+//            else
+//                ti.width = 80;
             //ti.width = (dxml.display.TEXTINPUT.@length * 50 > 200) ? 200 : (dxml.display.TEXTINPUT.@length) * 50;
             ti.displayAsPassword = (dxml.display.TEXTINPUT.@displayAsPassword == 0 ? false : true);
             ti.text = dict.text;

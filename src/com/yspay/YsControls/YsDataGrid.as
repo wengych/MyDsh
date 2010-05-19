@@ -137,11 +137,11 @@ package com.yspay.YsControls
                     editable = kids.toString();
                 if (kids.name() == "dragEnabled")
                     dragEnabled = kids.toString();
-                if (kids.name() == "append")
-                {
-                    data["attrib"] = new Object;
-                    data["attrib"][kids.name().toString()] = kids.toString();
-                }
+//                if (kids.name() == "append")
+//                {
+//                    data["attrib"] = new Object;
+//                    data["attrib"][kids.name().toString()] = kids.toString();
+//                }
                 if (kids.name() == "itemEditEnd")
                 {
                     if (kids.toString() == "true")
