@@ -25,10 +25,8 @@ package com.yspay.YsControls
         public override function Init(xml:XML):void
         {
             super.Init(xml);
-
             action_info = UtilFunc.FullXml(xml);
             action_name = xml.text().toString();
-
             (_parent as Object).action_list.push(this);
         }
 
@@ -41,7 +39,6 @@ package com.yspay.YsControls
         {
             var action_func:Function = EventHandlerFactory.get_handler(action_name);
             action_func(stack_event.target_component, stack_event.source, action_info);
-
             _parent.dispatchEvent(stack_event);
         }
     }
