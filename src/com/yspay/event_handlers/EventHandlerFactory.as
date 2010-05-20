@@ -11,7 +11,8 @@ package com.yspay.event_handlers
         {
             var event_arr:Array = [clean_text, make_windows_xml, make_tran_xml,
                                    bus2window, drag_drop, show_xml, refresh_pool,
-                                   drag_enter, test_action, dict_change, dict_check];
+                                   drag_enter, test_action, dict_change, dict_check,
+                                   make_datagrid_xml];
 
         /*
            clean_text(null, null);

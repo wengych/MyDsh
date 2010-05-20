@@ -2,6 +2,7 @@ package com.yspay.YsControls
 {
     import com.yspay.YsData.MData;
     import com.yspay.YsData.PData;
+    import com.yspay.events.EventDragToDatagrid;
     import com.yspay.util.UtilFunc;
 
     import flash.display.DisplayObjectContainer;
@@ -29,6 +30,7 @@ package com.yspay.YsControls
             percentHeight = 100;
             setStyle('borderStyle', 'solid');
             setStyle('fontSize', '12');
+            this.addEventListener(EventDragToDatagrid.EVENT_NAME, OnDragDrop);
         }
 
         protected function RefreshColumn(P_data:PData, field_name:String):void
@@ -122,6 +124,33 @@ package com.yspay.YsControls
             return _xml;
         }
 
+        public function GetSaveXml():XML
+        {
+            var rtn:XML = <L KEY="DATAGRID" KEYNAME="DATAGRID" VALUE=""/>;
+
+            var xml_line:XML = <L KEY="" KEYNAME="" VALUE="" >
+                    <L KEY="From" KEYNAME="From" VALUE="pod"/>
+                    <L KEY="To" KEYNAME="To" VALUE="pod"/>
+                </L>;
+
+            for each (var ctrl:XML in this.GetXml().children())
+            {
+                if (ctrl.name().toString() != "DICT")
+                    continue;
+
+                var newxml:XML = new XML(xml_line);
+
+                newxml.@KEY = ctrl.name().toString();
+                newxml.@KEYNAME = ctrl.name().toString();
+
+                newxml.@VALUE = ctrl.text().toString();
+
+                rtn.appendChild(newxml);
+                newxml = null;
+            }
+            return rtn;
+        }
+
         public function Init(xml:XML):void
         {
             var data_provider_arr:ArrayCollection;
@@ -194,7 +223,7 @@ package com.yspay.YsControls
                 trace(dataProvider.length);
             }
             else
-                return;
+                ;
 
             // 清空DataGridColumns
             columns = []; //.splice(0, columns.length);
@@ -210,6 +239,28 @@ package com.yspay.YsControls
                 child_ctrl = new YsMaps.ys_type_map[node_name](this);
                 child_ctrl.Init(child);
             }
+        }
+
+        private function OnDragDrop(event:EventDragToDatagrid):void
+        {
+            var obj:Object = event.drag_object;
+
+            if (!(obj.hasOwnProperty('TYPE') && obj.hasOwnProperty('NAME')))
+                return;
+
+            var child_type:String = obj.TYPE.toLowerCase();
+            if (!YsMaps.ys_type_map.hasOwnProperty(child_type))
+                return;
+
+            var child_xml:XML = new XML('<' + obj.TYPE + '/>');
+            child_xml.appendChild(obj.TYPE + '://' + obj.NAME);
+            child_xml.appendChild('<To>pod</To>');
+            child_xml.appendChild('<From>pod</From>');
+
+            var child:YsControl = new YsMaps.ys_type_map[child_type](this);
+            child.Init(child_xml);
+
+            this._xml.appendChild(child_xml);
         }
 
         private function itemEditEndHandler(e:DataGridEvent):void

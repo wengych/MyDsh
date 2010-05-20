@@ -4,10 +4,11 @@ package com.yspay.event_handlers
 {
     import com.yspay.EventCache;
     import com.yspay.YsControls.*;
+    import com.yspay.events.EventButtonAddAction;
     import com.yspay.events.EventCacheComplete;
+    import com.yspay.events.EventDragToDatagrid;
     import com.yspay.events.EventPodShowXml;
     import com.yspay.events.EventWindowShowXml;
-    import com.yspay.events.EventButtonAddAction;
     import com.yspay.pool.DBTable;
     import com.yspay.pool.DBTableQueryEvent;
     import com.yspay.pool.Query;
@@ -46,6 +47,8 @@ package com.yspay.event_handlers
                     new_event = new EventWindowShowXml(event.cache_xml);
                 else if (ui_comp is YsButton)
                     new_event = new EventButtonAddAction(event.cache_xml);
+                else if (ui_comp is YsDataGrid)
+                    new_event = new EventDragToDatagrid(drag_object);
 
                 ui_comp.dispatchEvent(new_event);
             }
@@ -57,11 +60,11 @@ package com.yspay.event_handlers
             return;
         }
 
-        var o:Object = (drag_event.dragInitiator as ListBase).selectedItem;
+        var drag_object:Object = (drag_event.dragInitiator as ListBase).selectedItem;
         var dts:DBTable = Application.application._pool.dts as DBTable;
 
-        dts.AddQuery(o.DTS, Query, o.DTS, ui_comp);
+        dts.AddQuery(drag_object.DTS, Query, drag_object.DTS, ui_comp);
         ui_comp.addEventListener(dts.select_event_name, get_dts_func);
-        dts.DoQuery(o.DTS);
+        dts.DoQuery(drag_object.DTS);
     }
 }
