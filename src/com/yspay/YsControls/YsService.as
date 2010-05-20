@@ -10,8 +10,8 @@ package com.yspay.YsControls
     import flash.display.DisplayObjectContainer;
     import flash.events.Event;
 
+    import mx.controls.Alert;
     import mx.core.Application;
-    import mx.core.Container;
 
     public class YsService extends YsAction
     {
@@ -159,9 +159,17 @@ package com.yspay.YsControls
                 return; //?错误处理！
 
             var rtn:int = bus.__DICT_USER_RTN[0].value;
+            var rtn_msg:String = bus.__DICT_USER_RTNMSG[0].value;
 
             if (rtn != 0)
+            {
+                Alert.show('服务调用出错: ' + action_name + '\n' +
+                           '     返回码: ' + rtn + '\n' +
+                           '   错误信息: ' + rtn_msg);
+
+                _parent.dispatchEvent(event);
                 return;
+            }
 
 
             // action_info

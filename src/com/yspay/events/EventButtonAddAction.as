@@ -10,7 +10,7 @@ package com.yspay.events
 
         public function EventButtonAddAction(_xml:XML, bubbles:Boolean=false, cancelable:Boolean=false)
         {
-            super(type, bubbles, cancelable);
+            super(EVENT_NAME, bubbles, cancelable);
             TraceEventName(EVENT_NAME);
 
             xml = _xml;

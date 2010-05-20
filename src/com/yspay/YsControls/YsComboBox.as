@@ -4,10 +4,12 @@ package com.yspay.YsControls
     import com.yspay.YsData.TargetList;
     import com.yspay.util.UtilFunc;
 
+    import flash.display.DisplayObject;
     import flash.display.DisplayObjectContainer;
 
     import mx.collections.ArrayCollection;
     import mx.controls.ComboBox;
+    import mx.managers.IFocusManagerComponent;
 
     public class YsComboBox extends ComboBox implements YsControl
     {
@@ -27,13 +29,10 @@ package com.yspay.YsControls
 
         public function Init(dxml:XML):void
         {
-            var parent_dict:YsDict = _parent as YsDict;
-            var parent_wnd:YsTitleWindow = UtilFunc.GetParentByType(_parent, YsTitleWindow) as YsTitleWindow;
+            //var parent_dict:YsDict = _parent as YsDict;
             var parent_pod:YsPod = UtilFunc.GetParentByType(_parent, YsPod) as YsPod;
 
             var P_data:PData = parent_pod.D_data;
-            var W_data:PData = parent_wnd.D_data;
-
             var data_cont:int = P_data.datacont++;
             var i:int = 0;
             var x:XML;
@@ -219,7 +218,13 @@ package com.yspay.YsControls
 
             selectedIndex = -1;
             validateNow();
-            open();
+
+            var focus_comp:IFocusManagerComponent = (_parent as YsDict)._focusManager.getFocus();
+            if (focus_comp != null && (_parent as YsDict).contains(focus_comp as DisplayObject))
+                open();
+
+            //(this._parent._text as TextInput).getFocus();
+            //open();
 
             dropdown.selectedIndex = 0;
             dropdown.validateNow();
@@ -242,7 +247,15 @@ package com.yspay.YsControls
                 {
                     return filterFunction(combo_item, key, value);
                 }
-
+            if (value == "")
+            {
+                prompt = "请选择...";
+                arr_col.filterFunction = null;
+                arr_col.refresh();
+                selectedIndex = -1;
+                open();
+                return;
+            }
             for each (var obj:Object in arr_col)
             {
                 if (obj[key] == value)
@@ -270,7 +283,7 @@ package com.yspay.YsControls
 //            dropdown.validateNow();
             dropdown.selectedIndex = -1;
             dropdown.verticalScrollPosition = 0;
-            //open();
+            open();
 
         }
 
