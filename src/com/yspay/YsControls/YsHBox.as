@@ -1,6 +1,7 @@
 package com.yspay.YsControls
 {
     import com.yspay.pool.Pool;
+    import com.yspay.YsData.PData;
 
     import flash.display.DisplayObjectContainer;
 
@@ -12,7 +13,7 @@ package com.yspay.YsControls
         protected var _pool:Pool;
         protected var _xml:XML;
         public var _parent:DisplayObjectContainer;
-        public var D_data:Object = new Object;
+        public var D_data:PData = new PData;
 
         public function YsHBox(parent:DisplayObjectContainer)
         {

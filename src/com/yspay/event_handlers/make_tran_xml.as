@@ -57,6 +57,7 @@ package com.yspay.event_handlers
             var new_button:YsButton = child_wnd as YsButton;
             if (new_button != null)
             {
+                xml.L.appendChild(new_button.GetXml());
                 continue;
             }
             var new_YsDataGrid:YsDataGrid = child_wnd as YsDataGrid;

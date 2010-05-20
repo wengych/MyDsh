@@ -10,7 +10,7 @@ package com.yspay.YsControls
 
     public class YsAction extends YsInvisible implements YsControl
     {
-        protected var action_name:String;
+        public var action_name:String;
         protected var action_info:XML;
         protected var action_arg_list:Array;
         public var _parent:DisplayObjectContainer;

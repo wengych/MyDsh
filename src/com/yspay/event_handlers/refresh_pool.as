@@ -20,7 +20,8 @@ package com.yspay.event_handlers
         var _pool:Pool = Application.application._pool;
 
         var info:DBTable = _pool.info as DBTable;
-        var arr:Array = ['DICT', 'WINDOWS', 'BUTTON', 'SERVICES', 'TRAN', 'ACTION', 'HBOX', 'EVENT'];
+        var arr:Array = ['DICT', 'WINDOWS', 'BUTTON', 'SERVICES', 'TRAN', 'ACTION', 'HBOX', 'EVENT', 'DATAGRID', 'SCRIPT'];
+
         ys_pod.addEventListener(info.select_event_name, ys_pod._YsInfoQueryComplete);
         CursorManager.setBusyCursor();
 

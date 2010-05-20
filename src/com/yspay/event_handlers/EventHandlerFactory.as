@@ -11,7 +11,8 @@ package com.yspay.event_handlers
         {
             var event_arr:Array = [clean_text, make_windows_xml, make_tran_xml,
                                    bus2window, drag_drop, show_xml, refresh_pool,
-                                   drag_enter, test_action, dict_change, dict_check];
+                                   drag_enter, test_action, dict_change, dict_check,
+                                   mouse_over, make_button_xml];
 
         /*
            clean_text(null, null);
@@ -26,10 +27,6 @@ package com.yspay.event_handlers
 
         public static function get_handler(handler_name:String):Function
         {
-            if (handler_name.search('event_') >= 0)
-            {
-                handler_name = handler_name.substr('event_'.length);
-            }
             var func_name:String = 'com.yspay.event_handlers.' + handler_name;
             var func:Function = getDefinitionByName(func_name) as Function;
 

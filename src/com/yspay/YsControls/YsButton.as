@@ -19,7 +19,6 @@ package com.yspay.YsControls
             _pool = Application.application._pool;
             _parent = parent;
 
-            this.addEventListener(MouseEvent.CLICK, OnBtnClick);
             this.addEventListener(StackEvent.EVENT_NAME, DoActions);
             this.addEventListener(EventButtonAddAction.EVENT_NAME, OnAddAction);
         }
@@ -40,32 +39,48 @@ package com.yspay.YsControls
             for each (var child:XML in _xml.elements())
             {
                 child_name = child.name().toString().toLowerCase();
-                // 查表未发现匹配类�
+                // 查表未发现匹配类�
                 if (!YsMaps.ys_type_map.hasOwnProperty(child_name))
                     return;
                 var child_ctrl:YsControl = new YsMaps.ys_type_map[child_name](this);
                 child_ctrl.Init(child);
             }
+
+            if (!this.hasEventListener(MouseEvent.CLICK))
+                this.addEventListener(MouseEvent.CLICK, OnBtnClick);
         }
 
         protected function OnAddAction(event:EventButtonAddAction):void
         {
-            var child_name:String = event.xml.name().toString().toLowerCase();
+            var info_obj:Object = event.info_object;
 
-            if (!YsMaps.ys_type_map.hasOwnProperty(child_name))
+            // dts_info没有TYPE或NAME字段则退出
+            if (!(info_obj.hasOwnProperty('TYPE') && info_obj.hasOwnProperty('NAME')))
+                return;
+            // map中未查到对应类型
+            if (!YsMaps.ys_type_map.hasOwnProperty(info_obj.TYPE))
                 return;
 
-            var child:YsControl = new YsMaps.ys_type_map[child_name](this);
-            child.Init(event.xml);
+            // 生成链接
+            var child_xml:XML = new XML('<' + info_obj.TYPE + ' />');
+            child_xml.appendChild(info_obj.TYPE + '://' + info_obj.NAME);
+            child_xml.appendChild('<To>pod</To>');
+            child_xml.appendChild('<From>pod</From>');
 
-            _xml.appendChild(event.xml);
+            // 创建子节点
+            var child:YsControl = new YsMaps.ys_type_map[info_obj.TYPE](this);
+            child.Init(child_xml);
+            _xml.appendChild(child_xml);
         }
 
         protected function DoActions(e:StackEvent):void
         {
             var curr_action:YsAction = e.NextEvent() as YsAction;
             if (curr_action != null)
+            {
+                this.label = action_list.length.toString();
                 curr_action.Do(e, e.source);
+            }
             else
             {
                 this.label = _xml.@LABEL;
