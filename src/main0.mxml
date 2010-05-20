@@ -226,8 +226,8 @@
                                                                         port: "16920"}, {ip: "192.168.88.84", port: "16920"}]);
             [Bindable]
             private var ver_prvd:ArrayCollection = new ArrayCollection(
-                        [{text:'开发版本'},
-                         {text:'生产版本', isused:'1'}]);
+                [{text: '开发版本'},
+                 {text: '生产版本', isused: '1'}]);
 
             private function comboboxClickHandler(event:Event):void
             {
@@ -428,9 +428,15 @@
                   y="189"
                   text="scall_ip"
                   width="43.5"/>
-        <mx:Label x="45" y="218"
-        	      text="版本"/>
-        <mx:ComboBox x="96" y="218" width="182.5" id="versionChoose"
-        	            dataProvider="{ver_prvd}" labelField="text"></mx:ComboBox>
+        <mx:Label x="45"
+                  y="218"
+                  text="版本"/>
+        <mx:ComboBox x="96"
+                     y="218"
+                     width="182.5"
+                     id="versionChoose"
+                     dataProvider="{ver_prvd}"
+                     labelField="text">
+        </mx:ComboBox>
     </mx:Panel>
 </mx:Application>

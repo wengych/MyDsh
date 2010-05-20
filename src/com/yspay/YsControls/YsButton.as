@@ -1,6 +1,7 @@
 package com.yspay.YsControls
 {
     import com.yspay.YsData.PData;
+    import com.yspay.events.EventButtonAddAction;
     import com.yspay.events.StackEvent;
     import com.yspay.pool.Pool;
 
@@ -18,6 +19,9 @@ package com.yspay.YsControls
             _pool = Application.application._pool;
             _parent = parent;
 
+            this.addEventListener(MouseEvent.CLICK, OnBtnClick);
+            this.addEventListener(StackEvent.EVENT_NAME, DoActions);
+            this.addEventListener(EventButtonAddAction.EVENT_NAME, OnAddAction);
         }
         protected var _pool:Pool;
         public var _parent:DisplayObjectContainer;
@@ -46,9 +50,19 @@ package com.yspay.YsControls
                 var child_ctrl:YsControl = new YsMaps.ys_type_map[child_name](this);
                 child_ctrl.Init(child);
             }
+        }
 
-            this.addEventListener(MouseEvent.CLICK, OnBtnClick);
-            this.addEventListener(StackEvent.EVENT_NAME, DoActions);
+        protected function OnAddAction(event:EventButtonAddAction):void
+        {
+            var child_name:String = event.xml.name().toString().toLowerCase();
+
+            if (!YsMaps.ys_type_map.hasOwnProperty(child_name))
+                return;
+
+            var child:YsControl = new YsMaps.ys_type_map[child_name](this);
+            child.Init(event.xml);
+
+            _xml.appendChild(event.xml);
         }
 
         protected function DoActions(e:StackEvent):void
