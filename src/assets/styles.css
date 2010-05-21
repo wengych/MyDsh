@@ -3,9 +3,8 @@ Application
    background-gradient-colors:	#ffffff, #ffffff;
    color: 						#000000;
    background-image: 			Embed(source="/assets/application_background.png",
-								scaleGridTop="94", scaleGridBottom="791", scaleGridLeft="350", scaleGridRight="690");
+								scaleGridTop="0", scaleGridBottom="791", scaleGridLeft="350", scaleGridRight="690");
 }
-
 .maximizeRestoreButton
 {
 	up-skin:        	Embed("/assets/maximize_up.png");
@@ -33,6 +32,9 @@ TabBar
 {
 	selected-tab-text-style-name: 	tabBarButtonSelected;
 	tab-style-name: 				tabBarButton;
+	padding-top:			0px;
+    tabHeight: 32px;
+    tabWidth: 80px;
 }
 
 .tabBarButton
@@ -47,10 +49,10 @@ TabBar
 	text-roll-over-color:	#858585;
 	font-size:				12px;
 	font-family:			Arial;
-	text-align:				left;
+	text-align:				center;
 	padding-left:			10px;
 	padding-right:			20px;
-	padding-top:			-4px;
+	padding-top:			0px;
 }
 
 .tabBarButtonSelected
@@ -61,7 +63,7 @@ TabBar
 
 Pod
 {
-	padding-top: 31px;
+	padding-top: 10px;
 	padding-left: 10px;
 	padding-right: 10px;
 	padding-bottom: 10px;
@@ -73,7 +75,7 @@ Pod
 	highlight-alphas: .9, 0;
 	background-color: #ffffff;
 	corner-radius: 6px;
-	header-height: 22px;
+	header-height: 20px;
 	shadow-direction: right;
 	drop-shadow-color: #999999;
 }
