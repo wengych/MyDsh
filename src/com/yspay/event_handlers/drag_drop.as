@@ -46,10 +46,9 @@ package com.yspay.event_handlers
                 else if (ui_comp is YsTitleWindow)
                     new_event = new EventWindowShowXml(event.cache_xml);
                 else if (ui_comp is YsButton)
-                    new_event = new EventButtonAddAction(event.cache_xml);
+                    new_event = new EventButtonAddAction(event.cache_xml, o);
                 else if (ui_comp is YsDataGrid)
                     new_event = new EventDragToDatagrid(drag_object);
-
                 ui_comp.dispatchEvent(new_event);
             }
 

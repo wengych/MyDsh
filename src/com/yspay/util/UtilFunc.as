@@ -92,7 +92,6 @@ package com.yspay.util
 
                 for each (var attr:XML in xml.attributes())
                 {
-                    trace(attr);
                     rtn.@[attr.name().toString()] = attr.toString();
                 }
                 for each (var val:XML in xml.elements())

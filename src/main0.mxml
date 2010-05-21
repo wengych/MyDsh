@@ -86,7 +86,7 @@
                           dts_insert_name, dts_insert_arg,
                           ip, port);
                 var info:DBTable = _pool.info as DBTable;
-                var arr:Array = ['DICT', 'WINDOWS', 'BUTTON', 'SERVICES', 'TRAN', 'ACTION', 'HBOX', 'EVENT'];
+                var arr:Array = ['DICT', 'WINDOWS', 'BUTTON', 'SERVICES', 'TRAN', 'ACTION', 'HBOX', 'EVENT', 'DATAGRID', 'SCRIPT'];
                 this.addEventListener(info.select_event_name, InfoQueryComplete);
                 CursorManager.setBusyCursor();
 

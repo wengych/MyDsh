@@ -158,8 +158,14 @@ package com.yspay.YsControls
             if (bus == null)
                 return; //?错误处理！
 
-            var rtn:int = bus.__DICT_USER_RTN[0].value;
-            var rtn_msg:String = bus.__DICT_USER_RTNMSG[0].value;
+            var rtn:int = -1;
+            var rtn_msg:String = '';
+            
+            if (bus.hasOwnProperty('__DICT_USER_RTN'))
+            {
+                rtn = bus.__DICT_USER_RTN[0].value;
+                rtn_msg = bus.__DICT_USER_RTNMSG[0].value;
+            }
 
             if (rtn != 0)
             {
