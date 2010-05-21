@@ -6,5 +6,7 @@ package com.yspay.YsControls
     {
         function Init(xml:XML):void;
         function GetXml():XML;
+        function GetSaveXml():XML;
+        function GetLinkString():String;
     }
 }

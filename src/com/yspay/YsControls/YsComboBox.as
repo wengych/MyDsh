@@ -299,5 +299,10 @@ package com.yspay.YsControls
             var rtn:Boolean = item[key].toString().indexOf(value) != -1;
             return rtn;
         }
+
+        public function GetSaveXml():XML
+        {
+            return null;
+        }
     }
 }

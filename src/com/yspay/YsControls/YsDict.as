@@ -14,6 +14,7 @@ package com.yspay.YsControls
     import mx.controls.TextInput;
     import mx.controls.dataGridClasses.DataGridColumn;
     import mx.events.FlexEvent;
+    import mx.events.ListEvent;
     import mx.events.PropertyChangeEvent;
     import mx.managers.FocusManager;
     import mx.managers.IFocusManagerContainer;
@@ -332,7 +333,8 @@ package com.yspay.YsControls
         {
             var coboBox:YsComboBox = new YsComboBox(this);
 
-            coboBox.addEventListener("close", ComboChange);
+            // coboBox.addEventListener("close", ComboChange);
+            coboBox.addEventListener(ListEvent.CHANGE, ComboChange);
 
             // TODO:ComboBox和YsPod.P_data.ctrls_proxy[index][name]
 

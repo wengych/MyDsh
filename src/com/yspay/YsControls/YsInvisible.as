@@ -20,5 +20,10 @@ package com.yspay.YsControls
             return null;
         }
 
+        public function GetSaveXml():XML
+        {
+            return null;
+        }
+
     }
 }

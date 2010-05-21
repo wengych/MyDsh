@@ -84,10 +84,39 @@ package com.yspay.YsControls
 
         }
 
+        public function GetSaveXml():XML
+        {
+            var rtn:XML = <L KEY="windows" KEYNAME="windows" VALUE="windows IN">
+                    <A KEY="TITLE" KEYNAME="Title" />
+                </L>;
+            var xml_line:XML = <L KEY="" KEYNAME="" VALUE="" >
+                    <L KEY="From" KEYNAME="From" VALUE="pod"/>
+                    <L KEY="To" KEYNAME="To" VALUE="pod"/>
+                </L>;
+
+            var P_data = from
+            var ename:String;
+            var cname:String;
+            if (P_data.data.__W_ENAME)
+
+                return rtn;
+        }
+
+        public function GetLinkString():String
+        {
+            var rtn:String = 'WINDOWS://';
+            rtn += _xml.text().toString();
+
+            return rtn;
+        }
+
         public function save_windows_xml(p_cont:int):XML
         {
-
             var P_data:Object = _M_data.TRAN[p_cont];
+
+            if (!P_data.data.hasOwnProperty('__W_ENAME') || !P_data.data.hasOwnProperty('__W_CNAME'))
+                return null;
+
             var ename:String = P_data.data["__W_ENAME"][0];
             var cname:String = P_data.data["__W_CNAME"][0];
             var rtn:XML = <L KEY="windows" KEYNAME="windows" VALUE="windows IN">
@@ -112,8 +141,12 @@ package com.yspay.YsControls
                 newxml.@KEY = child_xml.name().toString();
                 if (child_xml.name().toString() == "DICT")
                     newxml.@KEYNAME = child_xml.display.LABEL.@text.toString();
-                else
+                else if (child_xml.name().toString() == "BUTTON")
+                {
+                    var btn_xml:XML = ctrl.GetSaveXml();
                     newxml.@KEYNAME = child_xml.text().toString();
+
+                }
 
                 newxml.@VALUE = child_xml.name().toString() + "://" + child_xml.text().toString();
 

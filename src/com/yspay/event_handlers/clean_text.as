@@ -2,15 +2,13 @@
 
 package com.yspay.event_handlers
 {
-    import com.yspay.YsData.PData;
     import com.yspay.YsControls.*;
+    import com.yspay.YsData.PData;
     import com.yspay.util.UtilFunc;
 
     import flash.display.DisplayObjectContainer;
     import flash.events.Event;
 
-    import mx.controls.TextArea;
-    import mx.controls.TextInput;
     import mx.core.Container;
     import mx.core.UIComponent;
 
@@ -18,14 +16,15 @@ package com.yspay.event_handlers
     {
         var clean_all_child_text:Function = function(container:Container, ys_pod:YsPod):void
             {
-                for each (var child:*in container.getChildren())
+                for each (var child:* in container.getChildren())
                 {
-                    if (child is TextArea || child is TextInput)
+                    // if (child is TextArea || child is TextInput)
+                    if (child is YsDict)
                     {
-                        child.text = '';
+                        child.dict.text = '';
 
-                        var Pod_data:PData = ys_pod._M_data.TRAN[ys_pod.P_cont];
-                        Pod_data.data[child.data.index][child.data.name] = '';
+//                        var Pod_data:PData = ys_pod._M_data.TRAN[ys_pod.P_cont];
+//                        Pod_data.data[child.data.name][child.data.index] = '';
                     }
                     else if (child is Container)
                     {

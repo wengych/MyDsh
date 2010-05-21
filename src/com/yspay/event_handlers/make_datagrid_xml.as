@@ -15,6 +15,10 @@ package com.yspay.event_handlers
     {
         var ys_pod:YsPod = UtilFunc.GetParentByType(ui_comp.parent as Container, YsPod) as YsPod;
         var P_data:Object = ys_pod._M_data.TRAN[ys_pod.P_cont];
+
+        if (!P_data.data.hasOwnProperty('__W_ENAME') || !P_data.data.hasOwnProperty('__W_CNAME'))
+            return;
+
         var ename:Object = P_data._data["__W_ENAME"][0]; // wnd.main_bus.GetFirst("__W_ENAME");
         var cname:Object = P_data._data["__W_CNAME"][0]; // wnd.main_bus.GetFirst("__W_CNAME");
 
