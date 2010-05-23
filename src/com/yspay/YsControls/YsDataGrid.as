@@ -151,6 +151,11 @@ package com.yspay.YsControls
             return rtn;
         }
 
+        public function GetLinkXml():XML
+        {
+            return GetSaveXml();
+        }
+
         public function Init(xml:XML):void
         {
             var data_provider_arr:ArrayCollection;

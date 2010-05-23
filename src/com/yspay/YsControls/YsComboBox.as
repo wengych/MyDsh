@@ -26,6 +26,12 @@ package com.yspay.YsControls
             _parent = parent;
         }
 
+        public function GetLink():XML
+        {
+            var rtn:XML = new XML;
+
+            return rtn;
+        }
 
         public function Init(dxml:XML):void
         {
@@ -301,6 +307,11 @@ package com.yspay.YsControls
         }
 
         public function GetSaveXml():XML
+        {
+            return null;
+        }
+
+        public function GetLinkXml():XML
         {
             return null;
         }

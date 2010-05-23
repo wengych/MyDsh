@@ -74,6 +74,22 @@ package com.yspay.YsControls
             return _xml;
         }
 
+        public function GetSaveXml():XML
+        {
+            // TODO: 实现生成保存格式的xml的方法
+
+            return null;
+        }
+
+        public function GetLinkXml():XML
+        {
+            var rtn:XML = new XML('<DICT />');
+
+            rtn.appendChild('DICT://' + _xml.text().toString());
+
+            return rtn;
+        }
+
         public function Init(xml:XML):void
         {
             var ys_pod:YsPod = UtilFunc.GetParentByType(_parent, YsPod) as YsPod;

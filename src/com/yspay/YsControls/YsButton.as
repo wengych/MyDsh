@@ -8,7 +8,6 @@ package com.yspay.YsControls
     import flash.display.DisplayObjectContainer;
     import flash.events.MouseEvent;
 
-    import mx.controls.Button;
     import mx.core.Application;
 
     public class YsButton extends MyButton implements YsControl
@@ -141,6 +140,11 @@ package com.yspay.YsControls
                 newxml = null;
             }
             return rtn;
+        }
+
+        public function GetLinkXml():XML
+        {
+            return GetSaveXml();
         }
     }
 }

@@ -50,6 +50,15 @@ package com.yspay.YsControls
             return _xml;
         }
 
+        public function GetLinkXml():XML
+        {
+            var rtn:XML = new XML('<windows />');
+
+            rtn.appendChild('windows://' + _xml.text().toString());
+
+            return rtn;
+        }
+
         public function Init(xml:XML):void
         {
             _xml = xml;
@@ -94,19 +103,11 @@ package com.yspay.YsControls
                     <L KEY="To" KEYNAME="To" VALUE="pod"/>
                 </L>;
 
-            var P_data = from
+            //var P_data = from;
             var ename:String;
             var cname:String;
-            if (P_data.data.__W_ENAME)
-
-                return rtn;
-        }
-
-        public function GetLinkString():String
-        {
-            var rtn:String = 'WINDOWS://';
-            rtn += _xml.text().toString();
-
+            // if (P_data.data.__W_ENAME)
+            ;
             return rtn;
         }
 

@@ -25,5 +25,10 @@ package com.yspay.YsControls
             return null;
         }
 
+        public function GetLinkXml():XML
+        {
+            return null;
+        }
+
     }
 }

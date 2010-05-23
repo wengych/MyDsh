@@ -32,6 +32,11 @@ package com.yspay.YsControls
             return null;
         }
 
+        public function GetLinkXml():XML
+        {
+            return null;
+        }
+
         public function Init(xml:XML):void
         {
             _xml = xml;
