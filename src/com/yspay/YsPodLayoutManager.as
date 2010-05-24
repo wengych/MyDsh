@@ -123,7 +123,7 @@ package com.yspay
         {
             pod_xml = UtilFunc.FullXml(pod_xml);
             var pod:YsPod = new YsPod(container);
-            pod.title = pod_xml.@title;
+
             if (this.maximizedPod == null)
                 this.addItemAt(pod, this.items.length + 1, false);
             else
@@ -133,12 +133,7 @@ package com.yspay
             }
             pod.addEventListener(FlexEvent.UPDATE_COMPLETE, onCreationCompletePod);
 
-
-            for each (var child:XML in pod_xml.elements())
-            {
-                var evt:EventPodShowXml = new EventPodShowXml(child);
-                pod.dispatchEvent(evt);
-            }
+            pod.Init(pod_xml);
         }
 
         private function DoNewPod(setupContent:DisplayObject, title:String):void

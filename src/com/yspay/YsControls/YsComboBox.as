@@ -26,6 +26,12 @@ package com.yspay.YsControls
             _parent = parent;
         }
 
+        public function GetLink():XML
+        {
+            var rtn:XML = new XML;
+
+            return rtn;
+        }
 
         public function Init(dxml:XML):void
         {
@@ -298,6 +304,21 @@ package com.yspay.YsControls
             var val:String = item[key];
             var rtn:Boolean = item[key].toString().indexOf(value) != -1;
             return rtn;
+        }
+
+        public function GetSaveXml():XML
+        {
+            return null;
+        }
+
+        public function GetLinkXml():XML
+        {
+            return null;
+        }
+
+        public function get type():String
+        {
+            return '';
         }
     }
 }

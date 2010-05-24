@@ -87,7 +87,8 @@
                           dts_insert_name, dts_insert_arg,
                           ip, port);
                 var info:DBTable = _pool.info as DBTable;
-                var arr:Array = ['DICT', 'WINDOWS', 'BUTTON', 'SERVICES', 'TRAN', 'ACTION', 'HBOX', 'EVENT', 'DATAGRID', 'SCRIPT'];
+                var arr:Array = ['DICT', 'WINDOWS', 'BUTTON', 'SERVICES', 'TRAN',
+                                 'ACTION', 'HBOX', 'EVENT', 'DATAGRID', 'SCRIPT'];
                 this.addEventListener(info.select_event_name, InfoQueryComplete);
                 CursorManager.setBusyCursor();
 
@@ -227,8 +228,16 @@
                                                                           {name: "show_action"},
                                                                           {name: "new_tran"}]);
             [Bindable]
-            private var ipDP:ArrayCollection = new ArrayCollection([{ip: "192.168.0.77", port: "16920"}, {ip: "192.168.0.216", port: "16920"}, {ip: "124.207.197.178", port: "6802"}, {ip: "192.168.0.75",
-                                                                        port: "16920"}, {ip: "192.168.88.84", port: "16920"}]);
+            private var ipDP:ArrayCollection = new ArrayCollection([{ip: "192.168.0.77",
+                                                                        port: "16920"},
+                                                                    {ip: "192.168.0.216",
+                                                                        port: "16920"},
+                                                                    {ip: "124.207.197.178",
+                                                                        port: "6802"},
+                                                                    {ip: "192.168.0.75",
+                                                                        port: "16920"},
+                                                                    {ip: "192.168.88.84",
+                                                                        port: "16920"}]);
             [Bindable]
             private var ver_prvd:ArrayCollection = new ArrayCollection(
                 [{text: '开发版本'},

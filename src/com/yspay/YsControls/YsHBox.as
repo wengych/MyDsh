@@ -1,7 +1,7 @@
 package com.yspay.YsControls
 {
-    import com.yspay.pool.Pool;
     import com.yspay.YsData.PData;
+    import com.yspay.pool.Pool;
 
     import flash.display.DisplayObjectContainer;
 
@@ -25,6 +25,23 @@ package com.yspay.YsControls
         public function GetXml():XML
         {
             return _xml;
+        }
+
+        public function GetSaveXml():XML
+        {
+            if (_xml.@save == 'false')
+                return null;
+            return null;
+        }
+
+        public function GetLinkXml():XML
+        {
+            return null;
+        }
+
+        public function get type():String
+        {
+            return _xml.name().toString();
         }
 
         public function Init(xml:XML):void

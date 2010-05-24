@@ -126,12 +126,16 @@ package com.yspay.YsControls
 
         public function GetSaveXml():XML
         {
-            var rtn:XML = <L KEY="DATAGRID" KEYNAME="DATAGRID" VALUE=""/>;
+            var rtn:XML =
+                <L KEY="DATAGRID" KEYNAME="DATAGRID" VALUE=""/>
+                ;
 
-            var xml_line:XML = <L KEY="" KEYNAME="" VALUE="" >
+            var xml_line:XML =
+                <L KEY="" KEYNAME="" VALUE="">
                     <L KEY="From" KEYNAME="From" VALUE="pod"/>
                     <L KEY="To" KEYNAME="To" VALUE="pod"/>
-                </L>;
+                </L>
+                ;
 
             for each (var ctrl:XML in this.GetXml().children())
             {
@@ -149,6 +153,16 @@ package com.yspay.YsControls
                 newxml = null;
             }
             return rtn;
+        }
+
+        public function get type():String
+        {
+            return _xml.name().toString();
+        }
+
+        public function GetLinkXml():XML
+        {
+            return GetSaveXml();
         }
 
         public function Init(xml:XML):void

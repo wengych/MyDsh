@@ -8,10 +8,9 @@ package com.yspay.YsControls
     import flash.display.DisplayObjectContainer;
     import flash.events.MouseEvent;
 
-    import mx.controls.Button;
     import mx.core.Application;
 
-    public class YsButton extends Button implements YsControl
+    public class YsButton extends MyButton implements YsControl
     {
         public function YsButton(parent:DisplayObjectContainer)
         {
@@ -29,10 +28,16 @@ package com.yspay.YsControls
         public var action_list:Array = new Array;
         public var D_data:PData = new PData;
 
+        public function get type():String
+        {
+            return _xml.name().toString();
+        }
+
         public function Init(xml:XML):void
         {
             _parent.addChild(this);
             _xml = xml;
+
             this.setStyle('fontWeight', 'normal');
             this.label = _xml.@LABEL;
             var child_name:String;
@@ -46,29 +51,34 @@ package com.yspay.YsControls
                 child_ctrl.Init(child);
             }
 
+
             if (!this.hasEventListener(MouseEvent.CLICK))
+            {
                 this.addEventListener(MouseEvent.CLICK, OnBtnClick);
+            }
         }
 
         protected function OnAddAction(event:EventButtonAddAction):void
         {
-            var info_obj:Object = event.info_object;
+            var obj:Object = event.info_object;
 
             // dts_info没有TYPE或NAME字段则退出
-            if (!(info_obj.hasOwnProperty('TYPE') && info_obj.hasOwnProperty('NAME')))
+            if (!(obj.hasOwnProperty('TYPE') && obj.hasOwnProperty('NAME')))
                 return;
+
             // map中未查到对应类型
-            if (!YsMaps.ys_type_map.hasOwnProperty(info_obj.TYPE))
+            var child_type:String = obj.TYPE.toLowerCase();
+            if (!YsMaps.ys_type_map.hasOwnProperty(child_type))
                 return;
 
             // 生成链接
-            var child_xml:XML = new XML('<' + info_obj.TYPE + ' />');
-            child_xml.appendChild(info_obj.TYPE + '://' + info_obj.NAME);
-            child_xml.appendChild('<To>pod</To>');
-            child_xml.appendChild('<From>pod</From>');
+            var child_xml:XML = new XML('<' + obj.TYPE + ' />');
+            child_xml.appendChild(obj.TYPE + '://' + obj.NAME);
+            child_xml.appendChild(event.xml.From);
+            child_xml.appendChild(event.xml.To);
 
             // 创建子节点
-            var child:YsControl = new YsMaps.ys_type_map[info_obj.TYPE](this);
+            var child:YsControl = new YsMaps.ys_type_map[child_type](this);
             child.Init(child_xml);
             _xml.appendChild(child_xml);
         }
@@ -83,15 +93,15 @@ package com.yspay.YsControls
             }
             else
             {
-                this.label = _xml.@LABEL;
-                this.enabled = true;
+                this.btn.label = _xml.@LABEL;
+                this.btn.enabled = true;
             }
         }
 
         protected function OnBtnClick(event:MouseEvent):void
         {
-            this.label = action_list.length.toString();
-            this.enabled = false;
+            this.btn.label = action_list.length.toString();
+            this.btn.enabled = false;
 
             var stack_event:StackEvent = new StackEvent(action_list.concat());
             stack_event.target_component = this;
@@ -103,6 +113,40 @@ package com.yspay.YsControls
         public function GetXml():XML
         {
             return _xml;
+        }
+
+        public function GetSaveXml():XML
+        {
+            if (_xml.@save == "false")
+                return null;
+
+            var rtn:XML =
+                <L KEY="" KEYNAME="" VALUE=""/>
+                ;
+
+            var label:XML =
+                <A KEY="LABEL" KEYNAME="LABEL"/>
+                ;
+            label.@VALUE = this.label;
+            rtn.@VALUE = this.label;
+            rtn.@KEY = type;
+            rtn.@KEYNAME = type;
+            rtn.appendChild(label);
+
+
+            for each (var ctrl:YsControl in action_list)
+            {
+                var ctrl_xml:XML = ctrl.GetLinkXml();
+                if (ctrl_xml != null)
+                    rtn.appendChild(ctrl_xml);
+            }
+
+            return rtn;
+        }
+
+        public function GetLinkXml():XML
+        {
+            return GetSaveXml();
         }
     }
 }

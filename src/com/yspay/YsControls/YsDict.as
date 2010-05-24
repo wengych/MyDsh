@@ -14,6 +14,7 @@ package com.yspay.YsControls
     import mx.controls.TextInput;
     import mx.controls.dataGridClasses.DataGridColumn;
     import mx.events.FlexEvent;
+    import mx.events.ListEvent;
     import mx.events.PropertyChangeEvent;
     import mx.managers.FocusManager;
     import mx.managers.IFocusManagerContainer;
@@ -52,6 +53,11 @@ package com.yspay.YsControls
             dict.text = new_text;
         }
 
+        public function get type():String
+        {
+            return _xml.name().toString();
+        }
+
         public function YsDict(parent:DisplayObjectContainer)
         {
             _parent = parent;
@@ -71,6 +77,43 @@ package com.yspay.YsControls
         public function GetXml():XML
         {
             return _xml;
+        }
+
+        public function GetSaveXml():XML
+        {
+            if (_xml.@save == 'false')
+                return null;
+            // TODO: 实现生成保存格式的xml的方法
+
+            return null;
+        }
+
+        public function GetLinkXml():XML
+        {
+            if (_xml.@save == 'false')
+                return null;
+
+            var rtn:XML = new XML('<L KEY="" KEYNAME="" VALUE="" />');
+            rtn.@VALUE = type + '://' + _xml.text().toString();
+            rtn.@KEY = type;
+            rtn.@KEYNAME = type;
+
+            var target_name:String;
+            var target_node:XML;
+            for each (target_name in dict.From.GetAllTargetName())
+            {
+                target_node = new XML('<L KEY="From" KEYNAME="From" VALUE="" />');
+                target_node.@VALUE = target_name;
+                rtn.appendChild(target_node);
+            }
+            for each (target_name in dict.To.GetAllTargetName())
+            {
+                target_node = new XML('<L KEY="To" KEYNAME="To" VALUE="" />');
+                target_node.@VALUE = target_name;
+                rtn.appendChild(target_node);
+            }
+
+            return rtn;
         }
 
         public function Init(xml:XML):void
@@ -332,7 +375,8 @@ package com.yspay.YsControls
         {
             var coboBox:YsComboBox = new YsComboBox(this);
 
-            coboBox.addEventListener("close", ComboChange);
+            // coboBox.addEventListener("close", ComboChange);
+            coboBox.addEventListener(ListEvent.CHANGE, ComboChange);
 
             // TODO:ComboBox和YsPod.P_data.ctrls_proxy[index][name]
 

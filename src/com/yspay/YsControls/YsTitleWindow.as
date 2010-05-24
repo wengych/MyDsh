@@ -45,9 +45,148 @@ package com.yspay.YsControls
             this.addEventListener(EventWindowShowXml.EVENT_NAME, OnShow);
         }
 
+        public function set ename(str:String):void
+        {
+            //_xml.appendChild(str);
+            _xml.text()[0] = str;
+        }
+
+        public function set cname(str:String):void
+        {
+            _xml.@title = str;
+        }
+
+        public function get ename():String
+        {
+            return _xml.text().toString();
+        }
+
+        public function get cname():String
+        {
+            return _xml.@title.toString();
+        }
+
         public function GetXml():XML
         {
             return _xml;
+        }
+
+        public function get type():String
+        {
+            return _xml.name().toString();
+        }
+
+        public function GetLinkXml():XML
+        {
+            var rtn:XML =
+                <L KEY="" KEYNAME="" VALUE=""/>
+                ;
+
+            rtn.@KEY = type;
+            rtn.@KEYNAME = type;
+            rtn.@VALUE = type + '://' + _xml.text().toString();
+
+            return rtn;
+        }
+
+        public function GetSaveXml():XML
+        {
+            if (_xml.@save == 'false')
+                return null;
+
+            var rtn:XML =
+                <L KEY="windows" KEYNAME="windows" VALUE="windows IN"/>
+                ;
+            var title:XML =
+                <A KEY="TITLE" KEYNAME="Title"/>
+                ;
+
+            rtn.@VALUE = ename;
+            title.@VALUE = cname;
+            rtn.appendChild(title);
+
+            for each (var ctrl:YsControl in this.getChildren())
+            {
+                var child_xml:XML = ctrl.GetLinkXml();
+                if (child_xml != null)
+                    rtn.appendChild(child_xml);
+            }
+
+            return rtn;
+        }
+
+        public function save_windows_xml(p_cont:int):XML
+        {
+            var P_data:Object = _M_data.TRAN[p_cont];
+
+            if (!P_data.data.hasOwnProperty('__W_ENAME') || !P_data.data.hasOwnProperty('__W_CNAME'))
+                return null;
+
+            var ename:String = P_data.data["__W_ENAME"][0];
+            var cname:String = P_data.data["__W_CNAME"][0];
+            var rtn:XML =
+                <L KEY="windows" KEYNAME="windows" VALUE="windows IN">
+                    <A KEY="TITLE" KEYNAME="Title"/>
+                </L>
+                ;
+            var xml_line:XML =
+                <L KEY="" KEYNAME="" VALUE="">
+                    <L KEY="From" KEYNAME="From" VALUE="pod"/>
+                    <L KEY="To" KEYNAME="To" VALUE="pod"/>
+                </L>
+                ;
+            // var tb_xml_args:Object = {'TITLE': 'ENAME'};
+            //  rtn.A.(@KEY == 'TITLE').@VALUE = (args_obj[tb_xml_args['TITLE']].text);
+            rtn.@VALUE = ename;
+            rtn.A.(@KEY == 'TITLE').@VALUE = cname;
+            for each (var ctrl:YsControl in this.getChildren())
+            {
+
+                var child_xml:XML = ctrl.GetXml();
+                if (child_xml == null)
+                    continue;
+
+                var newxml:XML = new XML(xml_line);
+                newxml.@KEY = child_xml.name().toString();
+                if (child_xml.name().toString() == "DICT")
+                    newxml.@KEYNAME = child_xml.display.LABEL.@text.toString();
+                else if (child_xml.name().toString() == "BUTTON")
+                {
+                    var btn_xml:XML = ctrl.GetSaveXml();
+                    newxml.@KEYNAME = child_xml.text().toString();
+
+                }
+
+                newxml.@VALUE = child_xml.name().toString() + "://" + child_xml.text().toString();
+
+                rtn.appendChild(newxml);
+                newxml = null;
+            }
+            return rtn;
+        /*
+           for each (var form_item:MyFormItem in this.getChildren())
+           {
+           var form_xml:XML = form_item.descXml;
+           if (form_xml.name() == 'SERVICES')
+           {
+           var labelXml:XML = <A KEY="LABEL" KEYNAME="按钮信息"/>;
+           labelXml.@VALUE = form_xml.@LABEL;
+           var serviceXml:XML = <L KEY="SERVICES" KEYNAME="按钮服务"/>;
+           serviceXml.@VALUE = "SERVICES://" + form_xml.text();
+           var button_xml:XML = <L KEY="BUTTON" KEYNAME="按钮" VALUE=""/>;
+           button_xml.appendChild(labelXml);
+           button_xml.appendChild(serviceXml);
+           rtn.appendChild(button_xml);
+           }
+           else
+           {
+           var dict_xml:XML = <L/>;
+           dict_xml.@KEY = form_xml.localName();
+           dict_xml.@KEYNAME = form_item.label;
+           dict_xml.@VALUE = form_xml.localName() + "://" + form_xml.services.@NAME;
+           rtn.appendChild(dict_xml);
+           }
+         }*/
         }
 
         public function Init(xml:XML):void
@@ -84,67 +223,5 @@ package com.yspay.YsControls
 
         }
 
-        public function save_windows_xml(p_cont:int):XML
-        {
-
-            var P_data:Object = _M_data.TRAN[p_cont];
-            var ename:String = P_data.data["__W_ENAME"][0];
-            var cname:String = P_data.data["__W_CNAME"][0];
-            var rtn:XML = <L KEY="windows" KEYNAME="windows" VALUE="windows IN">
-                    <A KEY="TITLE" KEYNAME="Title" />
-                </L>;
-            var xml_line:XML = <L KEY="" KEYNAME="" VALUE="" >
-                    <L KEY="From" KEYNAME="From" VALUE="pod"/>
-                    <L KEY="To" KEYNAME="To" VALUE="pod"/>
-                </L>;
-            // var tb_xml_args:Object = {'TITLE': 'ENAME'};
-            //  rtn.A.(@KEY == 'TITLE').@VALUE = (args_obj[tb_xml_args['TITLE']].text);
-            rtn.@VALUE = ename;
-            rtn.A.(@KEY == 'TITLE').@VALUE = cname;
-            for each (var ctrl:YsControl in this.getChildren())
-            {
-
-                var child_xml:XML = ctrl.GetXml();
-                if (child_xml == null)
-                    continue;
-
-                var newxml:XML = new XML(xml_line);
-                newxml.@KEY = child_xml.name().toString();
-                if (child_xml.name().toString() == "DICT")
-                    newxml.@KEYNAME = child_xml.display.LABEL.@text.toString();
-                else
-                    newxml.@KEYNAME = child_xml.text().toString();
-
-                newxml.@VALUE = child_xml.name().toString() + "://" + child_xml.text().toString();
-
-                rtn.appendChild(newxml);
-                newxml = null;
-            }
-            return rtn;
-        /*
-           for each (var form_item:MyFormItem in this.getChildren())
-           {
-           var form_xml:XML = form_item.descXml;
-           if (form_xml.name() == 'SERVICES')
-           {
-           var labelXml:XML = <A KEY="LABEL" KEYNAME="按钮信息"/>;
-           labelXml.@VALUE = form_xml.@LABEL;
-           var serviceXml:XML = <L KEY="SERVICES" KEYNAME="按钮服务"/>;
-           serviceXml.@VALUE = "SERVICES://" + form_xml.text();
-           var button_xml:XML = <L KEY="BUTTON" KEYNAME="按钮" VALUE=""/>;
-           button_xml.appendChild(labelXml);
-           button_xml.appendChild(serviceXml);
-           rtn.appendChild(button_xml);
-           }
-           else
-           {
-           var dict_xml:XML = <L/>;
-           dict_xml.@KEY = form_xml.localName();
-           dict_xml.@KEYNAME = form_item.label;
-           dict_xml.@VALUE = form_xml.localName() + "://" + form_xml.services.@NAME;
-           rtn.appendChild(dict_xml);
-           }
-         }*/
-        }
     }
 }
