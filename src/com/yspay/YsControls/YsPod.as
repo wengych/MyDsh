@@ -9,16 +9,26 @@ package com.yspay.YsControls
     import com.yspay.events.EventPodShowXml;
     import com.yspay.pool.*;
     import com.yspay.util.UtilFunc;
+
     import flash.display.DisplayObjectContainer;
+
     import mx.core.Application;
-    import mx.events.PropertyChangeEvent;
     import mx.managers.CursorManager;
     import mx.utils.object_proxy;
 
     use namespace object_proxy;
 
-    public class YsPod extends Pod
+    public class YsPod extends Pod implements YsControl
     {
+        public var D_data:PData;
+        public var P_cont:int; //xingj
+        public var _M_data:MData = Application.application.M_data; //xingj
+        public var _parent:DisplayObjectContainer;
+        public var main_bus:UserBus;
+        protected var P_data:PData; // = new Object; //xingj
+        protected var _bus_ctrl_arr:Array = new Array;
+        protected var _pool:Pool;
+        protected var _xml:XML;
 
         public function YsPod(parent:DisplayObjectContainer)
         {
@@ -39,16 +49,6 @@ package com.yspay.YsControls
             D_data = P_data;
         }
 
-        public var D_data:PData;
-        public var P_cont:int; //xingj
-        public var _M_data:MData = Application.application.M_data; //xingj
-        public var _parent:DisplayObjectContainer;
-        public var main_bus:UserBus;
-        protected var P_data:PData; // = new Object; //xingj
-        protected var _bus_ctrl_arr:Array = new Array;
-        // protected var _cache:EventCache;
-
-        protected var _pool:Pool;
 
         // TODO: CallBack的职责由YsService负责
         // ServiceCall回调函数
@@ -176,6 +176,80 @@ package com.yspay.YsControls
             var child_xml:XML = UtilFunc.FullXml(event.xml);
             var child_ctrl:YsControl = new YsMaps.ys_type_map[node_name](this);
             child_ctrl.Init(child_xml);
+        }
+
+        public function Init(xml:XML):void
+        {
+            _xml = xml;
+            title = _xml.@title.toString();
+
+            for each (var child:XML in _xml.elements())
+            {
+                var evt:EventPodShowXml = new EventPodShowXml(child);
+                this.dispatchEvent(evt);
+            }
+        }
+
+        public function GetLinkXml():XML
+        {
+            trace('目前没有用到此处代码');
+            return null;
+        }
+
+        public function get type():String
+        {
+            return _xml.name().toString();
+        }
+
+        public function GetSaveXml():XML
+        {
+            if (_xml.@save == 'false')
+                return null;
+
+            var rtn:XML = new XML('<L KEY="pod" />');
+            rtn.@KEYNAME = cname;
+            rtn.@VALUE = ename;
+            var title:XML = new XML('<A KEY="title" KEYNAME="title" />');
+            title.@VALUE = cname;
+
+            rtn.appendChild(title);
+            /* <L KEY="pod" KEYNAME="tran" VALUE="">\
+               <A KEY="title" KEYNAME="title"/>\
+             </L>');*/
+
+            for each (var ctrl:YsControl in this.getChildren())
+            {
+                var ctrl_xml:XML = ctrl.GetLinkXml();
+                if (ctrl_xml != null)
+                    rtn.appendChild(ctrl_xml);
+            }
+            return rtn;
+        }
+
+        public function GetXml():XML
+        {
+            return _xml;
+        }
+
+        public function set ename(str:String):void
+        {
+            // _xml.appendChild(str);
+            _xml.text()[0] = str;
+        }
+
+        public function set cname(str:String):void
+        {
+            _xml.@title = str;
+        }
+
+        public function get ename():String
+        {
+            return _xml.text().toString();
+        }
+
+        public function get cname():String
+        {
+            return _xml.@title.toString();
         }
     }
 }

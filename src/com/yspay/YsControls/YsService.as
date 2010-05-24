@@ -2,7 +2,6 @@ package com.yspay.YsControls
 {
     import com.yspay.*;
     import com.yspay.YsData.PData;
-    import com.yspay.YsData.TargetList;
     import com.yspay.events.StackEvent;
     import com.yspay.pool.*;
     import com.yspay.util.UtilFunc;
@@ -16,8 +15,8 @@ package com.yspay.YsControls
     public class YsService extends YsAction
     {
         protected var _pool:Pool;
-        protected var _to:TargetList = new TargetList;
-        protected var _from:TargetList = new TargetList;
+        //protected var _to:TargetList = new TargetList;
+        //protected var _from:TargetList = new TargetList;
         public var main_bus:UserBus;
 
         public function YsService(parent:DisplayObjectContainer)
@@ -43,7 +42,7 @@ package com.yspay.YsControls
             {
                 if (from_item.data.hasOwnProperty(key))
                 {
-                    for each (var data_item:*in from_item.data[key])
+                    for each (var data_item:* in from_item.data[key])
                         bus.Add(key, data_item);
                     return true;
                 }
@@ -60,8 +59,8 @@ package com.yspay.YsControls
             var bus_in_name_args:Array = new Array;
             var bus_in_const_args:Array = new Array;
 
-            var scall_name:String = action_info.SendPKG.HEAD.@active;
-            var dict_list:XMLList = action_info.SendPKG.BODY.DICT;
+            var scall_name:String = _xml.SendPKG.HEAD.@active;
+            var dict_list:XMLList = _xml.SendPKG.BODY.DICT;
 
             // 生成输入参数列表
             for each (var dict_xml:XML in dict_list)
@@ -79,7 +78,7 @@ package com.yspay.YsControls
             bus.Add(ServiceCall.SCALL_NAME, scall_name);
 
             // 向bus中添加const项
-            for each (var const_item_xml:XML in action_info["CONST"])
+            for each (var const_item_xml:XML in _xml["CONST"])
             {
                 var const_item_key:String = const_item_xml.text().toString();
                 for each (var const_value_xml:XML in const_item_xml["VALUE"])
@@ -156,11 +155,16 @@ package com.yspay.YsControls
         protected function ServiceCallBack(bus:UserBus, event:StackEvent):void
         {
             if (bus == null)
-                return; //?错误处理！
+            {
+                Alert.show('服务调用出错,bus为空' + '\n' +
+                           '            服务名:' + action_name);
+                _parent.dispatchEvent(event);
+                return;
+            }
 
             var rtn:int = -1;
             var rtn_msg:String = '';
-            
+
             if (bus.hasOwnProperty('__DICT_USER_RTN'))
             {
                 rtn = bus.__DICT_USER_RTN[0].value;
@@ -189,7 +193,7 @@ package com.yspay.YsControls
             var to_arr:Array = new Array;
             var to_obj:Object = null;
 
-            for each (var action_to_item:XML in action_info.To)
+            for each (var action_to_item:XML in _xml.To)
             {
                 to_obj = GetToObject(action_to_item.text().toString());
                 if (to_obj != null)
@@ -202,7 +206,7 @@ package com.yspay.YsControls
                     to_obj.Update(bus);
                 else if (to_obj is UserBus)
                 {
-                    var bus_out_name_args:Array = GetBusArgs('dict://', action_info);
+                    var bus_out_name_args:Array = GetBusArgs('dict://', _xml);
                     for each (var var_name:String in bus_out_name_args)
                     {
                         if (bus[var_name] == null)

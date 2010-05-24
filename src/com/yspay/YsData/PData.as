@@ -145,7 +145,6 @@ package com.yspay.YsData
             }
         }
 
-        public var xml:XML;
         public var cont:int;
         public var datacont:int;
         public var ys_pod:YsPod;

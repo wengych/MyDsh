@@ -8,7 +8,8 @@ package com.yspay.YsData
     public class TargetList
     {
         protected var object:Object;
-        protected var arr:Array = new Array;
+        protected var target_arr:Array = new Array;
+        protected var target_name_arr:Array = new Array;
 
         public function TargetList()
         {
@@ -30,28 +31,38 @@ package com.yspay.YsData
                         dict = obj as YsDict;
                     else
                         dict = UtilFunc.GetParentByType(obj._parent, YsDict) as YsDict;
-                    arr.push(dict.D_data);
+
+                    target_arr.push(dict.D_data);
+                    target_name_arr.push('dict');
                 }
                 else if (item_text == 'windows')
                 {
                     var wnd:YsTitleWindow = UtilFunc.GetParentByType(obj._parent, YsTitleWindow) as YsTitleWindow;
-                    arr.push(wnd.D_data);
+                    target_arr.push(wnd.D_data);
+                    target_name_arr.push('windows');
                 }
                 else if (item_text == 'pod')
                 {
                     var pod:YsPod = UtilFunc.GetParentByType(obj._parent, YsPod) as YsPod;
-                    arr.push(pod.D_data);
+                    target_arr.push(pod.D_data);
+                    target_name_arr.push('pod');
                 }
                 else if (item_text == 'parent')
                 {
-                    arr.push(obj._parent.D_data);
+                    target_arr.push(obj._parent.D_data);
+                    target_name_arr.push('parent');
                 }
             }
         }
 
         public function GetAllTarget():Array
         {
-            return arr;
+            return target_arr;
+        }
+
+        public function GetAllTargetName():Array
+        {
+            return target_name_arr;
         }
 
     }

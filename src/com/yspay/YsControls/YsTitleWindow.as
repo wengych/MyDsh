@@ -45,69 +45,73 @@ package com.yspay.YsControls
             this.addEventListener(EventWindowShowXml.EVENT_NAME, OnShow);
         }
 
+        public function set ename(str:String):void
+        {
+            //_xml.appendChild(str);
+            _xml.text()[0] = str;
+        }
+
+        public function set cname(str:String):void
+        {
+            _xml.@title = str;
+        }
+
+        public function get ename():String
+        {
+            return _xml.text().toString();
+        }
+
+        public function get cname():String
+        {
+            return _xml.@title.toString();
+        }
+
         public function GetXml():XML
         {
             return _xml;
         }
 
+        public function get type():String
+        {
+            return _xml.name().toString();
+        }
+
         public function GetLinkXml():XML
         {
-            var rtn:XML = new XML('<windows />');
+            var rtn:XML =
+                <L KEY="" KEYNAME="" VALUE=""/>
+                ;
 
-            rtn.appendChild('windows://' + _xml.text().toString());
+            rtn.@KEY = type;
+            rtn.@KEYNAME = type;
+            rtn.@VALUE = type + '://' + _xml.text().toString();
 
             return rtn;
         }
 
-        public function Init(xml:XML):void
-        {
-            _xml = xml;
-            _parent.addChild(this);
-
-            this.title = xml.@TITLE;
-            this.name = xml.text().toString();
-
-            for each (var event_xml:XML in xml.elements())
-            {
-                var event:EventWindowShowXml = new EventWindowShowXml(event_xml);
-                this.dispatchEvent(event);
-            }
-        }
-
-        private function closeHandler(e:CloseEvent):void
-        {
-            this.parent.removeChild(this);
-        }
-
-        protected function OnShow(event:EventWindowShowXml):void
-        {
-            var xml:XML = event.xml;
-            var node_name:String = xml.name().toString().toLowerCase();
-
-            // 查表未发现匹配类型
-            if (!YsMaps.ys_type_map.hasOwnProperty(node_name))
-                return;
-
-            var child_ctrl:YsControl = new YsMaps.ys_type_map[node_name](this);
-            child_ctrl.Init(xml);
-
-        }
-
         public function GetSaveXml():XML
         {
-            var rtn:XML = <L KEY="windows" KEYNAME="windows" VALUE="windows IN">
-                    <A KEY="TITLE" KEYNAME="Title" />
-                </L>;
-            var xml_line:XML = <L KEY="" KEYNAME="" VALUE="" >
-                    <L KEY="From" KEYNAME="From" VALUE="pod"/>
-                    <L KEY="To" KEYNAME="To" VALUE="pod"/>
-                </L>;
+            if (_xml.@save == 'false')
+                return null;
 
-            //var P_data = from;
-            var ename:String;
-            var cname:String;
-            // if (P_data.data.__W_ENAME)
-            ;
+            var rtn:XML =
+                <L KEY="windows" KEYNAME="windows" VALUE="windows IN"/>
+                ;
+            var title:XML =
+                <A KEY="TITLE" KEYNAME="Title"/>
+                ;
+
+            rtn.@VALUE = ename;
+            title.@VALUE = cname;
+            rtn.appendChild(title);
+
+            for each (var ctrl:YsControl in this.getChildren())
+            {
+                var child_xml:XML = ctrl.GetLinkXml();
+                if (child_xml != null)
+                    rtn.appendChild(child_xml);
+            }
+
             return rtn;
         }
 
@@ -120,13 +124,17 @@ package com.yspay.YsControls
 
             var ename:String = P_data.data["__W_ENAME"][0];
             var cname:String = P_data.data["__W_CNAME"][0];
-            var rtn:XML = <L KEY="windows" KEYNAME="windows" VALUE="windows IN">
-                    <A KEY="TITLE" KEYNAME="Title" />
-                </L>;
-            var xml_line:XML = <L KEY="" KEYNAME="" VALUE="" >
+            var rtn:XML =
+                <L KEY="windows" KEYNAME="windows" VALUE="windows IN">
+                    <A KEY="TITLE" KEYNAME="Title"/>
+                </L>
+                ;
+            var xml_line:XML =
+                <L KEY="" KEYNAME="" VALUE="">
                     <L KEY="From" KEYNAME="From" VALUE="pod"/>
                     <L KEY="To" KEYNAME="To" VALUE="pod"/>
-                </L>;
+                </L>
+                ;
             // var tb_xml_args:Object = {'TITLE': 'ENAME'};
             //  rtn.A.(@KEY == 'TITLE').@VALUE = (args_obj[tb_xml_args['TITLE']].text);
             rtn.@VALUE = ename;
@@ -180,5 +188,40 @@ package com.yspay.YsControls
            }
          }*/
         }
+
+        public function Init(xml:XML):void
+        {
+            _xml = xml;
+            _parent.addChild(this);
+
+            this.title = xml.@TITLE;
+            this.name = xml.text().toString();
+
+            for each (var event_xml:XML in xml.elements())
+            {
+                var event:EventWindowShowXml = new EventWindowShowXml(event_xml);
+                this.dispatchEvent(event);
+            }
+        }
+
+        private function closeHandler(e:CloseEvent):void
+        {
+            this.parent.removeChild(this);
+        }
+
+        protected function OnShow(event:EventWindowShowXml):void
+        {
+            var xml:XML = event.xml;
+            var node_name:String = xml.name().toString().toLowerCase();
+
+            // 查表未发现匹配类型
+            if (!YsMaps.ys_type_map.hasOwnProperty(node_name))
+                return;
+
+            var child_ctrl:YsControl = new YsMaps.ys_type_map[node_name](this);
+            child_ctrl.Init(xml);
+
+        }
+
     }
 }

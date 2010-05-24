@@ -10,7 +10,7 @@ package com.yspay.YsControls
     public class YsDictPool extends YsInvisible implements YsControl
     {
         protected var _pool:Pool;
-        protected var _xml:XML;
+        //protected var _xml:XML;
         public var _parent:DisplayObjectContainer;
 
         public function YsDictPool(parent:DisplayObjectContainer)

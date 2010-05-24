@@ -8,5 +8,6 @@ package com.yspay.YsControls
         function GetXml():XML;
         function GetSaveXml():XML;
         function GetLinkXml():XML;
+        function get type():String;
     }
 }

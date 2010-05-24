@@ -315,5 +315,10 @@ package com.yspay.YsControls
         {
             return null;
         }
+
+        public function get type():String
+        {
+            return '';
+        }
     }
 }
