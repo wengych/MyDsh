@@ -52,16 +52,25 @@
             public var _pool:Pool;
             public var M_data:MData = new MData; //xingj
 
+            protected var pod_xml:XML = new XML('<?xml version="1.0" encoding="utf-8"?> \
+<views>\
+    <view id="view0">\
+    </view>\
+    <view id="view1">\
+    </view>\
+</views>');
+
             private function onEnterState():void
             {
                 // Load pods.xml, which contains the pod layout.
-                var httpService:HTTPService = new HTTPService();
+                /*var httpService:HTTPService = new HTTPService();
                 httpService.url = "data/pods.xml";
                 httpService.resultFormat = "e4x";
                 httpService.addEventListener(FaultEvent.FAULT, onFaultHttpService);
                 httpService.addEventListener(ResultEvent.RESULT, onResultHttpService);
-                httpService.send();
+                httpService.send();*/
                 initPoolAndM_data();
+                onResultHttpService();
             }
 
             public function initPoolAndM_data():void
@@ -142,9 +151,9 @@
                 Alert.show("Unable to load data/pods.xml.");
             }
 
-            private function onResultHttpService(e:ResultEvent):void
+            private function onResultHttpService():void//e:ResultEvent):void
             {
-                var viewXMLList:XMLList = e.result.view;
+                var viewXMLList:XMLList = pod_xml.view; //e.result.view;
                 var len:Number = viewXMLList.length();
                 for (var i:Number = 0; i < len; i++)
                 { // Create a canvas for each view node.
