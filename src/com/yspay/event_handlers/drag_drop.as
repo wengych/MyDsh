@@ -39,6 +39,19 @@ package com.yspay.event_handlers
             {
                 ui_comp.removeEventListener(EventCacheComplete.EVENT_NAME, cache_xml_func);
 
+                var obj:Object = drag_object;
+                if (drag_object.TYPE == 'DICT' || drag_object.TYPE == 'SERVICES')
+                {
+                    var to_pod:XML =
+                        <To>pod</To>
+                        ;
+                    var from_pod:XML =
+                        <From>pod</From>
+                        ;
+                    event.cache_xml.appendChild(to_pod);
+                    event.cache_xml.appendChild(from_pod);
+                }
+
                 // var event:Event = YsMaps.ys_event_map[];
                 var new_event:Event;
                 if (ui_comp is YsPod)
@@ -49,6 +62,7 @@ package com.yspay.event_handlers
                     new_event = new EventButtonAddAction(event.cache_xml, drag_object);
                 else if (ui_comp is YsDataGrid)
                     new_event = new EventDragToDatagrid(drag_object);
+
                 ui_comp.dispatchEvent(new_event);
             }
 

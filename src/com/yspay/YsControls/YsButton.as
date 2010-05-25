@@ -28,6 +28,11 @@ package com.yspay.YsControls
         public var action_list:Array = new Array;
         public var D_data:PData = new PData;
 
+        public function get type():String
+        {
+            return _xml.name().toString();
+        }
+
         public function Init(xml:XML):void
         {
             _parent.addChild(this);
@@ -69,8 +74,8 @@ package com.yspay.YsControls
             // 生成链接
             var child_xml:XML = new XML('<' + obj.TYPE + ' />');
             child_xml.appendChild(obj.TYPE + '://' + obj.NAME);
-            child_xml.appendChild('<To>pod</To>');
-            child_xml.appendChild('<From>pod</From>');
+            child_xml.appendChild(event.xml.From);
+            child_xml.appendChild(event.xml.To);
 
             // 创建子节点
             var child:YsControl = new YsMaps.ys_type_map[child_type](this);
@@ -112,33 +117,30 @@ package com.yspay.YsControls
 
         public function GetSaveXml():XML
         {
-            var rtn:XML = <L KEY="BUTTON" KEYNAME="BUTTON" VALUE="">
-                    <L KEY="LABEL" KEYNAME="LABEL" VALUE=""/>
-                </L>;
+            if (_xml.@save == "false")
+                return null;
 
-            var services_line:XML = <L KEY="" KEYNAME="" VALUE="" >
-                    <L KEY="From" KEYNAME="From" VALUE="pod"/>
-                    <L KEY="To" KEYNAME="To" VALUE="pod"/>
-                </L>;
-            var action_line:XML = <L KEY="" KEYNAME="" VALUE="" >
-                </L>;
+            var rtn:XML =
+                <L KEY="" KEYNAME="" VALUE=""/>
+                ;
 
-            rtn.L.@VALUE = this.label;
-            for each (var ctrl:XML in this.GetXml().children())
+            var label:XML =
+                <A KEY="LABEL" KEYNAME="LABEL"/>
+                ;
+            label.@VALUE = this.label;
+            rtn.@VALUE = this.label;
+            rtn.@KEY = type;
+            rtn.@KEYNAME = type;
+            rtn.appendChild(label);
+
+
+            for each (var ctrl:YsControl in action_list)
             {
-                if (ctrl.name().toString() != "DICT")
-                    continue;
-
-                var newxml:XML = new XML(services_line);
-
-                newxml.@KEY = ctrl.name().toString();
-                newxml.@KEYNAME = ctrl.name().toString();
-
-                newxml.@VALUE = ctrl.text().toString();
-
-                rtn.appendChild(newxml);
-                newxml = null;
+                var ctrl_xml:XML = ctrl.GetLinkXml();
+                if (ctrl_xml != null)
+                    rtn.appendChild(ctrl_xml);
             }
+
             return rtn;
         }
 

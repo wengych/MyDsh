@@ -29,12 +29,19 @@ package com.yspay.YsControls
 
         public function GetSaveXml():XML
         {
+            if (_xml.@save == 'false')
+                return null;
             return null;
         }
 
         public function GetLinkXml():XML
         {
             return null;
+        }
+
+        public function get type():String
+        {
+            return _xml.name().toString();
         }
 
         public function Init(xml:XML):void

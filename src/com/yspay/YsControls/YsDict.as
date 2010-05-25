@@ -53,6 +53,11 @@ package com.yspay.YsControls
             dict.text = new_text;
         }
 
+        public function get type():String
+        {
+            return _xml.name().toString();
+        }
+
         public function YsDict(parent:DisplayObjectContainer)
         {
             _parent = parent;
@@ -76,6 +81,8 @@ package com.yspay.YsControls
 
         public function GetSaveXml():XML
         {
+            if (_xml.@save == 'false')
+                return null;
             // TODO: 实现生成保存格式的xml的方法
 
             return null;
@@ -83,9 +90,28 @@ package com.yspay.YsControls
 
         public function GetLinkXml():XML
         {
-            var rtn:XML = new XML('<DICT />');
+            if (_xml.@save == 'false')
+                return null;
 
-            rtn.appendChild('DICT://' + _xml.text().toString());
+            var rtn:XML = new XML('<L KEY="" KEYNAME="" VALUE="" />');
+            rtn.@VALUE = type + '://' + _xml.text().toString();
+            rtn.@KEY = type;
+            rtn.@KEYNAME = type;
+
+            var target_name:String;
+            var target_node:XML;
+            for each (target_name in dict.From.GetAllTargetName())
+            {
+                target_node = new XML('<L KEY="From" KEYNAME="From" VALUE="" />');
+                target_node.@VALUE = target_name;
+                rtn.appendChild(target_node);
+            }
+            for each (target_name in dict.To.GetAllTargetName())
+            {
+                target_node = new XML('<L KEY="To" KEYNAME="To" VALUE="" />');
+                target_node.@VALUE = target_name;
+                rtn.appendChild(target_node);
+            }
 
             return rtn;
         }
