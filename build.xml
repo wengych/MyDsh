@@ -39,7 +39,7 @@
             keep-generated-actionscript="true"
             actionscript-file-encoding="utf-8"
             incremental="false"
-            debug="false"
+            debug="true"
             use-resource-bundle-metadata="true"
             optimize="true"
             locale="en_US">
