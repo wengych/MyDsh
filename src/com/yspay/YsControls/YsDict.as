@@ -19,6 +19,7 @@ package com.yspay.YsControls
     import mx.managers.FocusManager;
     import mx.managers.IFocusManagerContainer;
     import mx.utils.ObjectProxy;
+    import mx.controls.Alert;
 
     public class YsDict extends HBox implements YsControl
     {
@@ -122,6 +123,12 @@ package com.yspay.YsControls
             var P_data:PData = ys_pod._M_data.TRAN[ys_pod.P_cont];
             _xml = UtilFunc.FullXml(xml);
 
+            if (_xml == null)
+            {
+                // TODO 将此处代码扩展到所有类型中
+                Alert.show('无此dict' + xml.text().toString());
+                return;
+            }
 
             if (_xml.services.@NAME != undefined)
                 dict.name = _xml.services.@NAME.toString();

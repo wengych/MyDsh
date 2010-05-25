@@ -19,6 +19,7 @@ package com.yspay.event_handlers
         var func:Function = function()
             {
             // TODO 修正刷新pool的问题
+
             };
 
         var event_disp:EventDispatcher = new EventDispatcher;
