@@ -2,9 +2,9 @@
     <property   environment="env"/>
 
     <!-- Setup paths for build -->
-    <property name="src.loc" location="${basedir}/src" />
-    <property name="lib.loc"      location="${basedir}/libs" />
-    <property name="output.loc"   location="${basedir}/out" />
+    <property name="src.loc"       location="${basedir}/src" />
+    <property name="lib.loc"       location="${basedir}/libs" />
+    <property name="output.loc"    location="${basedir}/out" />
     <property name="build.useFlex" value="true" />
 
     <echo message="src.loc=${src.loc}" />
@@ -32,7 +32,7 @@
         <mkdir dir="${output.loc}" />
     </target>
 
-    <target name="MyDsh" depends="init">
+    <target name="compile" depends="init">
         <!-- Compile main0.mxml as a SWF -->
         <mxmlc file="${src.loc}/main0.mxml"
             output="${output.loc}/MyDsh.swf"
@@ -52,5 +52,8 @@
             <compiler.verbose-stacktraces>true</compiler.verbose-stacktraces>
             <compiler.headless-server>true</compiler.headless-server>
         </mxmlc>
+    </target>
+
+    <target name="MyDsh" depends="compile">
     </target>
 </project>
