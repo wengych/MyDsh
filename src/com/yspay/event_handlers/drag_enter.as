@@ -13,5 +13,7 @@ package com.yspay.event_handlers
             DragManager.acceptDragDrop(ui_comp);
         else if (ui_comp.parent == source_event.currentTarget)
             DragManager.acceptDragDrop(ui_comp.parent as UIComponent);
+        else if (ui_comp.parent.parent == source_event.currentTarget)
+            DragManager.acceptDragDrop(ui_comp.parent.parent as UIComponent);
     }
 }
