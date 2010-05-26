@@ -34,8 +34,8 @@ ant
 echo 'Build completed'
 
 echo ''
-echo "$HOME/sbin/sshpass -p g scp out/MyDsh.swf guest@192.168.0.77:$file_path$file_name"
-$HOME/sbin/sshpass -p g scp out/MyDsh.swf guest@192.168.0.77:$file_path$file_name
+echo "sshpass -p g scp out/MyDsh.swf guest@192.168.0.77:$file_path$file_name"
+sshpass -p g scp out/MyDsh.swf guest@192.168.0.77:$file_path$file_name
 echo 'end'
 
 echo 'rm -rf out'
