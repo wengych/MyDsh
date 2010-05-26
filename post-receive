@@ -12,15 +12,8 @@
 # rename the file to "post-receive".
 
 #. /usr/share/doc/git-core/contrib/hooks/post-receive-email
-echo $1
-echo $2
-echo $3
 
-echo $oldrev
-echo $newrev
-echo $refname
-
-date_mmdd=`date +%m%d%H`
+date_mmdd=`date +%m%d%H%M`
 file_name="MyDsh.$date_mmdd.swf"
 file_path="MapClient/autobuild/"
 
