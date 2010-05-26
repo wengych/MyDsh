@@ -93,14 +93,14 @@ package com.yspay.YsControls
             }
             else
             {
-                this.btn.label = _xml.@LABEL;
+                this.label = _xml.@LABEL;
                 this.btn.enabled = true;
             }
         }
 
         protected function OnBtnClick(event:MouseEvent):void
         {
-            this.btn.label = action_list.length.toString();
+            this.label = action_list.length.toString();
             this.btn.enabled = false;
 
             var stack_event:StackEvent = new StackEvent(action_list.concat());
