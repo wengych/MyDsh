@@ -38,7 +38,7 @@
             output="${output.loc}/MyDsh.swf"
             keep-generated-actionscript="true"
             actionscript-file-encoding="utf-8"
-            incremental="false"
+            incremental="true"
             debug="true"
             use-resource-bundle-metadata="true"
             optimize="false"
