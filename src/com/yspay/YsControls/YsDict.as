@@ -366,7 +366,7 @@ package com.yspay.YsControls
                 ti.width = int(dxml.display.TEXTINPUT.@length) * 12;
             else
                 ti.width = 80;
-            ti.width = (dxml.display.TEXTINPUT.@length * 50 > 200) ? 200 : (dxml.display.TEXTINPUT.@length) * 50;
+            ti.width = (dxml.display.TEXTINPUT.@length * 20 > 200) ? 200 : (dxml.display.TEXTINPUT.@length) * 50;
             ti.displayAsPassword = (dxml.display.TEXTINPUT.@displayAsPassword == 0 ? false : true);
             ti.text = dict.text;
 
