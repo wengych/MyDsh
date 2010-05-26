@@ -4,6 +4,7 @@ package com.yspay.YsControls
     import com.yspay.YsData.PData;
     import com.yspay.events.EventDragToDatagrid;
     import com.yspay.util.UtilFunc;
+    import com.yspay.util.YsClassFactory;
 
     import flash.display.DisplayObjectContainer;
 
@@ -242,18 +243,32 @@ package com.yspay.YsControls
             // 清空DataGridColumns
             columns = []; //.splice(0, columns.length);
 
+            // TODO:  用对象关注数据,对象再和datagrid的对应数据格关联
+            //        创建一行数据，就建立了对应的一组DICT对象
             for each (child in xml.elements())
             {
-                node_name = child.localName().toString().toLocaleLowerCase();
+                node_name = child.localName().toString().toLowerCase();
 
-                // 查表未发现匹配类型
-                if (!YsMaps.ys_type_map.hasOwnProperty(node_name))
-                    return;
+                if (YsMaps.ys_type_map.hasOwnProperty(node_name))
+                {
+                    child_ctrl = new YsDict(this);
+                    child_ctrl.Init(child);
+                }
+            }
 
-                child_ctrl = new YsMaps.ys_type_map[node_name](this);
-                child_ctrl.Init(child);
+            if (xml.attribute('editable').length() > 0 && xml.@editable == "true")
+            {
+                var dgc:DataGridColumn = new DataGridColumn;
+                dgc.itemRenderer = new YsClassFactory(YsButton, this, btn_xml);
+                columns = columns.concat(dgc);
             }
         }
+
+        protected var btn_xml:XML =
+            <BUTTON LABEL="删除">删除
+                <ACTION>data_grid_delete_line</ACTION>
+            </BUTTON>
+            ;
 
         private function OnDragDrop(event:EventDragToDatagrid):void
         {
