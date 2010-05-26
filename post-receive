@@ -36,8 +36,9 @@ echo 'Build completed'
 echo ''
 echo "sshpass -p g scp out/MyDsh.swf guest@192.168.0.77:$file_path$file_name"
 sshpass -p g scp out/MyDsh.swf guest@192.168.0.77:$file_path$file_name
-echo 'end'
 
-echo 'rm -rf out'
-rm -rf out
+echo 'sshpass -p g ssh guest@192.168.0.77 "ln -s -f $file_path$file_name MapClient/MyDsh.swf"'
+shpass -p g ssh guest@192.168.0.77 "ln -s -f $file_path$file_name MapClient/MyDsh.swf"
+
+echo 'end'
 
