@@ -41,7 +41,7 @@
             incremental="false"
             debug="true"
             use-resource-bundle-metadata="true"
-            optimize="true"
+            optimize="false"
             locale="en_US">
             <source-path path-element="${FLEX_HOME}/frameworks" />
             <source-path path-element="${src.loc}" />
