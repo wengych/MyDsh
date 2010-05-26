@@ -58,7 +58,8 @@ package com.yspay.YsData
                 else if (item_text == 'pool')
                 {
                     var pool:Pool = Application.application._pool;
-                    arr.push(pool.D_data);
+                    target_arr.push(pool.D_data);
+                    target_name_arr.push('pool');
                 }
             }
         }
