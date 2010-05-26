@@ -10,8 +10,8 @@
                 backgroundColor="#ffffff"
                 paddingLeft="45"
                 paddingRight="45"
-                paddingBottom="35"
-                paddingTop="34"
+                paddingBottom="0"
+                paddingTop="4"
                 xmlns:flexlib="http://code.google.com/p/flexlib/">
     <mx:Style source="/assets/styles.css"/>
     <mx:Script>
@@ -46,6 +46,7 @@
             import com.yspay.event_handlers.EventHandlerFactory;
             import com.yspay.*;
             import com.yspay.YsData.MData;
+            import com.yspay.YsData.PData;
 
             // Array of PodLayoutManagers
             private var podLayoutManagers:Array = new Array();
@@ -113,6 +114,7 @@
                     M_data.POOL.INFO[str] = new ArrayCollection;
                 }
                 _pool.Add('MAIN_BUS', UserBus);
+                _pool.Add('D_data', PData);
             }
 
             //event.query_name "dict window tran event hbox ........"
@@ -211,7 +213,7 @@
             </mx:AddChild>
             <mx:AddChild>
                 <mx:ViewStack id="viewStack"
-                              paddingTop="15"
+                              paddingTop="3"
                               width="100%"
                               height="100%"/>
             </mx:AddChild>
@@ -230,6 +232,9 @@
                                                                           {name: "show_tran"},
                                                                           {name: "new_window"},
                                                                           {name: "new_service"},
+                                                                          {name: "show_button"},
+                                                                          {name: "show_hbox"},
+                                                                          {name: "show_action"},
                                                                           {name: "new_tran"}]);
             [Bindable]
             private var ipDP:ArrayCollection = new ArrayCollection([{ip: "192.168.0.77",
