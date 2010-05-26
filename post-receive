@@ -1,0 +1,50 @@
+#!/bin/sh
+#
+# The "post-receive" script is run after receive-pack has accepted a pack
+# and the repository has been updated.  It is passed arguments in through
+# stdin in the form
+#  <oldrev> <newrev> <refname>
+#   $1       $2       $3
+# For example:
+#  aa453216d1b3e49e7f6f98441fa56946ddcd6a20 68f7abf4e6f922807889f52bc043ecd31b79f814 refs/heads/master
+#
+# see contrib/hooks/ for an sample, or uncomment the next line and
+# rename the file to "post-receive".
+
+#. /usr/share/doc/git-core/contrib/hooks/post-receive-email
+echo $1
+echo $2
+echo $3
+
+echo $oldrev
+echo $newrev
+echo $refname
+
+date_mmdd=`date +%m%d%H`
+file_name="MyDsh.$date_mmdd.swf"
+file_path="MapClient/autobuild/"
+
+echo "path= $file_path"
+echo "name= $file_name"
+
+. $HOME/.adobe.cfg
+echo "FLEX_HOME= $FLEX_HOME"
+cd ..
+pwd
+
+echo "reset codebase"
+env -i git reset --hard -q
+
+echo ''
+echo 'Start build'
+ant
+echo 'Build completed'
+
+echo ''
+echo "$HOME/sbin/sshpass -p g scp out/MyDsh.swf guest@192.168.0.77:$file_path$file_name"
+$HOME/sbin/sshpass -p g scp out/MyDsh.swf guest@192.168.0.77:$file_path$file_name
+echo 'end'
+
+echo 'rm -rf out'
+rm -rf out
+
