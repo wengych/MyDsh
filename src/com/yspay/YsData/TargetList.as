@@ -3,7 +3,10 @@ package com.yspay.YsData
     import com.yspay.YsControls.YsDict;
     import com.yspay.YsControls.YsPod;
     import com.yspay.YsControls.YsTitleWindow;
+    import com.yspay.pool.Pool;
     import com.yspay.util.UtilFunc;
+
+    import mx.core.Application;
 
     public class TargetList
     {
@@ -51,6 +54,11 @@ package com.yspay.YsData
                 {
                     target_arr.push(obj._parent.D_data);
                     target_name_arr.push('parent');
+                }
+                else if (item_text == 'pool')
+                {
+                    var pool:Pool = Application.application._pool;
+                    arr.push(pool.D_data);
                 }
             }
         }

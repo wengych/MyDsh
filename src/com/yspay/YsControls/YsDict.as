@@ -30,7 +30,7 @@ package com.yspay.YsControls
         public var _focusManager:FocusManager = new FocusManager(this as IFocusManagerContainer);
 
         protected var _label:Label;
-        protected var _text:YsTextInput;
+        protected var _text:TextInput;
         protected var _combo:YsComboBox;
         protected var _xml:XML;
 
@@ -347,9 +347,9 @@ package com.yspay.YsControls
                 dict_arr[curr_index]._combo.setFocus();
         }
 
-        private function CreateTextInput(dxml:XML):YsTextInput
+        private function CreateTextInput(dxml:XML):TextInput
         {
-            var ti:YsTextInput = new YsTextInput;
+            var ti:TextInput = new TextInput;
             ti.text = '';
             ti.maxChars = int(dxml.services.@LEN);
             if (ti.maxChars > 40)
@@ -359,16 +359,16 @@ package com.yspay.YsControls
             {
                 mask = mask + "*";
             }
-            ti.inputMask = mask;
+            //ti.inputMask = mask;
             if (ti.maxChars > 40)
                 ti.width = 40;
+            //else
+            //    ti.width = ti.maxChars;
+            else if (int(dxml.display.TEXTINPUT.@length) < 10 && ti.maxChars < 10)
+                ti.width = int(dxml.display.TEXTINPUT.@length) * 12;
             else
-                ti.width = ti.maxChars;
-//            else if (int(dxml.display.TEXTINPUT.@length) < 10 && ti.maxChars < 10)
-//                ti.width = int(dxml.display.TEXTINPUT.@length) * 12;
-//            else
-//                ti.width = 80;
-            //ti.width = (dxml.display.TEXTINPUT.@length * 50 > 200) ? 200 : (dxml.display.TEXTINPUT.@length) * 50;
+                ti.width = 80;
+            ti.width = (dxml.display.TEXTINPUT.@length * 50 > 200) ? 200 : (dxml.display.TEXTINPUT.@length) * 50;
             ti.displayAsPassword = (dxml.display.TEXTINPUT.@displayAsPassword == 0 ? false : true);
             ti.text = dict.text;
 
