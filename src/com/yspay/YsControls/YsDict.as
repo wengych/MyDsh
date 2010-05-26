@@ -360,10 +360,8 @@ package com.yspay.YsControls
                 mask = mask + "*";
             }
             //ti.inputMask = mask;
-            if (ti.maxChars > 40)
+            if (ti.maxChars < 40)
                 ti.width = 40;
-            //else
-            //    ti.width = ti.maxChars;
             else if (int(dxml.display.TEXTINPUT.@length) < 10 && ti.maxChars < 10)
                 ti.width = int(dxml.display.TEXTINPUT.@length) * 12;
             else
