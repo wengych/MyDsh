@@ -1,5 +1,6 @@
 package com.yspay.YsData
 {
+    import com.yspay.YsControls.YsDataGrid;
     import com.yspay.YsControls.YsDict;
     import com.yspay.YsControls.YsPod;
     import com.yspay.YsControls.YsTitleWindow;
@@ -36,31 +37,38 @@ package com.yspay.YsData
                         dict = UtilFunc.GetParentByType(obj._parent, YsDict) as YsDict;
 
                     target_arr.push(dict.D_data);
-                    target_name_arr.push('dict');
+                }
+                else if (item_text == 'datagrid')
+                {
+                    var dg:YsDataGrid;
+                    if (obj is YsDataGrid)
+                        dg = obj as YsDataGrid;
+                    else
+                        dg = UtilFunc.GetParentByType(obj._parent, YsDataGrid) as YsDataGrid;
+                    target_arr.push(dg.D_data);
                 }
                 else if (item_text == 'windows')
                 {
-                    var wnd:YsTitleWindow = UtilFunc.GetParentByType(obj._parent, YsTitleWindow) as YsTitleWindow;
+                    var wnd:YsTitleWindow = UtilFunc.GetParentByType(obj._parent,
+                                                                     YsTitleWindow) as YsTitleWindow;
                     target_arr.push(wnd.D_data);
-                    target_name_arr.push('windows');
                 }
                 else if (item_text == 'pod')
                 {
                     var pod:YsPod = UtilFunc.GetParentByType(obj._parent, YsPod) as YsPod;
                     target_arr.push(pod.D_data);
-                    target_name_arr.push('pod');
                 }
                 else if (item_text == 'parent')
                 {
                     target_arr.push(obj._parent.D_data);
-                    target_name_arr.push('parent');
                 }
                 else if (item_text == 'pool')
                 {
                     var pool:Pool = Application.application._pool;
                     target_arr.push(pool.D_data);
-                    target_name_arr.push('pool');
                 }
+
+                target_name_arr.push(item_text);
             }
         }
 

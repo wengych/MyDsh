@@ -38,7 +38,8 @@ package com.yspay.util
             return parent;
         }
 
-        public static function GetParentByType(container:DisplayObjectContainer, parent_type:Class):*
+        public static function GetParentByType(container:DisplayObjectContainer,
+                                               parent_type:Class):*
         {
             var parent:* = null;
 
@@ -50,7 +51,7 @@ package com.yspay.util
                     break;
                 }
 
-                container = container.parent as Container;
+                container = container.parent;
             }
 
             return parent;
@@ -82,7 +83,8 @@ package com.yspay.util
                 var obj_key:String = url.substr(idx + search_str.length);
                 if (pool.info[query_key][obj_key] == undefined)
                 {
-                    Alert.show('error！');
+                    // Alert.show('error！');
+                    Alert.show('无dts项,type[' + query_key + '], key[' + obj_key + ']');
                     return null;
                 }
                 var dts_no:String = pool.info[query_key][obj_key].Get().DTS;
