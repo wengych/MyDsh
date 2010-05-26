@@ -242,16 +242,6 @@ package com.yspay.YsControls
 
                 // TODO:  用对象关注数据,对象再和datagrid的对应数据格关联
                 //        创建一行数据，就建立了对应的一组DICT对象
-                for each (child in xml.elements())
-                {
-                    node_name = child.localName().toString().toLowerCase();
-
-                    if (YsMaps.ys_type_map.hasOwnProperty(node_name))
-                    {
-                        child_ctrl = new YsDict(this);
-                        child_ctrl.Init(child);
-                    }
-                }
 
                 if (xml.attribute('editable').length() > 0 && xml.@editable == "true")
                 {
@@ -260,6 +250,17 @@ package com.yspay.YsControls
                     dgc.editable = false;
 
                     columns = columns.concat(dgc);
+                }
+            }
+
+            for each (child in xml.elements())
+            {
+                node_name = child.localName().toString().toLowerCase();
+
+                if (YsMaps.ys_type_map.hasOwnProperty(node_name))
+                {
+                    child_ctrl = new YsMaps.ys_type_map[node_name](this);
+                    child_ctrl.Init(child);
                 }
             }
         }
