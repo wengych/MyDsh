@@ -2,9 +2,9 @@
 package com.yspay.event_handlers
 {
     import com.yspay.YsControls.*;
-    
+
     import flash.events.Event;
-    
+
     import mx.controls.Alert;
     import mx.controls.dataGridClasses.DataGridColumn;
     import mx.controls.listClasses.ListBase;
@@ -34,29 +34,29 @@ package com.yspay.event_handlers
         {
             if (!drag_object.hasOwnProperty(dgc.dataField))
             {
-                Alert.show('drag_obj_to_dg: 无对应属性' + dgc.dataField);
+                Alert.show('drag_object_to_datagrid: 无对应属性' + dgc.dataField.toString());
                 return;
             }
             new_item[dgc.dataField] = drag_object[dgc.dataField];
         }
-        
+
         for each (var item:Object in data_grid.dataProvider)
         {
-        	var item_exist:Boolean = true;
-        	for (var key:String in new_item)
-        	{
-        		if (new_item[key] != item[key])
-        		{
-        		  item_exist = false;
-        		  break;
-        		}
-        	}
-        	
-        	if (item_exist)
-        	{
-        		Alert.show('对象已存在!');
-        		return;
-        	}
+            var item_exist:Boolean = true;
+            for (var key:String in new_item)
+            {
+                if (new_item[key] != item[key])
+                {
+                    item_exist = false;
+                    break;
+                }
+            }
+
+            if (item_exist)
+            {
+                Alert.show('对象已存在!');
+                return;
+            }
         }
 
         data_grid.dataProvider.addChild(new_item);

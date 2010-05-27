@@ -257,7 +257,15 @@ package com.yspay.YsControls
             {
                 node_name = child.localName().toString().toLowerCase();
 
-                if (YsMaps.ys_type_map.hasOwnProperty(node_name))
+                if (node_name == 'button')
+                {
+                    var dgc:DataGridColumn = new DataGridColumn;
+                    dgc.itemRenderer = new YsClassFactory(YsButton, this, child);
+                    dgc.editable = false;
+
+                    columns = columns.concat(dgc);
+                }
+                else if (YsMaps.ys_type_map.hasOwnProperty(node_name))
                 {
                     child_ctrl = new YsMaps.ys_type_map[node_name](this);
                     child_ctrl.Init(child);
