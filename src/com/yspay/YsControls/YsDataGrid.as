@@ -1,4 +1,4 @@
-package com.yspay.YsControls
+﻿package com.yspay.YsControls
 {
     import com.yspay.YsData.MData;
     import com.yspay.YsData.PData;
@@ -193,6 +193,9 @@ package com.yspay.YsControls
                 }
             }
 
+            // 清空DataGridColumns
+            columns = []; //.splice(0, columns.length);
+
             if (xml.POOL != undefined)
             {
                 var ddxml:XMLList = xml.POOL;
@@ -236,9 +239,6 @@ package com.yspay.YsControls
                 //xingj ..
                 P_data[data_count] = dataProvider;
                 trace(dataProvider.length);
-
-                // 清空DataGridColumns
-                columns = []; //.splice(0, columns.length);
 
                 // TODO:  用对象关注数据,对象再和datagrid的对应数据格关联
                 //        创建一行数据，就建立了对应的一组DICT对象
