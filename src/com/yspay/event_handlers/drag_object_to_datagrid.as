@@ -29,10 +29,12 @@ package com.yspay.event_handlers
 
         var drag_object:Object = (drag_event.dragInitiator as ListBase).selectedItem;
 
-        var new_item:Object;
+        var new_item:Object = new Object;
         for each (var dgc:DataGridColumn in data_grid.columns)
         {
-            if (!drag_object.hasOwnProperty(dgc.dataField))
+            if (dgc.dataField == null)
+                continue;
+            if (!(drag_object.hasOwnProperty(dgc.dataField)))
             {
                 Alert.show('drag_object_to_datagrid: 无对应属性' + dgc.dataField.toString());
                 return;
@@ -59,7 +61,7 @@ package com.yspay.event_handlers
             }
         }
 
-        data_grid.dataProvider.addChild(new_item);
+        data_grid.dataProvider.addItem(new_item);
     }
 }
 
