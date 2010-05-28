@@ -6,6 +6,8 @@ package com.yspay
     import flash.events.EventDispatcher;
     import flash.events.IEventDispatcher;
 
+    import mx.controls.Alert;
+
     public class EventCache extends EventDispatcher
     {
         protected var _pool:Pool;
@@ -85,13 +87,16 @@ package com.yspay
 
             if (xml.children().length() == 0)
             {
-                QueryLink(xml.toString());
-                rtn = 1;
+                rtn = QueryLink(xml.toString());
 
                 return rtn;
             }
+            
+            if (xml.text().length() > 0 &&
+                IsLink(xml.text()[0].toString()))
+                rtn += QueryLink(xml.text()[0].toString());
 
-            for each (var xml_child:XML in xml.children())
+            for each (var xml_child:XML in xml.elements())
             {
                 if (xml_child.children().length() > 0)
                 {
@@ -132,6 +137,13 @@ package com.yspay
 
         public function QueryCallBack(event:DBTableQueryEvent):void
         {
+            if (event.error_event != null)
+            {
+                Alert.show(event.error_event.toString());
+            }
+
+            if (count == 0)
+                return;
             // var xml:XML = event.target.xml as XML;
             var dts:DBTable = _pool.dts as DBTable;
             var xml:XML = new XML(dts[event.query_name].__DICT_XML);

@@ -71,8 +71,8 @@ package com.yspay.YsData
                 if (!_data.hasOwnProperty(name))
                 {
                     _data[name] = new Array;
-                    var def_v:* = (default_value == null) ? '' : default_value;
-                    _data[name].push(def_v);
+                    if (default_value != null)
+                        _data[name].push(default_value);
                 }
             }
 

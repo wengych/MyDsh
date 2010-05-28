@@ -2,9 +2,11 @@
 package com.yspay.event_handlers
 {
     import com.yspay.YsControls.*;
+    import com.yspay.YsData.PData;
 
     import flash.events.Event;
 
+    import mx.collections.ArrayCollection;
     import mx.controls.Alert;
     import mx.controls.dataGridClasses.DataGridColumn;
     import mx.controls.listClasses.ListBase;
@@ -30,6 +32,8 @@ package com.yspay.event_handlers
         var drag_object:Object = (drag_event.dragInitiator as ListBase).selectedItem;
 
         var new_item:Object = new Object;
+        var key:String = '';
+
         for each (var dgc:DataGridColumn in data_grid.columns)
         {
             if (dgc.dataField == null)
@@ -45,7 +49,7 @@ package com.yspay.event_handlers
         for each (var item:Object in data_grid.dataProvider)
         {
             var item_exist:Boolean = true;
-            for (var key:String in new_item)
+            for (key in new_item)
             {
                 if (new_item[key] != item[key])
                 {
@@ -61,7 +65,18 @@ package com.yspay.event_handlers
             }
         }
 
-        data_grid.dataProvider.addItem(new_item);
+        for (key in new_item)
+        {
+            for each (var to_data:PData in data_grid.toDataObject[key].GetAllTarget())
+            {
+                to_data.data[key].push('');
+                to_data.data[key][to_data.data[key].length - 1] = new_item[key]
+            }
+        }
+
+    /*var arr:ArrayCollection = data_grid.dataProvider as ArrayCollection;
+       arr.addItem(new_item);
+     arr.refresh();*/
     }
 }
 

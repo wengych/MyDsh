@@ -34,6 +34,9 @@ package com.yspay.YsControls
         protected var _combo:YsComboBox;
         protected var _xml:XML;
 
+        public var _To:TargetList = new TargetList;
+        public var _From:TargetList =  new TargetList;
+
         public override function get name():String
         {
             return dict.name;
@@ -84,7 +87,7 @@ package com.yspay.YsControls
         {
             if (_xml.@save == 'false')
                 return null;
-            // TODO: 实现生成保存格式的xml的方�
+            // TODO: 实现生成保存格式的xml的方�
 
             return null;
         }
@@ -150,11 +153,21 @@ package com.yspay.YsControls
                 dgc.headerText = ch_name;
                 dgc.dataField = en_name;
 
-                P_data.AddToNotifiers(_parent, dict.name, _xml.services.@DEFAULT.toString());
+                // P_data.AddToNotifiers(_parent, dict.name, _xml.services.@DEFAULT.toString());
+                dg.fromDataObject[dict.name] = new TargetList;
+                dg.fromDataObject[dict.name].Init(_parent, _xml.From);
+                for each (var dg_from_data:PData in dg.fromDataObject[dict.name].GetAllTarget())
+                {
+                    dg_from_data.AddToNotifiers(_parent, dict.name);
+                }
+
+                dg.toDataObject[dict.name] = new TargetList;
+                dg.toDataObject[dict.name].Init(_parent, _xml.To);
+
 
                 dg.columns = dg.columns.concat(dgc);
-                    // TODO:针对DataGrid的处理方�
-                    //(_parent as DataGrid); // 添加�
+                    // TODO:针对DataGrid的处理方�
+                    //(_parent as DataGrid); // 添加�
             }
             else //COMBOBOX || TEXTINPUT
             { //<DICT LABEL="CNAME" 
@@ -181,7 +194,10 @@ package com.yspay.YsControls
 
                 for each (var from_data:PData in dict.From.GetAllTarget())
                 {
-                    from_data.AddToNotifiers(this, dict.name, _xml.services.@DEFAULT.toString());
+                    var default_value:String = '';
+                    if (_xml.services.attribute('DEFAULT').length > 0)
+                        default_value = _xml.services.@DEFAULT.text().toString();
+                    from_data.AddToNotifiers(this, dict.name, default_value);
                 }
 
                 _parent.addChild(this);

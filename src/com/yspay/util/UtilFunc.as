@@ -90,6 +90,16 @@ package com.yspay.util
                 var dts_no:String = pool.info[query_key][obj_key].Get().DTS;
                 var dts:DBTable = pool.dts as DBTable;
                 //var temp:XML = new XML(dts[dts_no].__DICT_XML);
+                if (!(dts.hasOwnProperty(dts_no)))
+                {
+                	Alert.show('dts查询出错，无此dts号: ' + dts_no);
+                	return null;
+                }
+                if (!(dts[dts_no].hasOwnProperty('__DICT_XML')))
+                {
+                	Alert.show('dts查询出错，未找到__DICT_XML属性');
+                	return null;
+                }
                 rtn = new XML(dts[dts_no].__DICT_XML);
 
                 for each (var attr:XML in xml.attributes())

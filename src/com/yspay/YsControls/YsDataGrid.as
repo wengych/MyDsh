@@ -2,7 +2,7 @@
 {
     import com.yspay.YsData.MData;
     import com.yspay.YsData.PData;
-    import com.yspay.events.EventDragToDatagrid;
+    import com.yspay.YsData.TargetList;
     import com.yspay.util.UtilFunc;
     import com.yspay.util.YsClassFactory;
 
@@ -12,6 +12,7 @@
     import mx.controls.DataGrid;
     import mx.controls.dataGridClasses.DataGridColumn;
     import mx.core.Application;
+    import mx.events.CollectionEvent;
     import mx.events.DataGridEvent;
 
     public class YsDataGrid extends DataGrid implements YsControl
@@ -20,6 +21,9 @@
         public var _parent:DisplayObjectContainer;
         public var data_count:String;
         public var D_data:PData = new PData;
+
+        public var fromDataObject:Object = new Object;
+        public var toDataObject:Object = new Object;
 
         public function YsDataGrid(parent:DisplayObjectContainer)
         {
@@ -31,7 +35,6 @@
             percentHeight = 100;
             setStyle('borderStyle', 'solid');
             setStyle('fontSize', '12');
-            this.addEventListener(EventDragToDatagrid.EVENT_NAME, OnDragDrop);
         }
 
         protected function RefreshColumn(P_data:PData, field_name:String):void
@@ -111,7 +114,7 @@
             {
                 //var ys_pod:YsPod = UtilFunc.GetParentByType(_parent, YsPod) as YsPod;
                 //var P_data:PData = ys_pod._M_data.TRAN[ys_pod.P_cont];
-                if (dataProvider.length <= index)
+                while (dataProvider.length <= index)
                 {
                     dataProvider.addItem(new Object);
                 }
@@ -279,6 +282,9 @@
                     child_ctrl.Init(child);
                 }
             }
+
+            var data_prov:ArrayCollection = dataProvider as ArrayCollection;
+            //data_prov.addEventListener(CollectionEvent.COLLECTION_CHANGE, DataChange);
         }
 
         protected var btn_xml:XML =
@@ -287,26 +293,16 @@
             </BUTTON>
             ;
 
-        private function OnDragDrop(event:EventDragToDatagrid):void
+        protected function CheckEmptyObject(obj:Object):Boolean
         {
-            var obj:Object = event.drag_object;
+            var rtn:Boolean = true;
+            for each (var obj_property:* in obj)
+            {
+                rtn = false;
+                break;
+            }
 
-            if (!(obj.hasOwnProperty('TYPE') && obj.hasOwnProperty('NAME')))
-                return;
-
-            var child_type:String = obj.TYPE.toLowerCase();
-            if (!YsMaps.ys_type_map.hasOwnProperty(child_type))
-                return;
-
-            var child_xml:XML = new XML('<' + obj.TYPE + '/>');
-            child_xml.appendChild(obj.TYPE + '://' + obj.NAME);
-            child_xml.appendChild('<To>pod</To>');
-            child_xml.appendChild('<From>pod</From>');
-
-            var child:YsControl = new YsMaps.ys_type_map[child_type](this);
-            child.Init(child_xml);
-
-            this._xml.appendChild(child_xml);
+            return rtn;
         }
 
         private function itemEditEndHandler(e:DataGridEvent):void

@@ -6,10 +6,10 @@ package com.yspay.events
 
     public class EventNewWindowsComplete extends YsEvent
     {
-        public static var EVENT_NAME:String = 'Event_CacheComplete';
+        public static var EVENT_NAME:String = 'Event_NewWindowsComplete';
         public var ys_pod:YsPod;
 
-        public function EventNewWindowsComplete(type:String='Event_CacheComplete', bubbles:Boolean=false, cancelable:Boolean=false)
+        public function EventNewWindowsComplete(type:String='Event_NewWindowsComplete', bubbles:Boolean=false, cancelable:Boolean=false)
         {
             super(type, bubbles, cancelable);
             TraceEventName(EVENT_NAME);
