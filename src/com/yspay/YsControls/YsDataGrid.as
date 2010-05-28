@@ -1,9 +1,10 @@
-package com.yspay.YsControls
+﻿package com.yspay.YsControls
 {
     import com.yspay.YsData.MData;
     import com.yspay.YsData.PData;
     import com.yspay.events.EventDragToDatagrid;
     import com.yspay.util.UtilFunc;
+    import com.yspay.util.YsClassFactory;
 
     import flash.display.DisplayObjectContainer;
 
@@ -192,6 +193,9 @@ package com.yspay.YsControls
                 }
             }
 
+            // 清空DataGridColumns
+            columns = []; //.splice(0, columns.length);
+
             if (xml.POOL != undefined)
             {
                 var ddxml:XMLList = xml.POOL;
@@ -235,25 +239,45 @@ package com.yspay.YsControls
                 //xingj ..
                 P_data[data_count] = dataProvider;
                 trace(dataProvider.length);
-            }
-            else
-                ;
 
-            // 清空DataGridColumns
-            columns = []; //.splice(0, columns.length);
+                // TODO:  用对象关注数据,对象再和datagrid的对应数据格关联
+                //        创建一行数据，就建立了对应的一组DICT对象
+
+                if (xml.attribute('editable').length() > 0 && xml.@editable == "true")
+                {
+                    var dgc:DataGridColumn = new DataGridColumn;
+                    dgc.itemRenderer = new YsClassFactory(YsButton, this, btn_xml);
+                    dgc.editable = false;
+
+                    columns = columns.concat(dgc);
+                }
+            }
 
             for each (child in xml.elements())
             {
-                node_name = child.localName().toString().toLocaleLowerCase();
+                node_name = child.localName().toString().toLowerCase();
 
-                // 查表未发现匹配类型
-                if (!YsMaps.ys_type_map.hasOwnProperty(node_name))
-                    return;
+                if (node_name == 'button')
+                {
+                    var dgc:DataGridColumn = new DataGridColumn;
+                    dgc.itemRenderer = new YsClassFactory(YsButton, this, child);
+                    dgc.editable = false;
 
-                child_ctrl = new YsMaps.ys_type_map[node_name](this);
-                child_ctrl.Init(child);
+                    columns = columns.concat(dgc);
+                }
+                else if (YsMaps.ys_type_map.hasOwnProperty(node_name))
+                {
+                    child_ctrl = new YsMaps.ys_type_map[node_name](this);
+                    child_ctrl.Init(child);
+                }
             }
         }
+
+        protected var btn_xml:XML =
+            <BUTTON LABEL="删除">删除
+                <ACTION>data_grid_delete_line</ACTION>
+            </BUTTON>
+            ;
 
         private function OnDragDrop(event:EventDragToDatagrid):void
         {

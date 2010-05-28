@@ -10,6 +10,7 @@ package com.yspay.YsControls
 
     import mx.collections.ArrayCollection;
     import mx.containers.HBox;
+    import mx.controls.Alert;
     import mx.controls.Label;
     import mx.controls.TextInput;
     import mx.controls.dataGridClasses.DataGridColumn;
@@ -83,7 +84,7 @@ package com.yspay.YsControls
         {
             if (_xml.@save == 'false')
                 return null;
-            // TODO: 实现生成保存格式的xml的方法
+            // TODO: 实现生成保存格式的xml的方�
 
             return null;
         }
@@ -122,6 +123,12 @@ package com.yspay.YsControls
             var P_data:PData = ys_pod._M_data.TRAN[ys_pod.P_cont];
             _xml = UtilFunc.FullXml(xml);
 
+            if (_xml == null)
+            {
+                // TODO 将此处代码扩展到所有类型中
+                Alert.show('无此dict' + xml.text().toString());
+                return;
+            }
 
             if (_xml.services.@NAME != undefined)
                 dict.name = _xml.services.@NAME.toString();
@@ -146,8 +153,8 @@ package com.yspay.YsControls
                 P_data.AddToNotifiers(_parent, dict.name, _xml.services.@DEFAULT.toString());
 
                 dg.columns = dg.columns.concat(dgc);
-                    // TODO:针对DataGrid的处理方法
-                    //(_parent as DataGrid); // 添加列
+                    // TODO:针对DataGrid的处理方�
+                    //(_parent as DataGrid); // 添加�
             }
             else //COMBOBOX || TEXTINPUT
             { //<DICT LABEL="CNAME" 
@@ -345,23 +352,22 @@ package com.yspay.YsControls
             var ti:TextInput = new TextInput;
             ti.text = '';
             ti.maxChars = int(dxml.services.@LEN);
-            if (ti.maxChars > 40)
-                ti.maxChars = 40;
             var mask:String = '';
             for (var j:int = 0; j < ti.maxChars; j++)
             {
                 mask = mask + "*";
             }
             //ti.inputMask = mask;
+            var ti_len:int = int(dxml.display.TEXTINPUT.@length);
             if (ti.maxChars > 40)
-                ti.width = 40;
+                ti.width = 200;
             //else
             //    ti.width = ti.maxChars;
             else if (int(dxml.display.TEXTINPUT.@length) < 10 && ti.maxChars < 10)
-                ti.width = int(dxml.display.TEXTINPUT.@length) * 12;
+                //    ti.width = int(dxml.display.TEXTINPUT.@length) * 12;
+                ti.width = (ti_len * 50 > 200) ? 200 : ti_len * 50;
             else
-                ti.width = 80;
-            ti.width = (dxml.display.TEXTINPUT.@length * 50 > 200) ? 200 : (dxml.display.TEXTINPUT.@length) * 50;
+                ti.width = 200;
             ti.displayAsPassword = (dxml.display.TEXTINPUT.@displayAsPassword == 0 ? false : true);
             ti.text = dict.text;
 

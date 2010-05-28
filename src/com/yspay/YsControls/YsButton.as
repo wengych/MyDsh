@@ -8,9 +8,11 @@ package com.yspay.YsControls
     import flash.display.DisplayObjectContainer;
     import flash.events.MouseEvent;
 
+    import mx.controls.DataGrid;
+    import mx.controls.listClasses.IListItemRenderer;
     import mx.core.Application;
 
-    public class YsButton extends MyButton implements YsControl
+    public class YsButton extends MyButton implements YsControl, IListItemRenderer
     {
         public function YsButton(parent:DisplayObjectContainer)
         {
@@ -33,9 +35,26 @@ package com.yspay.YsControls
             return _xml.name().toString();
         }
 
+        public function get data():Object
+        {
+            return this.label;
+        }
+
+        public function set data(value:Object):void
+        {
+            //this.label = value.toString();
+        }
+
         public function Init(xml:XML):void
         {
-            _parent.addChild(this);
+            if (_parent is DataGrid)
+            {
+                ;
+            }
+            else
+            {
+                _parent.addChild(this);
+            }
             _xml = xml;
 
             this.setStyle('fontWeight', 'normal');
@@ -46,7 +65,7 @@ package com.yspay.YsControls
                 child_name = child.name().toString().toLowerCase();
                 // 查表未发现匹配类�
                 if (!YsMaps.ys_type_map.hasOwnProperty(child_name))
-                    return;
+                    continue;
                 var child_ctrl:YsControl = new YsMaps.ys_type_map[child_name](this);
                 child_ctrl.Init(child);
             }
@@ -93,14 +112,14 @@ package com.yspay.YsControls
             }
             else
             {
-                this.btn.label = _xml.@LABEL;
+                this.label = _xml.@LABEL;
                 this.btn.enabled = true;
             }
         }
 
         protected function OnBtnClick(event:MouseEvent):void
         {
-            this.btn.label = action_list.length.toString();
+            this.label = action_list.length.toString();
             this.btn.enabled = false;
 
             var stack_event:StackEvent = new StackEvent(action_list.concat());

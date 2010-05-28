@@ -226,8 +226,8 @@ package com.yspay.YsControls
             validateNow();
 
             var focus_comp:IFocusManagerComponent = (_parent as YsDict)._focusManager.getFocus();
-            if (focus_comp != null && (_parent as YsDict).contains(focus_comp as DisplayObject))
-                open();
+            //if (focus_comp != null && (_parent as YsDict).contains(focus_comp as DisplayObject))
+            //    open();
 
             //(this._parent._text as TextInput).getFocus();
             //open();

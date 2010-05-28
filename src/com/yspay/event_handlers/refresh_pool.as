@@ -3,12 +3,14 @@ package com.yspay.event_handlers
 {
     import com.yspay.*;
     import com.yspay.YsControls.*;
+    import com.yspay.YsData.MData;
     import com.yspay.pool.*;
     import com.yspay.util.UtilFunc;
 
     import flash.events.Event;
     import flash.events.EventDispatcher;
 
+    import mx.collections.ArrayCollection;
     import mx.core.Application;
     import mx.core.Container;
     import mx.core.UIComponent;
@@ -16,9 +18,38 @@ package com.yspay.event_handlers
 
     public function refresh_pool(ui_comp:UIComponent, source_event:Event, action_info:XML):void
     {
-        var func:Function = function()
+        var func:Function = function(event:DBTableQueryEvent):void
             {
-            // TODO 修正刷新pool的问题
+                var M_data:MData = Application.application.M_data;
+                // TODO 修正刷新pool的问题
+                CursorManager.removeBusyCursor();
+                if (M_data.POOL.INFO[event.query_name] != null)
+                    M_data.POOL.INFO[event.query_name].removeAll();
+
+                M_data.POOL.INFO[event.query_name] = new ArrayCollection;
+                var info:DBTable = _pool.info as DBTable;
+                for each (var dict_obj:QueryObject in info[event.query_name])
+                {
+                    var ys_var:YsVarStruct = dict_obj.Get();
+                    var o:Object = new Object;
+                    o["APPNAME"] = ys_var.APPNAME.getValue();
+                    o["CDATE"] = ys_var.CDATE.getValue();
+                    o["CUSER"] = ys_var.CUSER.getValue();
+                    o["DTS"] = ys_var.DTS.getValue();
+                    o["ISUSED"] = ys_var.ISUSED.getValue();
+                    o["MDATE"] = ys_var.MDATE.getValue();
+                    o["MEMO"] = ys_var.MEMO.getValue();
+                    o["MUSER"] = ys_var.MUSER.getValue();
+                    o["NAME"] = ys_var.NAME.getValue();
+                    o["TYPE"] = ys_var.TYPE.getValue();
+                    o["VALUE"] = ys_var.VALUE.getValue();
+                    o["VER"] = ys_var.VER.getValue();
+                    M_data.POOL.INFO[event.query_name].addItem(o);
+                }
+
+                M_data.POOL.INFO[event.query_name].refresh();
+
+                return;
             };
 
         var event_disp:EventDispatcher = new EventDispatcher;
