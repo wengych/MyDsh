@@ -163,7 +163,15 @@
 
         public function GetLinkXml():XML
         {
-            return GetSaveXml();
+            if (_xml.@save == 'false')
+                return null;
+
+            var rtn:XML = new XML('<L KEY="" KEYNAME="" VALUE="" />');
+            rtn.@VALUE = type + '://' + _xml.text().toString();
+            rtn.@KEY = type;
+            rtn.@KEYNAME = type;
+
+            return rtn;
         }
 
         public function Init(xml:XML):void
