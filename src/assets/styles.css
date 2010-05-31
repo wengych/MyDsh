@@ -110,3 +110,10 @@ DragHighlight
 	down-skin:		Embed("/assets/right_arrow_up.gif");
 	disabled-skin:	Embed("/assets/right_arrow_disabled.gif");
 }
+.acb{
+   borderColor: #ffffff;
+      borderStyle: none;
+   backgroundAlpha: 0.51;
+   cornerRadius: 10;
+   dropShadowEnabled: false;
+}

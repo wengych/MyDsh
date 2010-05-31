@@ -222,25 +222,26 @@
                               height="100%"/>
             </mx:AddChild>
             <mx:AddChild>
-                <mx:ControlBar width="100%"
-                               height="5%"
-                               barColor="red"
-                               horizontalAlign="center"
-                               fontSize="11">
-                    <mx:Label text="服务返回码"/>
-                    <mx:TextInput editable="false"
-                                  width="35"/>
-                    <mx:Label text="用户返回码"/>
-                    <mx:TextInput editable="false"
-                                  width="35"/>
-                    <mx:Label text="用户返回信息"/>
-                    <mx:TextInput editable="false"
-                                  width="200"/>
-                </mx:ControlBar>
+                <mx:ApplicationControlBar dock="false"
+                                          styleName="acb"
+                                          barColor="blue"
+                                          height="5%"
+                                          horizontalAlign="left"
+                                          fontSize="11">
+                    <mx:Label text="服务返回码:"/>
+                    <mx:Label color="blue"
+                              width="35"/>
+                    <mx:Spacer width="100"/>
+                    <mx:Label text="用户返回码:"/>
+                    <mx:Label color="blue"
+                              width="35"/>
+                    <mx:Spacer width="100"/>
+                    <mx:Label text="用户返回信息:"/>
+                    <mx:Label color="blue"
+                              width="200"/>
+                </mx:ApplicationControlBar>
             </mx:AddChild>
-            <mx:AddChild>
-                <mx:Canvas height="2%"/>
-            </mx:AddChild>
+
 
         </mx:State>
     </mx:states>
