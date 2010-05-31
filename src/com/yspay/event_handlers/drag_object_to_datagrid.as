@@ -6,7 +6,6 @@ package com.yspay.event_handlers
 
     import flash.events.Event;
 
-    import mx.collections.ArrayCollection;
     import mx.controls.Alert;
     import mx.controls.dataGridClasses.DataGridColumn;
     import mx.controls.listClasses.ListBase;
@@ -29,48 +28,52 @@ package com.yspay.event_handlers
         }
 
 
-        var drag_object:Object = (drag_event.dragInitiator as ListBase).selectedItem;
+        //var drag_object:Object = (drag_event.dragInitiator as ListBase).selectedItem;
+        var drag_items:Array = (drag_event.dragInitiator as ListBase).selectedItems;
 
-        var new_item:Object = new Object;
-        var key:String = '';
-
-        for each (var dgc:DataGridColumn in data_grid.columns)
+        for each (var drag_item:Object in drag_items)
         {
-            if (dgc.dataField == null)
-                continue;
-            if (!(drag_object.hasOwnProperty(dgc.dataField)))
-            {
-                Alert.show('drag_object_to_datagrid: 无对应属性' + dgc.dataField.toString());
-                return;
-            }
-            new_item[dgc.dataField] = drag_object[dgc.dataField];
-        }
+            var new_item:Object = new Object;
+            var key:String = '';
 
-        for each (var item:Object in data_grid.dataProvider)
-        {
-            var item_exist:Boolean = true;
-            for (key in new_item)
+            for each (var dgc:DataGridColumn in data_grid.columns)
             {
-                if (new_item[key] != item[key])
+                if (dgc.dataField == null)
+                    continue;
+                if (!(drag_item.hasOwnProperty(dgc.dataField)))
                 {
-                    item_exist = false;
-                    break;
+                    Alert.show('drag_object_to_datagrid: 无对应属性' + dgc.dataField.toString());
+                    return;
+                }
+                new_item[dgc.dataField] = drag_item[dgc.dataField];
+            }
+
+            for each (var item:Object in data_grid.dataProvider)
+            {
+                var item_exist:Boolean = true;
+                for (key in new_item)
+                {
+                    if (new_item[key] != item[key])
+                    {
+                        item_exist = false;
+                        break;
+                    }
+                }
+
+                if (item_exist)
+                {
+                    Alert.show('对象已存在!');
+                    return;
                 }
             }
 
-            if (item_exist)
+            for (key in new_item)
             {
-                Alert.show('对象已存在!');
-                return;
-            }
-        }
-
-        for (key in new_item)
-        {
-            for each (var to_data:PData in data_grid.toDataObject[key].GetAllTarget())
-            {
-                to_data.data[key].push('');
-                to_data.data[key][to_data.data[key].length - 1] = new_item[key]
+                for each (var to_data:PData in data_grid.toDataObject[key].GetAllTarget())
+                {
+                    to_data.data[key].push('');
+                    to_data.data[key][to_data.data[key].length - 1] = new_item[key]
+                }
             }
         }
 

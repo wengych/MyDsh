@@ -192,6 +192,8 @@
                     editable = kids.toString();
                 if (kids.name() == "dragEnabled")
                     dragEnabled = kids.toString();
+
+                this.allowMultipleSelection = true;
 //                if (kids.name() == "append")
 //                {
 //                    data["attrib"] = new Object;
