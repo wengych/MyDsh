@@ -191,7 +191,8 @@
             <mx:RemoveChild target="{panel1}"/>
             <mx:AddChild>
                 <mx:ApplicationControlBar dock="true"
-                                          fontSize="12">
+                                          fontSize="12"
+                                          height="5%">
                     <mx:Label text="交易码"/>
                     <mx:TextInput id="action"
                                   width="300"
@@ -206,15 +207,18 @@
             <mx:AddChild position="lastChild">
                 <flexlib:SuperTabBar id="tabBar"
                                      dragEnabled="false"
-                                     height="35"
+                                     tabHeight="32"
                                      dataProvider="viewStack"
                                      tabClose="tabCloseHandler(event)">
                 </flexlib:SuperTabBar>
             </mx:AddChild>
+
             <mx:AddChild>
                 <mx:ViewStack id="viewStack"
                               paddingTop="3"
                               width="100%"
+                              paddingLeft="0"
+                              paddingRight="0"
                               height="100%"/>
             </mx:AddChild>
             <mx:AddChild>
@@ -234,6 +238,10 @@
                                   width="200"/>
                 </mx:ControlBar>
             </mx:AddChild>
+            <mx:AddChild>
+                <mx:Canvas height="2%"/>
+            </mx:AddChild>
+
         </mx:State>
     </mx:states>
     <mx:Script>
