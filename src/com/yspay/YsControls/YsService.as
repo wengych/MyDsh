@@ -162,8 +162,12 @@ package com.yspay.YsControls
                 return;
             }
 
+            var scall_rtn:int = -1;
             var rtn:int = -1;
             var rtn_msg:String = '';
+
+            if (bus.hasOwnProperty('__DICT_SCALL_RTN'))
+                scall_rtn = bus.__DICT_SCALL_RTN[0].value;
 
             if (bus.hasOwnProperty('__DICT_USER_RTN'))
             {
@@ -171,12 +175,17 @@ package com.yspay.YsControls
                 rtn_msg = bus.__DICT_USER_RTNMSG[0].value;
             }
 
-            if (rtn != 0)
-            {
-                Alert.show('服务调用出错: ' + action_name + '\n' +
-                           '     返回码: ' + rtn + '\n' +
-                           '   错误信息: ' + rtn_msg);
+            var pool:Pool = Application.application._pool;
+            pool.SERVICE_RTN.SCALL_RTN = scall_rtn;
+            pool.SERVICE_RTN.RTN = rtn;
+            pool.SERVICE_RTN.RTN_MSG = rtn_msg;
 
+            if (rtn != 0 || scall_rtn != 0)
+            {
+                /* Alert.show('服务调用出错: ' + action_name + '\n' +
+                   '     返回码: ' + rtn + '\n' +
+                   '   错误信息: ' + rtn_msg);
+                 */
                 _parent.dispatchEvent(event);
                 return;
             }

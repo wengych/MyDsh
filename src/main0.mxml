@@ -16,6 +16,8 @@
     <mx:Style source="/assets/styles.css"/>
     <mx:Script>
         <![CDATA[
+            import mx.events.PropertyChangeEvent;
+            import mx.utils.ObjectProxy;
             import mx.containers.Canvas;
             import mx.controls.Alert;
             import mx.controls.ComboBox;
@@ -65,13 +67,19 @@
             {
                 // Load pods.xml, which contains the pod layout.
                 /*var httpService:HTTPService = new HTTPService();
-                httpService.url = "data/pods.xml";
-                httpService.resultFormat = "e4x";
-                httpService.addEventListener(FaultEvent.FAULT, onFaultHttpService);
-                httpService.addEventListener(ResultEvent.RESULT, onResultHttpService);
-                httpService.send();*/
+                   httpService.url = "data/pods.xml";
+                   httpService.resultFormat = "e4x";
+                   httpService.addEventListener(FaultEvent.FAULT, onFaultHttpService);
+                   httpService.addEventListener(ResultEvent.RESULT, onResultHttpService);
+                 httpService.send();*/
                 initPoolAndM_data();
                 onResultHttpService();
+            }
+
+            protected function ServiceRtnChange(event:PropertyChangeEvent):void
+            {
+                trace(event.property);
+                trace(event.source[event.property]);
             }
 
             public function initPoolAndM_data():void
@@ -87,6 +95,11 @@
                 var dts_insert_name:String = 'YSDBSDTSObjectConfigInsert';
                 var dts_insert_arg:String = '__DICT_XML';
                 _pool = new Pool;
+                // 服务返回信息
+                _pool.SERVICE_RTN = new ObjectProxy;
+                _pool.SERVICE_RTN.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE,
+                                                   ServiceRtnChange);
+
                 _pool.Add(info_table_name, DBTable,
                           info_select_name, info_select_arg,
                           '', '',
@@ -154,7 +167,7 @@
                 Alert.show("Unable to load data/pods.xml.");
             }
 
-            private function onResultHttpService():void//e:ResultEvent):void
+            private function onResultHttpService():void //e:ResultEvent):void
             {
                 var viewXMLList:XMLList = pod_xml.view; //e.result.view;
                 var len:Number = viewXMLList.length();
