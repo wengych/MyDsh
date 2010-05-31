@@ -183,6 +183,7 @@
             var child:XML;
             var node_name:String;
             var child_ctrl:YsControl;
+            var dgc:DataGridColumn;
 
             _parent.addChild(this);
             _xml = new XML(xml);
@@ -258,7 +259,7 @@
 
                 if (xml.attribute('editable').length() > 0 && xml.@editable == "true")
                 {
-                    var dgc:DataGridColumn = new DataGridColumn;
+                    dgc = new DataGridColumn;
                     dgc.itemRenderer = new YsClassFactory(YsButton, this, btn_xml);
                     dgc.editable = false;
 
@@ -272,7 +273,7 @@
 
                 if (node_name == 'button')
                 {
-                    var dgc:DataGridColumn = new DataGridColumn;
+                    dgc = new DataGridColumn;
                     dgc.itemRenderer = new YsClassFactory(YsButton, this, child);
                     dgc.editable = false;
 

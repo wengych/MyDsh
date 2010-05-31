@@ -6,7 +6,6 @@ package com.yspay.event_handlers
     import com.yspay.YsControls.*;
     import com.yspay.events.EventButtonAddAction;
     import com.yspay.events.EventCacheComplete;
-    import com.yspay.events.EventDragToDatagrid;
     import com.yspay.events.EventPodShowXml;
     import com.yspay.events.EventWindowShowXml;
     import com.yspay.pool.DBTable;
@@ -25,7 +24,8 @@ package com.yspay.event_handlers
         var get_dts_func:Function = function(event:DBTableQueryEvent):void
             {
                 var dts:DBTable = Application.application._pool.dts as DBTable;
-                ui_comp.removeEventListener(dts.select_event_name, get_dts_func);
+                if (--item_count <= 0)
+                    ui_comp.removeEventListener(dts.select_event_name, get_dts_func);
 
                 var dts_xml:String = dts[event.query_name][dts.arg_select];
 
@@ -37,10 +37,11 @@ package com.yspay.event_handlers
 
         var cache_xml_func:Function = function(event:EventCacheComplete):void
             {
+                var dts:DBTable = Application.application._pool.dts as DBTable;
                 ui_comp.removeEventListener(EventCacheComplete.EVENT_NAME, cache_xml_func);
 
-                var obj:Object = drag_object;
-                if (drag_object.TYPE == 'DICT' || drag_object.TYPE == 'SERVICES')
+                // var obj:Object = drag_object;
+                if (drag_item.TYPE == 'DICT' || drag_item.TYPE == 'SERVICES')
                 {
                     var to_pod:XML =
                         <To>pod</To>
@@ -59,9 +60,7 @@ package com.yspay.event_handlers
                 else if (ui_comp is YsTitleWindow)
                     new_event = new EventWindowShowXml(event.cache_xml);
                 else if (ui_comp is YsButton)
-                    new_event = new EventButtonAddAction(event.cache_xml, drag_object);
-                else if (ui_comp is YsDataGrid)
-                    new_event = new EventDragToDatagrid(drag_object);
+                    new_event = new EventButtonAddAction(event.cache_xml);
 
                 ui_comp.dispatchEvent(new_event);
             }
@@ -73,11 +72,17 @@ package com.yspay.event_handlers
             return;
         }
 
-        var drag_object:Object = (drag_event.dragInitiator as ListBase).selectedItem;
+        // var drag_object:Object = (drag_event.dragInitiator as ListBase).selectedItem;
+        var drag_items:Array = (drag_event.dragInitiator as ListBase).selectedItems;
         var dts:DBTable = Application.application._pool.dts as DBTable;
+        var drag_item:Object;
+        var item_count:int = drag_items.length;
 
-        dts.AddQuery(drag_object.DTS, Query, drag_object.DTS, ui_comp);
         ui_comp.addEventListener(dts.select_event_name, get_dts_func);
-        dts.DoQuery(drag_object.DTS);
+        for each (drag_item in drag_items)
+        {
+            dts.AddQuery(drag_item.DTS, Query, drag_item.DTS, ui_comp);
+            dts.DoQuery(drag_item.DTS);
+        }
     }
 }

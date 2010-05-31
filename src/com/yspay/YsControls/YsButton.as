@@ -79,25 +79,23 @@ package com.yspay.YsControls
 
         protected function OnAddAction(event:EventButtonAddAction):void
         {
-            var obj:Object = event.info_object;
+            //var obj:Object = event.info_object;
+            var type:String = event.xml.name().toString();
+            var name:String = event.xml.text().toString();
 
-            // dts_info没有TYPE或NAME字段则退出
-            if (!(obj.hasOwnProperty('TYPE') && obj.hasOwnProperty('NAME')))
-                return;
 
             // map中未查到对应类型
-            var child_type:String = obj.TYPE.toLowerCase();
-            if (!YsMaps.ys_type_map.hasOwnProperty(child_type))
+            if (!YsMaps.ys_type_map.hasOwnProperty(type))
                 return;
 
             // 生成链接
-            var child_xml:XML = new XML('<' + obj.TYPE + ' />');
-            child_xml.appendChild(obj.TYPE + '://' + obj.NAME);
+            var child_xml:XML = new XML('<' + type + ' />');
+            child_xml.appendChild(type + '://' + name);
             child_xml.appendChild(event.xml.From);
             child_xml.appendChild(event.xml.To);
 
             // 创建子节点
-            var child:YsControl = new YsMaps.ys_type_map[child_type](this);
+            var child:YsControl = new YsMaps.ys_type_map[type](this);
             child.Init(child_xml);
             _xml.appendChild(child_xml);
         }
