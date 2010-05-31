@@ -65,11 +65,11 @@
             {
                 // Load pods.xml, which contains the pod layout.
                 /*var httpService:HTTPService = new HTTPService();
-                httpService.url = "data/pods.xml";
-                httpService.resultFormat = "e4x";
-                httpService.addEventListener(FaultEvent.FAULT, onFaultHttpService);
-                httpService.addEventListener(ResultEvent.RESULT, onResultHttpService);
-                httpService.send();*/
+                   httpService.url = "data/pods.xml";
+                   httpService.resultFormat = "e4x";
+                   httpService.addEventListener(FaultEvent.FAULT, onFaultHttpService);
+                   httpService.addEventListener(ResultEvent.RESULT, onResultHttpService);
+                 httpService.send();*/
                 initPoolAndM_data();
                 onResultHttpService();
             }
@@ -154,7 +154,7 @@
                 Alert.show("Unable to load data/pods.xml.");
             }
 
-            private function onResultHttpService():void//e:ResultEvent):void
+            private function onResultHttpService():void //e:ResultEvent):void
             {
                 var viewXMLList:XMLList = pod_xml.view; //e.result.view;
                 var len:Number = viewXMLList.length();
@@ -216,6 +216,23 @@
                               paddingTop="3"
                               width="100%"
                               height="100%"/>
+            </mx:AddChild>
+            <mx:AddChild>
+                <mx:ControlBar width="100%"
+                               height="5%"
+                               barColor="red"
+                               horizontalAlign="center"
+                               fontSize="11">
+                    <mx:Label text="服务返回码"/>
+                    <mx:TextInput editable="false"
+                                  width="35"/>
+                    <mx:Label text="用户返回码"/>
+                    <mx:TextInput editable="false"
+                                  width="35"/>
+                    <mx:Label text="用户返回信息"/>
+                    <mx:TextInput editable="false"
+                                  width="200"/>
+                </mx:ControlBar>
             </mx:AddChild>
         </mx:State>
     </mx:states>
