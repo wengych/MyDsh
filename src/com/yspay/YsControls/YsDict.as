@@ -194,7 +194,7 @@ package com.yspay.YsControls
 
                 for each (var from_data:PData in dict.From.GetAllTarget())
                 {
-                    var default_value:String = '';
+                    var default_value:String = null;
                     if (_xml.services.attribute('DEFAULT').length > 0)
                         default_value = _xml.services.@DEFAULT.text().toString();
                     from_data.AddToNotifiers(this, dict.name, default_value);

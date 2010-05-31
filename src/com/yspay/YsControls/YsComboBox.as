@@ -4,7 +4,6 @@ package com.yspay.YsControls
     import com.yspay.YsData.TargetList;
     import com.yspay.util.UtilFunc;
 
-    import flash.display.DisplayObject;
     import flash.display.DisplayObjectContainer;
 
     import mx.collections.ArrayCollection;
@@ -19,6 +18,7 @@ package com.yspay.YsControls
         protected var combo_data:ArrayCollection = new ArrayCollection; //存放本作用域的数据
 
         protected var column_p_data:Object = new Object;
+        protected var column_dict_arr:Array = new Array;
 
         public function YsComboBox(parent:DisplayObjectContainer) //)xml:XML, key_name:String, key_index:int=0)
         {
@@ -97,7 +97,8 @@ package com.yspay.YsControls
 
                     var D_data:PData = column_p_data[en_name][0];
 
-                    combo_data.addItem(new Object); //选中项目？
+                    //combo_data.addItem(new Object); //选中项目？
+                    column_dict_arr.push(en_name);
 
                     for (i = 0; i < D_data.data[en_name].length; ++i)
                     {
@@ -110,6 +111,7 @@ package com.yspay.YsControls
                 }
             }
             dataProvider = combo_data;
+            this.collection;
         }
 
         private function ComboBoxShowLabel(item:Object):String
@@ -191,17 +193,20 @@ package com.yspay.YsControls
 
         public function Notify(p_data:PData, dict_name:String, index:int):void
         {
-            var has_key:Boolean = false;
-            for (var item_key:String in combo_data[0])
-            {
-                if (item_key == dict_name)
-                {
-                    has_key = true;
-                    break;
-                }
-            }
-            if (!has_key)
+            var idx:int = column_dict_arr.indexOf(dict_name);
+            if (idx < 0)
                 return;
+            /*var has_key:Boolean = false;
+               for (var item_key:String in combo_data[0])
+               {
+               if (item_key == dict_name)
+               {
+               has_key = true;
+               break;
+               }
+               }
+               if (!has_key)
+             return;*/
 
             combo_data.filterFunction = null;
             combo_data.refresh();
