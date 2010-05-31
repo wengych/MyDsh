@@ -163,24 +163,24 @@ package com.yspay.YsControls
             }
 
             var scall_rtn:int = -1;
-            var rtn:int = -1;
-            var rtn_msg:String = '';
+            var user_rtn:int = -1;
+            var user_rtn_msg:String = '';
 
             if (bus.hasOwnProperty('__DICT_SCALL_RTN'))
                 scall_rtn = bus.__DICT_SCALL_RTN[0].value;
 
             if (bus.hasOwnProperty('__DICT_USER_RTN'))
             {
-                rtn = bus.__DICT_USER_RTN[0].value;
-                rtn_msg = bus.__DICT_USER_RTNMSG[0].value;
+                user_rtn = bus.__DICT_USER_RTN[0].value;
+                user_rtn_msg = bus.__DICT_USER_RTNMSG[0].value;
             }
 
             var pool:Pool = Application.application._pool;
             pool.SERVICE_RTN.SCALL_RTN = scall_rtn;
-            pool.SERVICE_RTN.RTN = rtn;
-            pool.SERVICE_RTN.RTN_MSG = rtn_msg;
+            pool.SERVICE_RTN.USER_RTN = user_rtn;
+            pool.SERVICE_RTN.USER_RTN_MSG = user_rtn_msg;
 
-            if (rtn != 0 || scall_rtn != 0)
+            if (user_rtn != 0 || scall_rtn != 0)
             {
                 /* Alert.show('服务调用出错: ' + action_name + '\n' +
                    '     返回码: ' + rtn + '\n' +

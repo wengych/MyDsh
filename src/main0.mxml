@@ -80,6 +80,13 @@
             {
                 trace(event.property);
                 trace(event.source[event.property]);
+
+                if (event.property == 'SCALL_RTN')
+                    SCALL_RTN.text = event.source.SCALL_RTN;
+                else if (event.property == 'USER_RTN')
+                    USER_RTN.text = event.source.USER_RTN;
+                else if (event.property == 'USER_RTN_MSG')
+                    USER_RTN_MSG.text = event.source.USER_RTN_MSG;
             }
 
             public function initPoolAndM_data():void
@@ -238,12 +245,15 @@
                                fontSize="11">
                     <mx:Label text="服务返回码"/>
                     <mx:TextInput editable="false"
+                                  id="SCALL_RTN"
                                   width="35"/>
                     <mx:Label text="用户返回码"/>
                     <mx:TextInput editable="false"
+                                  id="USER_RTN"
                                   width="35"/>
                     <mx:Label text="用户返回信息"/>
                     <mx:TextInput editable="false"
+                                  id="USER_RTN_MSG"
                                   width="200"/>
                 </mx:ControlBar>
             </mx:AddChild>
