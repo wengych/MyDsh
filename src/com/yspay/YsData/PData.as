@@ -2,11 +2,13 @@ package com.yspay.YsData
 {
     import com.yspay.UserBus;
     import com.yspay.YsControls.YsPod;
-    import com.yspay.YsVar;
+    import com.yspay.util.AdvanceArray;
+    import com.yspay.util.FunctionCallEvent;
     import com.yspay.util.YsObjectProxy;
 
-    import mx.events.PropertyChangeEvent;
     import flash.utils.flash_proxy;
+
+    import mx.events.PropertyChangeEvent;
     import mx.utils.object_proxy;
 
     use namespace flash_proxy;
@@ -24,17 +26,40 @@ package com.yspay.YsData
 
             data.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE,
                                   UpdateChange);
-
-            //CheckCount(1);
+            data.addEventListener(FunctionCallEvent.EVENT_NAME,
+                                  FunctionCalled);
         }
 
-        protected function UpdateChange(event:PropertyChangeEvent):void
+        protected function FunctionCalled(event:FunctionCallEvent):void
         {
+            trace(event.type + ' ' + event.function_name + ' ' + event.args);
 
             var dict_proxy_item:Object;
             var source_obj:Object = event.source.object;
 
-            if (source_obj is Array)
+            if (source_obj is AdvanceArray)
+            {
+                var dict_key:String = GetKeyByObject(source_obj);
+                if (dict_key == '')
+                    return;
+                for each (dict_proxy_item in dict_proxy[dict_key])
+                {
+                    dict_proxy_item.NotifyFunctionCall(this,
+                                                       dict_key,
+                                                       event.function_name,
+                                                       event.args);
+                }
+            }
+        }
+
+        protected function UpdateChange(event:PropertyChangeEvent):void
+        {
+            trace(event.type + ' ' + event.property + ' ' + event.newValue);
+
+            var dict_proxy_item:Object;
+            var source_obj:Object = event.source.object;
+
+            if (source_obj is AdvanceArray)
             {
                 // 某一项被更新，需要从_data查找key
                 var dict_key:String = GetKeyByObject(source_obj)
@@ -43,14 +68,6 @@ package com.yspay.YsData
                 for each (dict_proxy_item in dict_proxy[dict_key])
                 {
                     dict_proxy_item.Notify(this, dict_key, event.property);
-                }
-            }
-            else
-            {
-                // 某一数组被更新
-                for each (dict_proxy_item in dict_proxy[event.property])
-                {
-                    dict_proxy_item.Notify(this, event.property, -1);
                 }
             }
         }
@@ -62,15 +79,17 @@ package com.yspay.YsData
          * 若循环至Array结尾，则新增元素存储ctrl
          * @param disp_obj
          */
-        public function AddToNotifiers(obj:Object, name:String, default_value:*=null):void
+        public function AddToNotifiers(obj:Object,
+                                       name:String,
+                                       default_value:*=null):void
         {
             if (!dict_proxy.hasOwnProperty(name))
             {
-                dict_proxy[name] = new Array;
+                dict_proxy[name] = new AdvanceArray;
 
                 if (!_data.hasOwnProperty(name))
                 {
-                    _data[name] = new Array;
+                    _data[name] = new AdvanceArray;
                     if (default_value != null)
                         _data[name].push(default_value);
                 }
@@ -131,16 +150,34 @@ package com.yspay.YsData
 
         public function Update(bus:UserBus):void
         {
+            var arr:Array;
+            var new_item_count:int = 0;
+            var idx:int = 0;
+
             for each (var key_name:String in bus.GetKeyArray())
             {
-                if (bus[key_name][0].value is String || bus[key_name][0].value is int)
+                if (bus[key_name][0].value is String ||
+                    bus[key_name][0].value is int)
                 {
-                    var arr:Array = new Array;
-                    for each (var ys_var:YsVar in bus.GetVarArray(key_name))
+                    if (!(data.hasProperty(key_name)))
+                        data[key_name] = new AdvanceArray;
+                    arr = bus.GetVarArray(key_name);
+                    new_item_count = arr.length - data[key_name].length;
+                    idx = 0;
+
+                    if (new_item_count > 0)
                     {
-                        arr.push(ys_var.value);
+                        data[key_name].AddEmptyItems(new_item_count);
                     }
-                    data[key_name] = arr;
+                    else if (new_item_count < 0)
+                    {
+                        data[key_name].RemoveItems(arr.length);
+                    }
+
+                    for (idx = 0; idx < arr.length; ++idx)
+                    {
+                        data[key_name][idx] = arr[idx].value;
+                    }
                 }
             }
         }

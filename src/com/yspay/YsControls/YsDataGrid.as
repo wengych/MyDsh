@@ -2,17 +2,18 @@
 {
     import com.yspay.YsData.MData;
     import com.yspay.YsData.PData;
-    import com.yspay.YsData.TargetList;
     import com.yspay.util.UtilFunc;
     import com.yspay.util.YsClassFactory;
 
     import flash.display.DisplayObjectContainer;
+    import flash.events.Event;
 
     import mx.collections.ArrayCollection;
     import mx.controls.DataGrid;
     import mx.controls.dataGridClasses.DataGridColumn;
     import mx.core.Application;
     import mx.events.CollectionEvent;
+    import mx.events.CollectionEventKind;
     import mx.events.DataGridEvent;
 
     public class YsDataGrid extends DataGrid implements YsControl
@@ -92,6 +93,66 @@
             }
         }
 
+        protected function OnRemoveItems(p_data:PData,
+                                         dict_name:String,
+                                         startPos:int,
+                                         count:int=-1):void
+        {
+            trace('YsDataGrid::OnRemoveItems');
+            var arr:ArrayCollection = dataProvider as ArrayCollection;
+            if (arr.length > p_data.data[dict_name].length)
+            {
+                if (count < 0)
+                    count = arr.length - startPos;
+                while (--count >= 0)
+                    arr.removeItemAt(startPos + count);
+            }
+        }
+
+        protected function OnAddEmptyItems(p_data:PData,
+                                           dict_name:String,
+                                           count:int):void
+        {
+            trace('YsDataGrid::OnAddEmptyItems');
+            var arr:ArrayCollection = dataProvider as ArrayCollection;
+
+            if (arr.length < p_data.data[dict_name].length)
+            {
+                while (--count >= 0 &&
+                    arr.length < p_data.data[dict_name].length)
+                    arr.addItem(new Object);
+            }
+        }
+
+        protected function OnInsert(p_data:PData,
+                                    dict_name:String,
+                                    startPos:int,
+                                    ... rest):void
+        {
+            trace('YsDataGrid::OnInsert');
+            var arr:ArrayCollection = dataProvider as ArrayCollection;
+        }
+
+        public function NotifyFunctionCall(p_data:PData,
+                                           dict_name:String,
+                                           func_name:String,
+                                           args:Array):void
+        {
+            trace('YsDataGrid::NotifyFunctionCall( ' +
+                  dict_name + ',' +
+                  func_name + ',' +
+                  args + ')');
+
+            var func_map:Object =
+                {
+                    'RemoveItems': OnRemoveItems,
+                    'AddEmptyItems': OnAddEmptyItems,
+                    'Insert': OnInsert
+                };
+
+            func_map[func_name](p_data, dict_name, args);
+        }
+
         public function Notify(p_data:PData, dict_name:String, index:int):void
         {
             var has_key:Boolean = false;
@@ -106,21 +167,11 @@
             if (!has_key)
                 return;
 
-            if (index == -1)
-            {
-                RefreshColumn(p_data, dict_name);
-            }
-            else
-            {
-                //var ys_pod:YsPod = UtilFunc.GetParentByType(_parent, YsPod) as YsPod;
-                //var P_data:PData = ys_pod._M_data.TRAN[ys_pod.P_cont];
-                while (dataProvider.length <= index)
-                {
-                    dataProvider.addItem(new Object);
-                }
-
-                dataProvider[index][dict_name] = p_data.data[dict_name][index];
-            }
+            var arr:ArrayCollection = dataProvider as ArrayCollection;
+            if (arr.length <= index)
+                return;
+            arr[index][dict_name] = p_data.data[dict_name][index];
+            arr.refresh();
         }
 
         public function GetXml():XML
@@ -257,10 +308,20 @@
                 // TODO:  用对象关注数据,对象再和datagrid的对应数据格关联
                 //        创建一行数据，就建立了对应的一组DICT对象
 
-                if (xml.attribute('editable').length() > 0 && xml.@editable == "true")
+                if (xml.attribute('delete').length() > 0 &&
+                    xml.attribute('delete')[0] == "true")
                 {
                     dgc = new DataGridColumn;
-                    dgc.itemRenderer = new YsClassFactory(YsButton, this, btn_xml);
+                    dgc.itemRenderer = new YsClassFactory(YsButton, this, del_btn_xml);
+                    dgc.editable = false;
+
+                    columns = columns.concat(dgc);
+                }
+                if (xml.attribute('insert').length() > 0 &&
+                    xml.attribute('insert')[0] == 'true')
+                {
+                    dgc = new DataGridColumn;
+                    dgc.itemRenderer = new YsClassFactory(YsButton, this, ins_btn_xml);
                     dgc.editable = false;
 
                     columns = columns.concat(dgc);
@@ -290,9 +351,15 @@
             //data_prov.addEventListener(CollectionEvent.COLLECTION_CHANGE, DataChange);
         }
 
-        protected var btn_xml:XML =
+        protected var del_btn_xml:XML =
             <BUTTON LABEL="删除">删除
                 <ACTION>data_grid_delete_line</ACTION>
+            </BUTTON>
+            ;
+
+        protected var ins_btn_xml:XML =
+            <BUTTON LABEL="插入">插入
+                <ACTION>data_grid_insert_line</ACTION>
             </BUTTON>
             ;
 
@@ -311,6 +378,36 @@
         private function itemEditEndHandler(e:DataGridEvent):void
         {
             e.target.dataProvider.refresh();
+        }
+
+        protected function OnCollectionAdd(event:CollectionEvent):void
+        {
+            var item:Object = event.items[0];
+            // for each (var item:Object in event.items)
+            {
+                for (var item_key:String in item)
+                {
+                    if (item[item_key] == null)
+                        continue;
+
+                    for each (var to_data:PData in toDataObject[item_key].GetAllTarget())
+                        to_data.data[item_key].Insert(event.location, event.items);
+                }
+            }
+        }
+
+        protected override function collectionChangeHandler(event:Event):void
+        {
+            super.collectionChangeHandler(event);
+
+            if (event is CollectionEvent)
+            {
+                var ceEvent:CollectionEvent = CollectionEvent(event);
+                if (ceEvent.kind == CollectionEventKind.ADD)
+                {
+                    OnCollectionAdd(ceEvent);
+                }
+            }
         }
     }
 }

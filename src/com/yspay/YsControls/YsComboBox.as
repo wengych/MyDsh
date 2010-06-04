@@ -5,9 +5,12 @@ package com.yspay.YsControls
     import com.yspay.util.UtilFunc;
 
     import flash.display.DisplayObjectContainer;
+    import flash.events.Event;
 
     import mx.collections.ArrayCollection;
     import mx.controls.ComboBox;
+    import mx.events.CollectionEvent;
+    import mx.events.CollectionEventKind;
     import mx.managers.IFocusManagerComponent;
 
     public class YsComboBox extends ComboBox implements YsControl
@@ -111,7 +114,6 @@ package com.yspay.YsControls
                 }
             }
             dataProvider = combo_data;
-            this.collection;
         }
 
         private function ComboBoxShowLabel(item:Object):String
@@ -143,94 +145,95 @@ package com.yspay.YsControls
             return (returnvalue.substring(0, returnvalue.length - 3));
         }
 
-
-        protected function RefreshColumn(P_data:PData, field_name:String):void
+        override protected function collectionChangeHandler(event:Event):void
         {
-            var j:int;
-            var i:int = 0;
-
-            for (; i < P_data.data[field_name].length; ++i)
+            super.collectionChangeHandler(event);
+            if (event is CollectionEvent)
             {
-                if (i >= combo_data.length)
+                var ce:CollectionEvent = CollectionEvent(event);
+                if (ce.kind == CollectionEventKind.REMOVE)
                 {
-                    combo_data.addItem(new Object);
-                    combo_data[i][field_name] = P_data.data[field_name][i];
+                    trace('remove item at ' + ce.location.toString());
                 }
-                else
-                {
-                    combo_data[i][field_name] = P_data.data[field_name][i];
-                }
-            }
-
-            // 清空后续元素的对应节点
-            for (; i < combo_data.length; ++i)
-            {
-                if (!combo_data[i].hasOwnProperty(field_name))
-                    continue;
-                combo_data[i][field_name] = null;
-            }
-
-            // 删除空行
-            for (j = int(combo_data.length - 1); j >= 0; --j)
-            {
-                var empty_item:Boolean = true;
-                for (var arr_key:String in combo_data[j])
-                {
-                    if (arr_key == 'mx_internal_uid')
-                        continue;
-
-                    if (combo_data[j][arr_key] == null)
-                        continue;
-
-                    empty_item = false;
-                    break;
-                }
-
-                if (empty_item)
-                    combo_data.removeItemAt(j);
             }
         }
 
-        public function Notify(p_data:PData, dict_name:String, index:int):void
+        protected function OnRemoveItems(p_data:PData,
+                                         dict_name:String,
+                                         startPos:int,
+                                         count:int=-1):void
+        {
+            trace('YsComboBox::OnRemoveItems');
+            if (combo_data.length > p_data.data[dict_name].length)
+            {
+                if (count < 0)
+                    count = combo_data.length - startPos;
+                while (--count >= 0)
+                    combo_data.removeItemAt(startPos + count);
+            }
+        }
+
+        protected function OnAddEmptyItems(p_data:PData,
+                                           dict_name:String,
+                                           count:int):void
+        {
+            trace('YsComboBox::OnAddEmptyItems');
+
+            if (combo_data.length < p_data.data[dict_name].length)
+            {
+                while (--count >= 0)
+                    combo_data.addItem(new Object);
+            }
+        }
+
+        protected function OnInsert(p_data:PData,
+                                    dict_name:String,
+                                    startPos:int,
+                                    ... rest):void
+        {
+            trace('YsComboBox::OnInsert');
+        }
+
+        public function NotifyFunctionCall(p_data:PData,
+                                           dict_name:String,
+                                           func_name:String,
+                                           args:Array):void
+        {
+            trace('YsComboBox::NotifyFunctionCall( ' +
+                  dict_name + ',' +
+                  func_name + ',' +
+                  args + ')');
+
+            var func_map:Object =
+                {
+                    'RemoveItems': OnRemoveItems,
+                    'AddEmptyItems': OnAddEmptyItems,
+                    'Insert': OnInsert
+                };
+
+            func_map[func_name](p_data, dict_name, args);
+        }
+
+        public function Notify(p_data:PData,
+                               dict_name:String,
+                               index:int):void
         {
             var idx:int = column_dict_arr.indexOf(dict_name);
             if (idx < 0)
                 return;
-            /*var has_key:Boolean = false;
-               for (var item_key:String in combo_data[0])
-               {
-               if (item_key == dict_name)
-               {
-               has_key = true;
-               break;
-               }
-               }
-               if (!has_key)
-             return;*/
 
             combo_data.filterFunction = null;
-            combo_data.refresh();
 
-            if (index == -1)
-            {
-                RefreshColumn(p_data, dict_name);
-            }
-            else
-            {
-                if (dataProvider.length <= index)
-                {
-                    dataProvider.addItem(new Object);
-                }
+            combo_data[index][dict_name] = p_data.data[dict_name][index];
 
-                combo_data[index][dict_name] = p_data.data[dict_name][index];
-            }
             selectedIndex = 0;
             validateNow();
 
             selectedIndex = -1;
             validateNow();
 
-            var focus_comp:IFocusManagerComponent = (_parent as YsDict)._focusManager.getFocus();
+            var focus_comp:IFocusManagerComponent =
+                (_parent as YsDict)._focusManager.getFocus();
             //if (focus_comp != null && (_parent as YsDict).contains(focus_comp as DisplayObject))
             //    open();
 
@@ -254,7 +257,8 @@ package com.yspay.YsControls
         {
             trace("SetComboBox")
             var arr_col:ArrayCollection = combo_data;
-            var filter_func:Function = function(combo_item:Object):Boolean
+            var filter_func:Function =
+                function(combo_item:Object):Boolean
                 {
                     return filterFunction(combo_item, key, value);
                 }
@@ -298,9 +302,11 @@ package com.yspay.YsControls
 
         }
 
-        private function filterFunction(item:Object, key:String, value:String):Boolean
+        private function filterFunction(item:Object,
+                                        key:String,
+                                        value:String):Boolean
         {
-            if (!item.hasOwnProperty(key))
+            if (!item.hasOwnProperty(key) || item[key] == null)
             {
                 trace('combo box filerFunction error.');
                 return false;

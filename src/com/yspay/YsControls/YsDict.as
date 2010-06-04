@@ -14,7 +14,6 @@ package com.yspay.YsControls
     import mx.controls.Label;
     import mx.controls.TextInput;
     import mx.controls.dataGridClasses.DataGridColumn;
-    import mx.events.FlexEvent;
     import mx.events.ListEvent;
     import mx.events.PropertyChangeEvent;
     import mx.managers.FocusManager;
@@ -257,9 +256,18 @@ package com.yspay.YsControls
                         ys_btn.Init(btn_xml);
                     }
                 }
-
-                    //??????        this.addEventListener(EventNextDict.EVENT_NAME, MoveToNextDict);
             }
+        }
+
+        public function NotifyFunctionCall(p_data:PData,
+                                           dict_name:String,
+                                           func_name:String,
+                                           args:Array):void
+        {
+            trace('YsDict::NotifyFunctionCall( ' +
+                  dict_name + ',' +
+                  func_name + ',' +
+                  args + ')');
         }
 
         public function Notify(p_data:PData, dict_name:String, index:int):void
@@ -286,6 +294,7 @@ package com.yspay.YsControls
             trace("DictChange", event.property)
             if (event.property == 'text')
             {
+                trace('\tdict.text = ', event.newValue);
                 for each (var p_data:PData in dict.To.GetAllTarget())
                 {
                     if (p_data.data[dict.name] == null)
@@ -298,6 +307,8 @@ package com.yspay.YsControls
                 //if (_combo != null && _combo != dict.source)
                 if (_combo != null) //无论是输入还是选单，都需要修改COMBOBOX，如果是选单，需要修改PROMPT
                     _combo.SetComboBox(dict.name, dict.text);
+
+                this.dispatchEvent(new EventNextDict);
 
                 dict.source = null;
             }
@@ -321,12 +332,6 @@ package com.yspay.YsControls
             }
             //else
             //    _combo.SetComboBox(dict.name, dict.text);
-        }
-
-        private function EnterHandler(event:FlexEvent):void
-        {
-            //MoveToNextDict();
-            this.dispatchEvent(new EventNextDict);
         }
 
         protected function MoveToNextDict(event:EventNextDict):void
@@ -388,7 +393,6 @@ package com.yspay.YsControls
             ti.text = dict.text;
 
             ti.addEventListener(Event.CHANGE, TextInputChange);
-            ti.addEventListener(FlexEvent.ENTER, EnterHandler);
 
             return ti;
         }
@@ -415,8 +419,6 @@ package com.yspay.YsControls
 
             dict.source = _combo;
             dict.text = sel_item[dict.name];
-
-            _text.dispatchEvent(new FlexEvent(FlexEvent.ENTER));
         }
     }
 }

@@ -12,8 +12,8 @@ package com.yspay.util
     import mx.core.IPropertyChangeNotifier;
     import mx.events.PropertyChangeEvent;
     import mx.events.PropertyChangeEventKind;
-    import mx.utils.UIDUtil;
     import mx.utils.ObjectUtil;
+    import mx.utils.UIDUtil;
     import mx.utils.object_proxy;
 
     //namespace flash_proxy = "http://www.adobe.com/flash/proxy";
@@ -330,7 +330,17 @@ package com.yspay.util
          */
         override flash_proxy function callProperty(name:*, ... rest):*
         {
-            return _item[name].apply(_item, rest)
+            var rtn:* = _item[name].apply(_item, rest);
+            if (dispatcher.hasEventListener(FunctionCallEvent.EVENT_NAME))
+            {
+                var event:FunctionCallEvent = new FunctionCallEvent();
+                event.function_name = name;
+                event.source = this;
+                event.args = rest;
+                dispatcher.dispatchEvent(event);
+            }
+
+            return rtn;
         }
 
         /**
@@ -476,26 +486,34 @@ package com.yspay.util
             {
                 value.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE,
                                        propertyChangeHandler);
+                value.addEventListener(FunctionCallEvent.EVENT_NAME,
+                                       functionCallHandler);
                 notifiers[name] = value;
                 return value;
             }
 
-            if (getQualifiedClassName(value) == "Object")
+            var class_name:String = getQualifiedClassName(value);
+
+            if (class_name == "Object")
             {
                 value = new proxyClass(_item[name], null,
                                        _proxyLevel > 0 ? _proxyLevel - 1 : _proxyLevel);
                 value.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE,
                                        propertyChangeHandler);
+                value.addEventListener(FunctionCallEvent.EVENT_NAME,
+                                       functionCallHandler);
                 notifiers[name] = value;
                 return value;
             }
 
-            if (getQualifiedClassName(value) == "Array")
+            if (["Array", "com.yspay.util::AdvanceArray"].indexOf(class_name) >= 0)
             {
                 value = new proxyClass(_item[name], null,
                                        _proxyLevel > 0 ? _proxyLevel - 1 : _proxyLevel);
                 value.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE,
                                        propertyChangeHandler);
+                value.addEventListener(FunctionCallEvent.EVENT_NAME,
+                                       functionCallHandler);
                 notifiers[name] = value;
                 return value;
             }
@@ -661,6 +679,11 @@ package com.yspay.util
             dispatcher.dispatchEvent(event);
         }
 
+        public function functionCallHandler(event:Event):void
+        {
+            dispatcher.dispatchEvent(event);
+        }
+
         //--------------------------------------------------------------------------
         //
         //  Protected Methods
@@ -685,7 +708,8 @@ package com.yspay.util
             }
             else
             {
-                propertyList = ObjectUtil.getClassInfo(_item, null, {includeReadOnly: true, uris: ["*"]}).properties;
+                propertyList = ObjectUtil.getClassInfo(_item, null, {includeReadOnly: true,
+                                                           uris: ["*"]}).properties;
             }
         }
     }

@@ -7,6 +7,7 @@ package com.yspay.YsControls
     import com.yspay.util.UtilFunc;
 
     import flash.display.DisplayObjectContainer;
+    import flash.events.ErrorEvent;
     import flash.events.Event;
 
     import mx.controls.Alert;
@@ -54,6 +55,9 @@ package com.yspay.YsControls
         // 调用ServiceCall
         public override function Do(stack_event:StackEvent, source_event:Event):void
         {
+            var pod:YsPod = UtilFunc.GetParentByType(this._parent, YsPod) as YsPod;
+            pod.enabled = false;
+
             var dict_str:String;
             var dict_search:String = 'dict://';
             var bus_in_name_args:Array = new Array;
@@ -108,9 +112,11 @@ package com.yspay.YsControls
             var ip:String = Application.application.GetServiceIp(scall_name);
             var port:String = Application.application.GetServicePort(scall_name);
 
-            var func:Function = function(new_bus:UserBus):void
+            var func:Function =
+                function(new_bus:UserBus,
+                         error_event:ErrorEvent=null):void
                 {
-                    ServiceCallBack(new_bus, stack_event);
+                    ServiceCallBack(new_bus, stack_event, error_event);
                 }
             //Alert.show(bus.toString());
             scall.Send(bus, ip, port, func);
@@ -152,13 +158,17 @@ package com.yspay.YsControls
             }
         }
 
-        protected function ServiceCallBack(bus:UserBus, event:StackEvent):void
+        protected function ServiceCallBack(bus:UserBus,
+                                           event:StackEvent,
+                                           error_event:ErrorEvent):void
         {
+            var pod:YsPod = UtilFunc.GetParentByType(this._parent, YsPod) as YsPod;
             if (bus == null)
             {
                 Alert.show('服务调用出错,bus为空' + '\n' +
                            '            服务名:' + action_name);
                 _parent.dispatchEvent(event);
+                pod.enabled = true;
                 return;
             }
 
@@ -182,11 +192,8 @@ package com.yspay.YsControls
 
             if (user_rtn != 0 || scall_rtn != 0)
             {
-                /* Alert.show('服务调用出错: ' + action_name + '\n' +
-                   '     返回码: ' + rtn + '\n' +
-                   '   错误信息: ' + rtn_msg);
-                 */
                 _parent.dispatchEvent(event);
+                pod.enabled = true;
                 return;
             }
 
@@ -226,6 +233,8 @@ package com.yspay.YsControls
                 }
             }
 
+            pod.enabled = true;
+
             _parent.dispatchEvent(event);
         }
 
@@ -240,8 +249,9 @@ package com.yspay.YsControls
             for each (var dict_xml:XML in dict_list)
             {
                 dict_str = dict_xml.toString();
+                var pre_link_str:String = dict_str.substr(0, dict_search.length);
 
-                if (dict_str.substr(0, dict_search.length).toLowerCase() == dict_search)
+                if (pre_link_str.toLowerCase() == dict_search)
                 {
                     arr.push(dict_str.substr(dict_search.length));
                 }
