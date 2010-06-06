@@ -317,11 +317,22 @@
 
                     columns = columns.concat(dgc);
                 }
+
                 if (xml.attribute('insert').length() > 0 &&
                     xml.attribute('insert')[0] == 'true')
                 {
                     dgc = new DataGridColumn;
                     dgc.itemRenderer = new YsClassFactory(YsButton, this, ins_btn_xml);
+                    dgc.editable = false;
+
+                    columns = columns.concat(dgc);
+                }
+
+                if (xml.attribute('append').length() > 0 &&
+                    xml.attribute('append')[0] == 'true')
+                {
+                    dgc = new DataGridColumn;
+                    dgc.itemRenderer = new YsClassFactory(YsButton, this, app_btn_xml);
                     dgc.editable = false;
 
                     columns = columns.concat(dgc);
@@ -360,6 +371,12 @@
         protected var ins_btn_xml:XML =
             <BUTTON LABEL="插入">插入
                 <ACTION>data_grid_insert_line</ACTION>
+            </BUTTON>
+            ;
+
+        protected var app_btn_xml:XML =
+            <BUTTON LABEL="追加">追加
+                <ACTION>data_grid_append_line</ACTION>
             </BUTTON>
             ;
 

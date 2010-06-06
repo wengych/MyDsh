@@ -12,14 +12,14 @@ package com.yspay.event_handlers
     import mx.controls.dataGridClasses.DataGridColumn;
     import mx.core.UIComponent;
 
-    public function data_grid_insert_line(ui_comp:UIComponent,
+    public function data_grid_append_line(ui_comp:UIComponent,
                                           source_event:Event,
                                           action_info:XML):void
     {
         var data_grid:YsDataGrid = UtilFunc.GetParentByType(ui_comp.parent, YsDataGrid) as YsDataGrid;
         if (data_grid == null)
         {
-            Alert.show('data_grid_insert_line: 控件类型不匹配');
+            Alert.show('data_grid_append_line: 控件类型不匹配');
             return;
         }
 
@@ -35,6 +35,6 @@ package com.yspay.event_handlers
             new_obj[dgc.dataField] = '';
         }
 
-        arr.addItemAt(new_obj, idx);
+        arr.addItem(new_obj);
     }
 }
