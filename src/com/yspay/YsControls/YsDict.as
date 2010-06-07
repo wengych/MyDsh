@@ -147,7 +147,12 @@ package com.yspay.YsControls
                         dgc.editable = kid.toString();
 
                 }
-                var ch_name:String = _xml.display.LABEL.@text;
+
+                var ch_name:String;
+                if (_xml.attribute('LABEL').length() == 0)
+                    ch_name = _xml.display.LABEL.@text;
+                else
+                    ch_name = _xml.@LABEL.toString();
                 var en_name:String = _xml.services.@NAME;
                 dgc.headerText = ch_name;
                 dgc.dataField = en_name;
