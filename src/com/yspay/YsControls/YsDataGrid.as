@@ -314,6 +314,7 @@
                     dgc = new DataGridColumn;
                     dgc.itemRenderer = new YsClassFactory(YsButton, this, del_btn_xml);
                     dgc.editable = false;
+                    dgc.width = int(del_btn_xml.attribute('width'));
 
                     columns = columns.concat(dgc);
                 }
@@ -324,6 +325,7 @@
                     dgc = new DataGridColumn;
                     dgc.itemRenderer = new YsClassFactory(YsButton, this, ins_btn_xml);
                     dgc.editable = false;
+                    dgc.width = int(ins_btn_xml.attribute('width'));
 
                     columns = columns.concat(dgc);
                 }
@@ -334,6 +336,7 @@
                     dgc = new DataGridColumn;
                     dgc.itemRenderer = new YsClassFactory(YsButton, this, app_btn_xml);
                     dgc.editable = false;
+                    dgc.width = int(app_btn_xml.attribute('width'));
 
                     columns = columns.concat(dgc);
                 }
@@ -363,19 +366,19 @@
         }
 
         protected var del_btn_xml:XML =
-            <BUTTON LABEL="删除">删除
+            <BUTTON LABEL="删除" width="60">删除
                 <ACTION>data_grid_delete_line</ACTION>
             </BUTTON>
             ;
 
         protected var ins_btn_xml:XML =
-            <BUTTON LABEL="插入">插入
+            <BUTTON LABEL="插入" width="60">插入
                 <ACTION>data_grid_insert_line</ACTION>
             </BUTTON>
             ;
 
         protected var app_btn_xml:XML =
-            <BUTTON LABEL="追加">追加
+            <BUTTON LABEL="追加" width="60">追加
                 <ACTION>data_grid_append_line</ACTION>
             </BUTTON>
             ;
