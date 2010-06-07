@@ -35,6 +35,6 @@ package com.yspay.event_handlers
             new_obj[dgc.dataField] = '';
         }
 
-        arr.addItem(new_obj);
+        arr.addItemAt(new_obj, idx + 1);
     }
 }
