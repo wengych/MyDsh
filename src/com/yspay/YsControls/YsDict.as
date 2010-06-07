@@ -71,7 +71,7 @@ package com.yspay.YsControls
                     'index': 0,
                     'name': '',
                     'source': null,
-                    'delimiter': 80};
+                    'delimiter': 100};
             dict = new ObjectProxy(dict_object);
 
             dict.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, DictChange);
