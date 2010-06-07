@@ -9,6 +9,7 @@
     import flash.events.Event;
 
     import mx.collections.ArrayCollection;
+    import mx.controls.Alert;
     import mx.controls.DataGrid;
     import mx.controls.dataGridClasses.DataGridColumn;
     import mx.core.Application;
@@ -19,6 +20,12 @@
     public class YsDataGrid extends DataGrid implements YsControl
     {
         protected var _xml:XML;
+
+        public var del:Boolean;
+        public var add:Boolean;
+        public var ins:Boolean;
+        public var default_line:Boolean;
+
         public var _parent:DisplayObjectContainer;
         public var data_count:String;
         public var D_data:PData = new PData;
@@ -238,23 +245,44 @@
 
             _parent.addChild(this);
             _xml = new XML(xml);
-            for each (var kids:XML in _xml.attributes())
-            {
-                if (kids.name() == "editable")
-                    editable = kids.toString();
-                if (kids.name() == "dragEnabled")
-                    dragEnabled = kids.toString();
 
-                this.allowMultipleSelection = true;
-//                if (kids.name() == "append")
-//                {
-//                    data["attrib"] = new Object;
-//                    data["attrib"][kids.name().toString()] = kids.toString();
-//                }
-                if (kids.name() == "itemEditEnd")
+            /*
+               for each (var kids:XML in _xml.attributes())
+               {
+               if (kids.name() == "editable")
+               editable = kids.toString();
+               if (kids.name() == "dragEnabled")
+               dragEnabled = kids.toString();
+
+               this.allowMultipleSelection = true;
+               //                if (kids.name() == "append")
+               //                {
+               //                    data["attrib"] = new Object;
+               //                    data["attrib"][kids.name().toString()] = kids.toString();
+               //                }
+               if (kids.name() == "itemEditEnd")
+               {
+               if (kids.toString() == "true")
+               addEventListener("itemEditEnd", itemEditEndHandler);
+               }
+             }*/
+
+            for (var attr_name:String in YsMaps.datagrid_attrs)
+            {
+                if (!(this.hasOwnProperty(attr_name)))
                 {
-                    if (kids.toString() == "true")
-                        addEventListener("itemEditEnd", itemEditEndHandler);
+                    Alert.show('YsDataGrid中没有 ' + attr_name + ' 属性');
+                    continue;
+                }
+
+                if (_xml.attribute(attr_name).length() == 0)
+                {
+                    // XML中未描述此属性，取默认值
+                    this[attr_name] = YsMaps.datagrid_attrs[attr_name]['default'];
+                }
+                else
+                {
+                    this[attr_name] = _xml.attribute(attr_name).toString();
                 }
             }
 
@@ -308,8 +336,7 @@
                 // TODO:  用对象关注数据,对象再和datagrid的对应数据格关联
                 //        创建一行数据，就建立了对应的一组DICT对象
 
-                if (xml.attribute('delete').length() > 0 &&
-                    xml.attribute('delete')[0] == "true")
+                if (this.del)
                 {
                     dgc = new DataGridColumn;
                     dgc.itemRenderer = new YsClassFactory(YsButton, this, del_btn_xml);
@@ -319,8 +346,7 @@
                     columns = columns.concat(dgc);
                 }
 
-                if (xml.attribute('insert').length() > 0 &&
-                    xml.attribute('insert')[0] == 'true')
+                if (this.ins)
                 {
                     dgc = new DataGridColumn;
                     dgc.itemRenderer = new YsClassFactory(YsButton, this, ins_btn_xml);
@@ -330,13 +356,12 @@
                     columns = columns.concat(dgc);
                 }
 
-                if (xml.attribute('append').length() > 0 &&
-                    xml.attribute('append')[0] == 'true')
+                if (this.add)
                 {
                     dgc = new DataGridColumn;
-                    dgc.itemRenderer = new YsClassFactory(YsButton, this, app_btn_xml);
+                    dgc.itemRenderer = new YsClassFactory(YsButton, this, add_btn_xml);
                     dgc.editable = false;
-                    dgc.width = int(app_btn_xml.attribute('width'));
+                    dgc.width = int(add_btn_xml.attribute('width'));
 
                     columns = columns.concat(dgc);
                 }
@@ -362,6 +387,8 @@
             }
 
             var data_prov:ArrayCollection = dataProvider as ArrayCollection;
+            if (this.default_line == true)
+                data_prov.addItem(new Object);
             //data_prov.addEventListener(CollectionEvent.COLLECTION_CHANGE, DataChange);
         }
 
@@ -377,7 +404,7 @@
             </BUTTON>
             ;
 
-        protected var app_btn_xml:XML =
+        protected var add_btn_xml:XML =
             <BUTTON LABEL="追加" width="60">追加
                 <ACTION>data_grid_append_line</ACTION>
             </BUTTON>

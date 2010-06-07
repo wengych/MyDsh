@@ -2,8 +2,6 @@ package com.yspay.YsControls
 {
     import com.yspay.events.*;
 
-    import flash.events.Event;
-
     public class YsMaps
     {
         public function YsMaps()
@@ -19,5 +17,22 @@ package com.yspay.YsControls
                 'event': YsXmlEvent,
                 'action': YsAction,
                 'services': YsService};
+
+        public static var datagrid_attrs:Object =
+            {
+                'editable': {'default': false},
+                'dragEnabled': {'default': false},
+                'allowMultipleSelection': {'default': true},
+                //'itemEditEnd': {'default': false},
+                'add': {'default': false},
+                'ins': {'default': false},
+                'del': {'default': false},
+                'default_line': {'default': false}
+            };
+
+        public static var button_attrs:Object =
+            {
+                '': ''
+            };
     }
 }
