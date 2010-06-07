@@ -53,6 +53,11 @@ package com.yspay.event_handlers
                     event.cache_xml.appendChild(from_pod);
                 }
 
+                if (drag_item.TYPE == 'WINDOWS')
+                {
+                    event.cache_xml.@showCloseButton = "true";
+                }
+
                 // var event:Event = YsMaps.ys_event_map[];
                 var new_event:Event;
                 if (ui_comp is YsPod)

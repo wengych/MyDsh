@@ -15,7 +15,8 @@ package com.yspay.event_handlers
     {
         var ys_pod:YsPod = UtilFunc.GetParentByType(ui_comp.parent, YsPod) as YsPod;
         trace('show_xml');
-        var xml:XML = <L TYPE="WINDOWS" NAME="IDNUMBER" VER="20091120999999" ISUSED="0" APPNAME="MapServer" CUSER="xing" MEMO=""></L>;
+        var xml:XML = <L TYPE="WINDOWS" NAME="IDNUMBER" VER="20091120999999" ISUSED="0" APPNAME="MapServer" CUSER="xing" MEMO=""></L>
+            ;
         var child_wnd:Container;
         var date:Date = new Date;
         xml.@VER = date.fullYear + DateUtil.doubleString(date.month + 1) + DateUtil.doubleString(date.date) + DateUtil.doubleString(date.hours) + DateUtil.doubleString(date.minutes) + DateUtil.doubleString(date.seconds);
@@ -24,7 +25,7 @@ package com.yspay.event_handlers
             var new_wnd:YsTitleWindow = child_wnd as YsTitleWindow;
             if (new_wnd == null)
                 continue;
-            var new_xml:XML = new_wnd.save_windows_xml(ys_pod.P_cont);
+            var new_xml:XML = new_wnd.GetSaveXml();
             xml.appendChild(new_xml);
             xml.@NAME = new_xml.@VALUE;
             xml.@MEMO = new_xml.A.(@KEYNAME == 'Title').@VALUE;

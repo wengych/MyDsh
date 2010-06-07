@@ -18,6 +18,7 @@ package com.yspay.YsControls
                 'action': YsAction,
                 'services': YsService};
 
+        // DataGrid支持的属性列表
         public static var datagrid_attrs:Object =
             {
                 'editable': {'default': false},
@@ -33,6 +34,13 @@ package com.yspay.YsControls
         public static var button_attrs:Object =
             {
                 '': ''
+            };
+
+        // Windows支持的属性列表
+        public static var windows_attrs:Object =
+            {
+                'title': {},
+                'showCloseButton': {'default': false}
             };
     }
 }

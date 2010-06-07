@@ -9,6 +9,7 @@ package com.yspay.YsControls
 
     import mx.collections.ArrayCollection;
     import mx.containers.TitleWindow;
+    import mx.controls.Alert;
     import mx.core.Application;
     import mx.events.*;
 
@@ -115,87 +116,37 @@ package com.yspay.YsControls
             return rtn;
         }
 
-        public function save_windows_xml(p_cont:int):XML
+        protected function InitAttributes():void
         {
-            var P_data:Object = _M_data.TRAN[p_cont];
-
-            if (!P_data.data.hasOwnProperty('__W_ENAME') || !P_data.data.hasOwnProperty('__W_CNAME'))
-                return null;
-
-            var ename:String = P_data.data["__W_ENAME"][0];
-            var cname:String = P_data.data["__W_CNAME"][0];
-            var rtn:XML =
-                <L KEY="windows" KEYNAME="windows" VALUE="windows IN">
-                    <A KEY="TITLE" KEYNAME="Title"/>
-                </L>
-                ;
-            var xml_line:XML =
-                <L KEY="" KEYNAME="" VALUE="">
-                    <L KEY="From" KEYNAME="From" VALUE="pod"/>
-                    <L KEY="To" KEYNAME="To" VALUE="pod"/>
-                </L>
-                ;
-            // var tb_xml_args:Object = {'TITLE': 'ENAME'};
-            //  rtn.A.(@KEY == 'TITLE').@VALUE = (args_obj[tb_xml_args['TITLE']].text);
-            rtn.@VALUE = ename;
-            rtn.A.(@KEY == 'TITLE').@VALUE = cname;
-            for each (var ctrl:YsControl in this.getChildren())
+            var wnd_attrs:Object = YsMaps.windows_attrs;
+            for (var attr_name:String in wnd_attrs)
             {
-
-                var child_xml:XML = ctrl.GetXml();
-                if (child_xml == null)
-                    continue;
-
-                var newxml:XML = new XML(xml_line);
-                newxml.@KEY = child_xml.name().toString();
-                if (child_xml.name().toString() == "DICT")
-                    newxml.@KEYNAME = child_xml.display.LABEL.@text.toString();
-                else if (child_xml.name().toString() == "BUTTON")
+                if (!(this.hasOwnProperty(attr_name)))
                 {
-                    var btn_xml:XML = ctrl.GetSaveXml();
-                    newxml.@KEYNAME = child_xml.text().toString();
-
+                    Alert.show('YsTitleWindow中没有 ' + attr_name + ' 属性');
+                    continue;
                 }
 
-                newxml.@VALUE = child_xml.name().toString() + "://" + child_xml.text().toString();
-
-                rtn.appendChild(newxml);
-                newxml = null;
+                if (_xml.attribute(attr_name).length() == 0)
+                {
+                    // XML中未描述此属性，取默认值
+                    if (wnd_attrs[attr_name].hasOwnProperty('default'))
+                        this[attr_name] = wnd_attrs[attr_name]['default'];
+                }
+                else
+                {
+                    this[attr_name] = _xml.attribute(attr_name).toString();
+                }
             }
-            return rtn;
-        /*
-           for each (var form_item:MyFormItem in this.getChildren())
-           {
-           var form_xml:XML = form_item.descXml;
-           if (form_xml.name() == 'SERVICES')
-           {
-           var labelXml:XML = <A KEY="LABEL" KEYNAME="按钮信息"/>;
-           labelXml.@VALUE = form_xml.@LABEL;
-           var serviceXml:XML = <L KEY="SERVICES" KEYNAME="按钮服务"/>;
-           serviceXml.@VALUE = "SERVICES://" + form_xml.text();
-           var button_xml:XML = <L KEY="BUTTON" KEYNAME="按钮" VALUE=""/>;
-           button_xml.appendChild(labelXml);
-           button_xml.appendChild(serviceXml);
-           rtn.appendChild(button_xml);
-           }
-           else
-           {
-           var dict_xml:XML = <L/>;
-           dict_xml.@KEY = form_xml.localName();
-           dict_xml.@KEYNAME = form_item.label;
-           dict_xml.@VALUE = form_xml.localName() + "://" + form_xml.services.@NAME;
-           rtn.appendChild(dict_xml);
-           }
-         }*/
         }
 
         public function Init(xml:XML):void
         {
             _xml = xml;
             _parent.addChild(this);
-
-            this.title = xml.@TITLE;
             this.name = xml.text().toString();
+
+            InitAttributes();
 
             for each (var event_xml:XML in xml.elements())
             {
@@ -222,6 +173,5 @@ package com.yspay.YsControls
             child_ctrl.Init(xml);
 
         }
-
     }
 }
