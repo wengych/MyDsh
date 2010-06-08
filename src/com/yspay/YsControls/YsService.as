@@ -36,7 +36,7 @@ package com.yspay.YsControls
 
         // 从_from中取得所有输入数据源，逐一查找对应key，找到后将值加入bus并返回true
         // 未找到对应key则返回false
-        public function AddBusDataFromPData(bus:UserBus, key:String):Boolean
+        public function AddBusDataFromPData(bus:UserBus, key:String, type:String):Boolean
         {
 
             for each (var from_item:PData in _from.GetAllTarget())
@@ -44,12 +44,45 @@ package com.yspay.YsControls
                 if (from_item.data.hasOwnProperty(key))
                 {
                     for each (var data_item:* in from_item.data[key])
-                        bus.Add(key, data_item);
+                    {
+                        if (type == 'STRING')
+                            bus.Add(key, data_item.toString());
+                        else if (type == 'INT')
+                            bus.Add(key, int(data_item));
+                    }
                     return true;
                 }
             }
 
             return false;
+        }
+
+        protected function SetBusInArgs(dict_list:XMLList,
+                                        names:Array,
+                                        types:Array):void
+        {
+            var dict_str:String;
+            var dict_name:String;
+            var dict_type:String;
+            var dict_search:String = 'dict://';
+            for each (var dict_xml:XML in dict_list)
+            {
+                dict_str = dict_xml.toString();
+                if (dict_str.substr(0, dict_search.length).toLowerCase() == dict_search)
+                {
+                    dict_name = dict_str.substr(dict_search.length);
+                }
+                var pool:Pool = Application.application._pool;
+
+                if (!pool.info.DICT.hasOwnProperty(dict_name))
+                    continue;
+                var dts_no:String = pool.info.DICT[dict_name].Get().DTS;
+                dict_xml = new XML(pool.dts[dts_no].__DICT_XML);
+                dict_type = dict_xml.services.@TYPE;
+
+                names.push(dict_name);
+                types.push(dict_type);
+            }
         }
 
         // 调用ServiceCall
@@ -58,24 +91,26 @@ package com.yspay.YsControls
             var pod:YsPod = UtilFunc.GetParentByType(this._parent, YsPod) as YsPod;
             pod.enabled = false;
 
-            var dict_str:String;
-            var dict_search:String = 'dict://';
             var bus_in_name_args:Array = new Array;
+            var bus_in_type_args:Array = new Array;
             var bus_in_const_args:Array = new Array;
 
             var scall_name:String = _xml.SendPKG.HEAD.@active;
             var dict_list:XMLList = _xml.SendPKG.BODY.DICT;
 
-            // 生成输入参数列表
-            for each (var dict_xml:XML in dict_list)
-            {
-                dict_str = dict_xml.toString();
+            /*
+               for each (var dict_xml:XML in dict_list)
+               {
+               dict_str = dict_xml.toString();
 
-                if (dict_str.substr(0, dict_search.length).toLowerCase() == dict_search)
-                {
-                    bus_in_name_args.push(dict_str.substr(dict_search.length));
-                }
-            }
+               if (dict_str.substr(0, dict_search.length).toLowerCase() == dict_search)
+               {
+               bus_in_name_args.push(dict_str.substr(dict_search.length));
+               }
+             }*/
+            SetBusInArgs(dict_list,
+                         bus_in_name_args,
+                         bus_in_type_args);
 
             var scall:ServiceCall = new ServiceCall;
             var bus:UserBus = new UserBus;
@@ -94,12 +129,16 @@ package com.yspay.YsControls
 
             //var_name=dict名字
             // 向bus中添加所有输入项
-            for each (var var_name:String in bus_in_name_args) //从本地P_data中取得所需数据
+            for (var idx:int = 0; idx < bus_in_name_args.length; ++idx)
+                //for each (var var_name:String in bus_in_name_args) //从本地P_data中取得所需数据
             {
+                var var_name:String = bus_in_name_args[idx];
+                var var_type:String = bus_in_type_args[idx];
+
                 if (bus[var_name] != null)
                     continue;
 
-                if (AddBusDataFromPData(bus, var_name) == true)
+                if (AddBusDataFromPData(bus, var_name, var_type) == true)
                     continue;
 
                 var ys_var:YsVar = main_bus[var_name];
