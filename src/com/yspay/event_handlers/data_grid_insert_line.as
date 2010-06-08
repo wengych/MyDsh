@@ -32,7 +32,7 @@ package com.yspay.event_handlers
             if (dgc.itemRenderer != null)
                 continue;
 
-            new_obj[dgc.dataField] = '';
+            new_obj[dgc.dataField] = data_grid.selectedItem[dgc.dataField];
         }
 
         arr.addItemAt(new_obj, idx);
