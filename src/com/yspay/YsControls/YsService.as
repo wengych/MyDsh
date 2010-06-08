@@ -95,7 +95,7 @@ package com.yspay.YsControls
             var bus_in_type_args:Array = new Array;
             var bus_in_const_args:Array = new Array;
 
-            var scall_name:String = _xml.SendPKG.HEAD.@active;
+            var scall_name:String = _xml.SendPKG[0].HEAD[0].@active;
             var dict_list:XMLList = _xml.SendPKG.BODY.DICT;
 
             /*
