@@ -15,7 +15,8 @@ package com.yspay.event_handlers
                                    mouse_over, make_datagrid_xml, drag_object_to_datagrid,
                                    data_grid_delete_line,
                                    data_grid_insert_line,
-                                   data_grid_append_line];
+                                   data_grid_append_line,
+                                   copy_dict];
 
         /*
            clean_text(null, null);

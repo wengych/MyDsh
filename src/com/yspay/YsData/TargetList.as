@@ -13,6 +13,7 @@ package com.yspay.YsData
     {
         protected var object:Object;
         protected var target_arr:Array = new Array;
+        protected var dict_arr_arr:Array = new Array;
         protected var target_name_arr:Array = new Array;
 
         public function TargetList()
@@ -28,6 +29,7 @@ package com.yspay.YsData
             for each (var item:XML in xml_list)
             {
                 var item_text:String = item.text().toString().toLowerCase();
+                var curr_pdata:PData;
                 if (item_text == 'dict')
                 {
                     var dict:YsDict;
@@ -36,7 +38,7 @@ package com.yspay.YsData
                     else
                         dict = UtilFunc.GetParentByType(obj._parent, YsDict) as YsDict;
 
-                    target_arr.push(dict.D_data);
+                    curr_pdata = dict.D_data;
                 }
                 else if (item_text == 'datagrid')
                 {
@@ -45,36 +47,49 @@ package com.yspay.YsData
                         dg = obj as YsDataGrid;
                     else
                         dg = UtilFunc.GetParentByType(obj._parent, YsDataGrid) as YsDataGrid;
-                    target_arr.push(dg.D_data);
+                    curr_pdata = dg.D_data;
                 }
                 else if (item_text == 'windows')
                 {
                     var wnd:YsTitleWindow = UtilFunc.GetParentByType(obj._parent,
                                                                      YsTitleWindow) as YsTitleWindow;
-                    target_arr.push(wnd.D_data);
+                    curr_pdata = wnd.D_data;
                 }
                 else if (item_text == 'pod')
                 {
                     var pod:YsPod = UtilFunc.GetParentByType(obj._parent, YsPod) as YsPod;
-                    target_arr.push(pod.D_data);
+                    curr_pdata = pod.D_data;
                 }
                 else if (item_text == 'parent')
                 {
-                    target_arr.push(obj._parent.D_data);
+                    curr_pdata = obj._parent.D_data;
                 }
                 else if (item_text == 'pool')
                 {
                     var pool:Pool = Application.application._pool;
-                    target_arr.push(pool.D_data);
+                    curr_pdata = pool.D_data;
                 }
 
+                target_arr.push(curr_pdata);
                 target_name_arr.push(item_text);
+
+                var dict_arr:Array = new Array;
+                for each (var dict_item:XML in item.DICT)
+                {
+                    dict_arr.push(dict_item.text().toString());
+                }
+                dict_arr_arr.push(dict_arr);
             }
         }
 
         public function GetAllTarget():Array
         {
             return target_arr;
+        }
+
+        public function GetTargetDictArr():Array
+        {
+            return dict_arr_arr;
         }
 
         public function GetAllTargetName():Array
