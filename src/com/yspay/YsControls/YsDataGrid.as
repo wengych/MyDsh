@@ -2,6 +2,7 @@
 {
     import com.yspay.YsData.MData;
     import com.yspay.YsData.PData;
+    import com.yspay.util.AdvanceArray;
     import com.yspay.util.UtilFunc;
     import com.yspay.util.YsClassFactory;
 
@@ -246,27 +247,6 @@
             _parent.addChild(this);
             _xml = new XML(xml);
 
-            /*
-               for each (var kids:XML in _xml.attributes())
-               {
-               if (kids.name() == "editable")
-               editable = kids.toString();
-               if (kids.name() == "dragEnabled")
-               dragEnabled = kids.toString();
-
-               this.allowMultipleSelection = true;
-               //                if (kids.name() == "append")
-               //                {
-               //                    data["attrib"] = new Object;
-               //                    data["attrib"][kids.name().toString()] = kids.toString();
-               //                }
-               if (kids.name() == "itemEditEnd")
-               {
-               if (kids.toString() == "true")
-               addEventListener("itemEditEnd", itemEditEndHandler);
-               }
-             }*/
-
             for (var attr_name:String in YsMaps.datagrid_attrs)
             {
                 if (!(this.hasOwnProperty(attr_name)))
@@ -388,8 +368,13 @@
 
             var data_prov:ArrayCollection = dataProvider as ArrayCollection;
             if (this.default_line == true)
-                data_prov.addItem(new Object);
-            //data_prov.addEventListener(CollectionEvent.COLLECTION_CHANGE, DataChange);
+            {
+                var new_item:Object = new Object;
+                for each (dgc in columns)
+                    if (dgc.itemRenderer == null)
+                        new_item[dgc.dataField] = '';
+                data_prov.addItem(new_item);
+            }
         }
 
         protected var del_btn_xml:XML =
@@ -438,8 +423,28 @@
                         continue;
 
                     for each (var to_data:PData in toDataObject[item_key].GetAllTarget())
-                        to_data.data[item_key].Insert(event.location, event.items);
+                    {
+                        if (!to_data.data.hasOwnProperty(item_key))
+                            to_data.data[item_key] = new AdvanceArray;
+                        to_data.data[item_key].Insert(event.location, item[item_key]);
+                    }
                 }
+            }
+        }
+
+        protected function OnCollectionUpdate(event:CollectionEvent):void
+        {
+            var property:String = event.items[0].property;
+            var source_obj:Object = event.items[0].source;
+            var arr:ArrayCollection = event.target as ArrayCollection;
+
+            for each (var to_data:PData in toDataObject[property].GetAllTarget())
+            {
+                if (!to_data.data.hasOwnProperty(property))
+                    to_data.data[property] = new AdvanceArray;
+                //to_data.data[property]
+                var idx:int = arr.getItemIndex(source_obj);
+                to_data.data[property][idx] = source_obj[property];
             }
         }
 
@@ -453,6 +458,10 @@
                 if (ceEvent.kind == CollectionEventKind.ADD)
                 {
                     OnCollectionAdd(ceEvent);
+                }
+                else if (ceEvent.kind == CollectionEventKind.UPDATE)
+                {
+                    OnCollectionUpdate(ceEvent);
                 }
             }
         }
