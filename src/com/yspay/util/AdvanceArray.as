@@ -22,9 +22,15 @@ package com.yspay.util
                 this.splice(startPos, count);
         }
 
-        public function Insert(startPos:int, ... rest):void
+        public function Insert(startPos:int, value:*=null):void
         {
-            this.splice(startPos, 0, rest);
+            if (!(value is Array))
+                this.splice(startPos, 0, value);
+            else
+            {
+                for each (var v:Object in value)
+                    this.splice(startPos++, 0, v);
+            }
         }
     }
 }
