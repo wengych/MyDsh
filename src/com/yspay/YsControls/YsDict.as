@@ -235,9 +235,10 @@ package com.yspay.YsControls
                 if (_xml.display.TEXTINPUT.list != undefined)
                 {
                     _combo = CreateComboBox(_xml);
-                    if (_xml.@OutputOnly != undefined)
-                        if (_xml.@OutputOnly == "true")
-                            _combo.enabled = false;
+                    /*if (_xml.@OutputOnly != undefined)
+                       if (_xml.@OutputOnly == "true")
+                       _combo.enabled = false;
+                     */
                     if (_xml.@ComboBoxVisible != undefined)
                         if (_xml.@ComboBoxVisible == "false")
                             _combo.visible = false;
