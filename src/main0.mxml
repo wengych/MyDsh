@@ -272,30 +272,51 @@
         <![CDATA[
             //longin handler 
             [Bindable]
-            private var comboboxDP:ArrayCollection = new ArrayCollection([{name: "请选择"},
-                                                                          {name: "cxbm_tran"},
-                                                                          {name: "show memory bus"},
-                                                                          {name: "show_dict"},
-                                                                          {name: "show_window"},
-                                                                          {name: "show_service"},
-                                                                          {name: "show_tran"},
-                                                                          {name: "new_window"},
-                                                                          {name: "new_service"},
-                                                                          {name: "show_button"},
-                                                                          {name: "show_hbox"},
-                                                                          {name: "show_action"},
-                                                                          {name: "new_tran"}]);
+            private var comboboxDP:ArrayCollection =
+                new ArrayCollection(
+                [{name: "请选择"},
+                 {name: "cxbm_tran"},
+                 {name: "show memory bus"},
+                 {name: "show_dict"},
+                 {name: "show_window"},
+                 {name: "show_service"},
+                 {name: "show_tran"},
+                 {name: "new_window"},
+                 {name: "new_service"},
+                 {name: "show_button"},
+                 {name: "show_hbox"},
+                 {name: "show_action"},
+                 {name: "new_tran"}]);
             [Bindable]
-            private var ipDP:ArrayCollection = new ArrayCollection([{ip: "192.168.0.77",
-                                                                        port: "16920"},
-                                                                    {ip: "192.168.0.216",
-                                                                        port: "16920"},
-                                                                    {ip: "124.207.197.178",
-                                                                        port: "6802"},
-                                                                    {ip: "192.168.0.75",
-                                                                        port: "16920"},
-                                                                    {ip: "192.168.88.84",
-                                                                        port: "16920"}]);
+            private var ipDP:ArrayCollection =
+                new ArrayCollection(
+                [
+                {
+                    ip: "192.168.0.77",
+                    port: "16920"
+                },
+                {
+                    ip: "192.168.0.75",
+                    port: "16920"
+                },
+                {
+                    ip: "192.168.88.84",
+                    port: "16920"
+                },
+                {
+                    ip: "192.168.0.216",
+                    port: "16920"
+                },
+                {
+                    ip: "124.207.197.178",
+                    port: "6802"
+                },
+                {
+                    ip: "124.207.197.178",
+                    port: "6804"
+                }
+                ]
+                );
             [Bindable]
             private var ver_prvd:ArrayCollection = new ArrayCollection(
                 [{text: '开发版本'},
@@ -407,6 +428,11 @@
                 }
                 return checkCode;
             }
+
+            protected function SetIpChooseLabel(item:Object):String
+            {
+                return item.ip + ':' + item.port;
+            }
         ]]>
     </mx:Script>
     <mx:Panel verticalAlign="middle"
@@ -483,7 +509,7 @@
                      width="182"
                      id="ipChoose"
                      dataProvider="{ipDP}"
-                     labelField="ip">
+                     labelFunction="SetIpChooseLabel">
         </mx:ComboBox>
         <mx:Label x="39.5"
                   y="157"
@@ -494,7 +520,7 @@
                      width="182"
                      id="s_ipChoose"
                      dataProvider="{ipDP}"
-                     labelField="ip">
+                     labelFunction="SetIpChooseLabel">
         </mx:ComboBox>
         <mx:Label x="37"
                   y="189"
