@@ -7,8 +7,6 @@ package com.yspay.event_handlers
     import flash.events.Event;
 
     import mx.controls.Alert;
-    import mx.controls.dataGridClasses.DataGridColumn;
-    import mx.controls.listClasses.ListBase;
     import mx.core.UIComponent;
     import mx.events.DragEvent;
 
@@ -29,23 +27,46 @@ package com.yspay.event_handlers
 
 
         //var drag_object:Object = (drag_event.dragInitiator as ListBase).selectedItem;
-        var drag_items:Array = (drag_event.dragInitiator as ListBase).selectedItems;
+        var drag_source_grid:YsDataGrid = drag_event.dragInitiator as YsDataGrid;
+        var drag_items:Array = drag_source_grid.selectedItems;
+        var drag_column_arr:Array = new Array;
+        var target_dict_name_arr:Array = new Array;
+        var source_dict_name_arr:Array = new Array;
+        var dict:YsDict;
+
+        if (action_info.elements('DICT').length() == 0)
+        {
+            for each (dict in data_grid.dict_arr)
+                target_dict_name_arr.push(dict.name);
+            for each (dict in drag_source_grid.dict_arr)
+                source_dict_name_arr.push(dict.name);
+
+            for each (var dict_name:String in target_dict_name_arr)
+            {
+                if (source_dict_name_arr.indexOf(dict_name) >= 0)
+                    drag_column_arr.push(dict_name);
+            }
+        }
+        else
+        {
+            for each (var dict_xml:XML in action_info.DICT)
+            {
+                var dict_str:String = dict_xml.text().toString();
+                drag_column_arr.push(dict_str);
+            }
+        }
+
+        if (drag_column_arr.length == 0)
+            return;
 
         for each (var drag_item:Object in drag_items)
         {
             var new_item:Object = new Object;
             var key:String = '';
 
-            for each (var dgc:DataGridColumn in data_grid.columns)
+            for each (key in drag_column_arr)
             {
-                if (dgc.dataField == null)
-                    continue;
-                if (!(drag_item.hasOwnProperty(dgc.dataField)))
-                {
-                    Alert.show('drag_object_to_datagrid: 无对应属性' + dgc.dataField.toString());
-                    return;
-                }
-                new_item[dgc.dataField] = drag_item[dgc.dataField];
+                new_item[key] = drag_item[key];
             }
 
             for each (var item:Object in data_grid.dataProvider)
@@ -67,14 +88,16 @@ package com.yspay.event_handlers
                 }
             }
 
-            for (key in new_item)
-            {
-                for each (var to_data:PData in data_grid.toDataObject[key].GetAllTarget())
-                {
-                    to_data.data[key].push('');
-                    to_data.data[key][to_data.data[key].length - 1] = new_item[key]
-                }
-            }
+            data_grid.dataProvider.addItem(new_item);
+            /*
+               for (key in new_item)
+               {
+               for each (var to_data:PData in data_grid.toDataObject[key].GetAllTarget())
+               {
+               to_data.data[key].push('');
+               to_data.data[key][to_data.data[key].length - 1] = new_item[key]
+               }
+             }*/
         }
 
     /*var arr:ArrayCollection = data_grid.dataProvider as ArrayCollection;

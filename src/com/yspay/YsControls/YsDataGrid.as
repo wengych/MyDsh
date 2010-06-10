@@ -34,6 +34,7 @@
 
         public var fromDataObject:Object = new Object;
         public var toDataObject:Object = new Object;
+        public var dict_arr:Array = new Array;
 
         public function YsDataGrid(parent:DisplayObjectContainer)
         {

@@ -153,9 +153,8 @@ package com.yspay.YsControls
                     ch_name = _xml.display.LABEL.@text;
                 else
                     ch_name = _xml.@LABEL.toString();
-                var en_name:String = _xml.services.@NAME;
                 dgc.headerText = ch_name;
-                dgc.dataField = en_name;
+                dgc.dataField = dict.name;
 
                 // P_data.AddToNotifiers(_parent, dict.name, _xml.services.@DEFAULT.toString());
                 dg.fromDataObject[dict.name] = new TargetList;
@@ -170,6 +169,7 @@ package com.yspay.YsControls
 
 
                 dg.columns = dg.columns.concat(dgc);
+                dg.dict_arr.push(this);
                     // TODO:针对DataGrid的处理方�
                     //(_parent as DataGrid); // 添加�
             }
