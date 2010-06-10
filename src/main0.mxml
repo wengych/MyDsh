@@ -49,13 +49,13 @@
             import com.yspay.*;
             import com.yspay.YsData.MData;
             import com.yspay.YsData.PData;
-            // import nl.demonsters.debugger.MonsterDebugger;
+            import nl.demonsters.debugger.MonsterDebugger;
 
             // Array of PodLayoutManagers
             private var podLayoutManagers:Array = new Array();
             public var _pool:Pool;
             public var M_data:MData = new MData; //xingj
-            // public var monsterDebugger:MonsterDebugger = new MonsterDebugger(this);
+            public var monsterDebugger:MonsterDebugger = new MonsterDebugger(this);
 
             protected var pod_xml:XML = new XML('<?xml version="1.0" encoding="utf-8"?> \
 <views>\
