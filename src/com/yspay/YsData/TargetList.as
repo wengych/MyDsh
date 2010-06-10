@@ -2,6 +2,7 @@ package com.yspay.YsData
 {
     import com.yspay.YsControls.YsDataGrid;
     import com.yspay.YsControls.YsDict;
+    import com.yspay.YsControls.YsHBox;
     import com.yspay.YsControls.YsPod;
     import com.yspay.YsControls.YsTitleWindow;
     import com.yspay.pool.Pool;
@@ -48,6 +49,12 @@ package com.yspay.YsData
                     else
                         dg = UtilFunc.GetParentByType(obj._parent, YsDataGrid) as YsDataGrid;
                     curr_pdata = dg.D_data;
+                }
+                else if (item_text == 'hbox')
+                {
+                    var hbox:YsHBox = UtilFunc.GetParentByType(obj._parent,
+                                                               YsHBox) as YsHBox;
+                    curr_pdata = hbox.D_data;
                 }
                 else if (item_text == 'windows')
                 {

@@ -8,8 +8,8 @@
                 height="100%"
                 backgroundSize="100%"
                 backgroundColor="#ffffff"
-                paddingLeft="45"
-                paddingRight="45"
+                paddingLeft="55"
+                paddingRight="55"
                 paddingBottom="0"
                 paddingTop="4"
                 xmlns:flexlib="http://code.google.com/p/flexlib/">
@@ -49,11 +49,13 @@
             import com.yspay.*;
             import com.yspay.YsData.MData;
             import com.yspay.YsData.PData;
+            import nl.demonsters.debugger.MonsterDebugger;
 
             // Array of PodLayoutManagers
             private var podLayoutManagers:Array = new Array();
             public var _pool:Pool;
             public var M_data:MData = new MData; //xingj
+            public var monsterDebugger:MonsterDebugger = new MonsterDebugger(this);
 
             protected var pod_xml:XML = new XML('<?xml version="1.0" encoding="utf-8"?> \
 <views>\
@@ -180,22 +182,32 @@
                 var len:Number = viewXMLList.length();
                 for (var i:Number = 0; i < len; i++)
                 { // Create a canvas for each view node.
-                    var canvas:Canvas = new Canvas();
-                    // PodLayoutManager handles resize and should prevent the need for
-                    // scroll bars so turn them off so they aren't visible during resizes.
-                    canvas.horizontalScrollPolicy = "off";
-                    canvas.verticalScrollPolicy = "off";
-                    canvas.label = viewXMLList[i].@id;
-                    canvas.percentWidth = 100;
-                    canvas.percentHeight = 100;
-                    viewStack.addChild(canvas);
-                    // Create a manager for each view.
+//                    var canvas:Canvas = new Canvas();
+//                    // PodLayoutManager handles resize and should prevent the need for
+//                    // scroll bars so turn them off so they aren't visible during resizes.
+//                    canvas.horizontalScrollPolicy = "off";
+//                    canvas.verticalScrollPolicy = "off";
+//                    canvas.label = viewXMLList[i].@id;
+//                    canvas.percentWidth = 100;
+//                    canvas.percentHeight = 100;
+//                    viewStack.addChild(canvas);
+//                    // Create a manager for each view.
+//                    var manager:YsPodLayoutManager = new YsPodLayoutManager(this._pool);
+//                    manager.container = canvas;
+//                    manager.id = viewXMLList[i].@id;
+//                    podLayoutManagers.push(manager);
+                    mainCanvas.horizontalScrollPolicy = "off";
+                    mainCanvas.verticalScrollPolicy = "off";
+                    mainCanvas.label = viewXMLList[i].@id;
+                    mainCanvas.percentWidth = 100;
+                    mainCanvas.percentHeight = 100;
                     var manager:YsPodLayoutManager = new YsPodLayoutManager(this._pool);
-                    manager.container = canvas;
+                    manager.container = mainCanvas;
                     manager.id = viewXMLList[i].@id;
                     podLayoutManagers.push(manager);
+                    break;
                 }
-                tabBar.selectedIndex = 0;
+                //               tabBar.selectedIndex = 0;
             }
 
             private function tabCloseHandler(event:SuperTabEvent):void
@@ -216,30 +228,41 @@
                     <mx:Label text="交易码"/>
                     <mx:TextInput id="action"
                                   width="300"
-                                  enter="podLayoutManagers[tabBar.selectedIndex].dispatchEvent(new EventNewPod(action.text))"
+                                  enter="podLayoutManagers[0].dispatchEvent(new EventNewPod(action.text))"
                                   toolTip="点击Enter发送"/>
                     <mx:ComboBox dataProvider="{comboboxDP}"
                                  labelField="name"
                                  close="comboboxClickHandler(event)"/>
                 </mx:ApplicationControlBar>
             </mx:AddChild>
-            <!--添加新的组件-->
-            <mx:AddChild position="lastChild">
-                <flexlib:SuperTabBar id="tabBar"
-                                     dragEnabled="false"
-                                     tabHeight="32"
-                                     dataProvider="viewStack"
-                                     tabClose="tabCloseHandler(event)">
-                </flexlib:SuperTabBar>
-            </mx:AddChild>
-
             <mx:AddChild>
-                <mx:ViewStack id="viewStack"
-                              paddingTop="3"
-                              width="100%"
-                              paddingLeft="0"
-                              paddingRight="0"
-                              height="100%"/>
+                <mx:Canvas height="32"
+                           enabled="false"/>
+            </mx:AddChild>
+            <!--添加新的组件-->
+            <!--
+                 <mx:AddChild position="lastChild">
+                 <flexlib:SuperTabBar id="tabBar"
+                 dragEnabled="false"
+                 tabHeight="32"
+                 dataProvider="viewStack"
+                 tabClose="tabCloseHandler(event)">
+                 </flexlib:SuperTabBar>
+                 </mx:AddChild>
+
+                 <mx:AddChild>
+                 <mx:ViewStack id="viewStack"
+                 paddingTop="3"
+                 width="100%"
+                 paddingLeft="0"
+                 paddingRight="0"
+                 height="100%"/>
+                 </mx:AddChild>
+            -->
+            <mx:AddChild>
+                <mx:Canvas width="100%"
+                           height="100%"
+                           id="mainCanvas"/>
             </mx:AddChild>
             <mx:AddChild>
                 <mx:ControlBar width="100%"
@@ -330,7 +353,7 @@
                 }
                 action.text = (event.currentTarget as ComboBox).selectedItem.name;
                 // addPod(podLayoutManagers[tabBar.selectedIndex], new Pod);
-                var podMgn:YsPodLayoutManager = podLayoutManagers[tabBar.selectedIndex] as YsPodLayoutManager;
+                var podMgn:YsPodLayoutManager = podLayoutManagers[0] as YsPodLayoutManager;
                 podMgn.dispatchEvent(new EventNewPod(action.text));
             }
 

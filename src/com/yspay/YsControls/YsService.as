@@ -158,11 +158,12 @@ package com.yspay.YsControls
                     ServiceCallBack(new_bus, stack_event, error_event);
                 }
             //Alert.show(bus.toString());
+            trace(bus.toString());
             scall.Send(bus, ip, port, func);
         }
 
         protected var To_Map:Object = {'pod': YsPod, 'windows': YsTitleWindow,
-                'dict': YsDict, 'event': YsXmlEvent};
+                'dict': YsDict, 'event': YsXmlEvent, 'hbox': YsHBox};
 
         protected function GetDData(obj:Object):Object
         {
