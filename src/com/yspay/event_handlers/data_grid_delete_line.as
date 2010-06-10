@@ -31,8 +31,9 @@ package com.yspay.event_handlers
                 continue;
             for each (var to_data:PData in data_grid.toDataObject[key].GetAllTarget())
             {
-                var idx_in_data:int = to_data.data[key].indexOf(obj[key]);
-                to_data.data[key].splice(idx_in_data, 1);
+                // var idx_in_data:int = to_data.data[key].indexOf(obj[key]);
+                // to_data.data[key].splice(idx_in_data, 1);
+                to_data.data[key].splice(idx, 1);
             }
         }
     }

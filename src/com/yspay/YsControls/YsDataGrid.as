@@ -17,6 +17,7 @@
     import mx.events.CollectionEvent;
     import mx.events.CollectionEventKind;
     import mx.events.DataGridEvent;
+    import mx.events.PropertyChangeEvent;
 
     public class YsDataGrid extends DataGrid implements YsControl
     {
@@ -419,6 +420,8 @@
             {
                 for (var item_key:String in item)
                 {
+                    if (item_key == 'mx_internal_udi')
+                        continue;
                     if (item[item_key] == null)
                         continue;
 
@@ -434,17 +437,20 @@
 
         protected function OnCollectionUpdate(event:CollectionEvent):void
         {
-            var property:String = event.items[0].property;
-            var source_obj:Object = event.items[0].source;
-            var arr:ArrayCollection = event.target as ArrayCollection;
-
-            for each (var to_data:PData in toDataObject[property].GetAllTarget())
+            for each (var event_item:PropertyChangeEvent in event.items)
             {
-                if (!to_data.data.hasOwnProperty(property))
-                    to_data.data[property] = new AdvanceArray;
-                //to_data.data[property]
-                var idx:int = arr.getItemIndex(source_obj);
-                to_data.data[property][idx] = source_obj[property];
+                var property:String = event_item.property.toString();
+                var source_obj:Object = event_item.source;
+                var arr:ArrayCollection = event.target as ArrayCollection;
+
+                for each (var to_data:PData in toDataObject[property].GetAllTarget())
+                {
+                    if (!to_data.data.hasOwnProperty(property))
+                        to_data.data[property] = new AdvanceArray;
+                    //to_data.data[property]
+                    var idx:int = arr.getItemIndex(source_obj);
+                    to_data.data[property][idx] = source_obj[property];
+                }
             }
         }
 
