@@ -505,7 +505,7 @@
                       id="txtPassword"
                       displayAsPassword="true"
                       width="183"
-                      text="1"/>
+                      text="admin"/>
         <!-- "登录"按钮 -->
         <mx:Button x="177"
                    y="251"

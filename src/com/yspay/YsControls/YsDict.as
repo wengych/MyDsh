@@ -29,7 +29,7 @@ package com.yspay.YsControls
         public var _focusManager:FocusManager = new FocusManager(this as IFocusManagerContainer);
 
         protected var _label:Label;
-        protected var _text:TextInput;
+        protected var _text:MultipleTextInput;
         protected var _combo:YsComboBox;
         protected var _xml:XML;
 
@@ -305,11 +305,12 @@ package com.yspay.YsControls
                 {
                     if (p_data.data[dict.name] == null)
                         p_data.data[dict.name] = [''];
-                    p_data.data[dict.name][dict.index] = dict.text;
+
+                    p_data.data[dict.name][0] = dict.text;
                 }
 
                 if (_text != null && _text != dict.source)
-                    _text.text = dict.text;
+                    _text.SetText(dict.text);
                 //if (_combo != null && _combo != dict.source)
                 if (_combo != null) //无论是输入还是选单，都需要修改COMBOBOX，如果是选单，需要修改PROMPT
                     _combo.SetComboBox(dict.name, dict.text);
@@ -327,18 +328,6 @@ package com.yspay.YsControls
             }
         }
 
-        private function TextInputChange(evt:Event):void
-        {
-            var tt:TextInput = evt.target as TextInput;
-
-            //if (_combo == null)
-            {
-                dict.source = _text;
-                dict.text = tt.text;
-            }
-            //else
-            //    _combo.SetComboBox(dict.name, dict.text);
-        }
 
         protected function MoveToNextDict(event:EventNextDict):void
         {
@@ -374,9 +363,9 @@ package com.yspay.YsControls
                 dict_arr[curr_index]._combo.setFocus();
         }
 
-        private function CreateTextInput(dxml:XML):TextInput
+        private function CreateTextInput(dxml:XML):MultipleTextInput
         {
-            var ti:TextInput = new TextInput;
+            var ti:MultipleTextInput = new MultipleTextInput;
             ti.text = '';
             ti.maxChars = int(dxml.services.@LEN);
             var mask:String = '';
@@ -397,8 +386,9 @@ package com.yspay.YsControls
                 ti.width = 200;
             ti.displayAsPassword = (dxml.display.TEXTINPUT.@displayAsPassword == 0 ? false : true);
             ti.text = dict.text;
+            ti._parent = this;
 
-            ti.addEventListener(Event.CHANGE, TextInputChange);
+            //ti.addEventListener(Event.CHANGE, TextInputChange);
 
             return ti;
         }
