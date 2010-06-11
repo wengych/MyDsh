@@ -53,7 +53,7 @@
 
             // Array of PodLayoutManagers
             private var podLayoutManagers:Array = new Array();
-            public var _pool:Pool;
+            public var _pool:Pool = new Pool;
             public var M_data:MData = new MData; //xingj
             public var monsterDebugger:MonsterDebugger = new MonsterDebugger(this);
 
@@ -103,7 +103,7 @@
                 var dts_select_arg:String = '__DICT_XML';
                 var dts_insert_name:String = 'YSDBSDTSObjectConfigInsert';
                 var dts_insert_arg:String = '__DICT_XML';
-                _pool = new Pool;
+
                 // 服务返回信息
                 _pool.SERVICE_RTN = new ObjectProxy;
                 _pool.SERVICE_RTN.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE,
@@ -136,7 +136,7 @@
                     M_data.POOL.INFO[str] = new ArrayCollection;
                 }
                 _pool.Add('MAIN_BUS', UserBus);
-                _pool.Add('D_data', PData);
+
             }
 
             //event.query_name "dict window tran event hbox ........"
@@ -313,33 +313,31 @@
             [Bindable]
             private var ipDP:ArrayCollection =
                 new ArrayCollection(
-                [
-                {
-                    ip: "192.168.0.77",
-                    port: "16920"
-                },
-                {
-                    ip: "192.168.0.75",
-                    port: "16920"
-                },
-                {
-                    ip: "192.168.88.84",
-                    port: "16920"
-                },
-                {
-                    ip: "192.168.0.216",
-                    port: "16920"
-                },
-                {
-                    ip: "124.207.197.178",
-                    port: "6802"
-                },
-                {
-                    ip: "124.207.197.178",
-                    port: "6804"
-                }
-                ]
-                );
+                [{
+                     ip: "192.168.0.77",
+                     port: "16920"
+                 },
+                 {
+                     ip: "192.168.0.75",
+                     port: "16920"
+                 },
+                 {
+                     ip: "192.168.88.84",
+                     port: "16920"
+                 },
+                 {
+                     ip: "192.168.0.216",
+                     port: "16920"
+                 },
+                 {
+                     ip: "124.207.197.178",
+                     port: "6802"
+                 },
+                 {
+                     ip: "124.207.197.178",
+                     port: "6804"
+                 }
+                ]);
             [Bindable]
             private var ver_prvd:ArrayCollection = new ArrayCollection(
                 [{text: '开发版本'},
@@ -357,45 +355,65 @@
                 podMgn.dispatchEvent(new EventNewPod(action.text));
             }
 
+            protected function OnLoginCallBack(bus:UserBus, error_event:ErrorEvent=null):void
+            {
+                if (error_event != null)
+                {
+                    Alert.show('登陆失败，服务器连接出错: ' + error_event.text);
+                    return;
+                }
+                if (bus == null)
+                {
+                    Alert.show('登陆失败，服务调用出错');
+                    return;
+                }
+
+                var scall_rtn:int = -1;
+                var user_rtn:int = -1;
+                var user_rtn_msg:String = '';
+
+                if (bus.hasOwnProperty('__DICT_SCALL_RTN'))
+                    scall_rtn = bus.__DICT_SCALL_RTN[0].value;
+
+                if (bus.hasOwnProperty('__DICT_USER_RTN'))
+                {
+                    user_rtn = bus.__DICT_USER_RTN[0].value;
+                    user_rtn_msg = bus.__DICT_USER_RTNMSG[0].value;
+                }
+
+                if (user_rtn != 0)
+                {
+                    Alert.show('登陆失败: ' + user_rtn_msg);
+                    return
+                }
+                else
+                {
+                    _pool.Add('D_data', PData);
+                    var p_data:PData = _pool.D_data as PData;
+                    p_data.Update(bus);
+                    currentState = "index";
+                }
+            }
+
             private function loginHandle():void
             {
                 if (txtUsername.text == "" || txtPassword.text == "")
                 {
                     Alert.show("请输入完整数据!");
+                    return;
                 }
-//                else if (txtCheckCode.text.toLocaleLowerCase() != lblCheckCode.text.toLowerCase())
-//                {
-//                    Alert.show("验证码错误");
-//                }
-                else
-                {
-                    if (txtUsername.text == "admin" && EncryptUtil.encryptHandler(txtPassword.text) == EncryptUtil.encryptHandler("1"))
-                    {
-                        if (rember.selected)
-                        {
-                            var so:SharedObject = SharedObject.getLocal('info');
-                            so.data.username = txtUsername.text;
-                            so.data.password = txtPassword.text;
-                            so.flush();
-                        }
-                        else
-                        {
-                            txtUsername.text = "";
-                            txtPassword.text = "";
-                            txtCheckCode.text = "";
-                            var share:SharedObject = SharedObject.getLocal('info');
-                            share.clear();
-                        }
-                        this.styleName = '';
-                        this.setStyle("horizontalAlign", "left");
-                        this.setStyle("verticalAlign", "top");
-                        currentState = "index";
-                    }
-                    else
-                    {
-                        Alert.show("用户名或密码错误!");
-                    }
-                }
+
+                var ip:String = ipChoose.selectedItem.ip;
+                var port:String = ipChoose.selectedItem.port;
+
+                var service_call:ServiceCall = new ServiceCall;
+                var send_bus:UserBus = new UserBus;
+                send_bus.Add('USERID', txtUsername.text);
+                // send_bus.Add('PASSWORD_EN', EncryptUtil.encryptHandler(txtPassword.text));
+                send_bus.Add('PASSWORD_EN', txtPassword.text);
+                send_bus.Add(ServiceCall.SCALL_NAME, 'YSUserLogin');
+
+                service_call.Send(send_bus, ip, port, OnLoginCallBack);
             }
 
             public function GetServiceIp(service_name:String):String
