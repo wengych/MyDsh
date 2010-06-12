@@ -15,7 +15,7 @@ package com.yspay.YsControls
         public var _parent:DisplayObjectContainer;
         public var D_data:PData = new PData;
 
-        public function YsVBox()
+        public function YsVBox(parent:DisplayObjectContainer)
         {
             super();
             _pool = Application.application._pool;
