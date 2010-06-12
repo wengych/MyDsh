@@ -188,6 +188,7 @@ package com.yspay.YsControls
                 //       to="dict"
                 //       to="parent"
                 //>
+                _parent.addChild(this);
 
                 // if (_xml.From != undefined)
                 dict.From.Init(this, _xml.From);
@@ -204,7 +205,6 @@ package com.yspay.YsControls
                     from_data.AddToNotifiers(this, dict.name, default_value);
                 }
 
-                _parent.addChild(this);
 
                 if (_xml.display.LABEL != undefined)
                 {

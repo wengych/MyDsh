@@ -5,8 +5,11 @@ package com.yspay.YsData
     import com.yspay.YsControls.YsHBox;
     import com.yspay.YsControls.YsPod;
     import com.yspay.YsControls.YsTitleWindow;
+    import com.yspay.YsControls.YsVBox;
     import com.yspay.pool.Pool;
     import com.yspay.util.UtilFunc;
+
+    import flash.display.DisplayObjectContainer;
 
     import mx.core.Application;
 
@@ -52,9 +55,16 @@ package com.yspay.YsData
                 }
                 else if (item_text == 'hbox')
                 {
-                    var hbox:YsHBox = UtilFunc.GetParentByType(obj._parent,
+                    var hbox:YsHBox = UtilFunc.GetParentByType(obj as DisplayObjectContainer,
                                                                YsHBox) as YsHBox;
                     curr_pdata = hbox.D_data;
+                }
+                else if (item_text == 'vbox')
+                {
+                    var vbox:YsVBox = UtilFunc.GetParentByType(obj as DisplayObjectContainer,
+                                                               YsVBox) as YsVBox;
+
+                    curr_pdata = vbox.D_data;
                 }
                 else if (item_text == 'windows')
                 {
