@@ -8,7 +8,9 @@ package com.yspay.YsControls
         {
         }
 
-        public static var ys_type_map:Object = {'hbox': YsHBox,
+        public static var ys_type_map:Object = {
+                'hbox': YsHBox,
+                'vbox': YsVBox,
                 'windows': YsTitleWindow,
                 'datagrid': YsDataGrid,
                 'dict': YsDict,

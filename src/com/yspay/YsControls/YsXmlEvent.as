@@ -27,6 +27,7 @@ package com.yspay.YsControls
             //this.visible = xml.@VISABLE;
             this.enabled = false;
             this.height = 0;
+            this.width = 0;
             this.visible = false;
             this.label = event_name;
 

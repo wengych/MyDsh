@@ -38,7 +38,10 @@ package com.yspay.event_handlers
 
         while (target != null)
         {
-            if (target is YsHBox || target is YsTitleWindow || target is YsPod)
+            if (target is YsHBox ||
+                target is YsVBox ||
+                target is YsTitleWindow ||
+                target is YsPod)
                 break;
 
             target = target.parent;

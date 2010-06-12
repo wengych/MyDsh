@@ -163,7 +163,7 @@ package com.yspay.YsControls
         }
 
         protected var To_Map:Object = {'pod': YsPod, 'windows': YsTitleWindow,
-                'dict': YsDict, 'event': YsXmlEvent, 'hbox': YsHBox};
+                'dict': YsDict, 'event': YsXmlEvent, 'hbox': YsHBox, 'vbox': YsVBox};
 
         protected function GetDData(obj:Object):Object
         {
