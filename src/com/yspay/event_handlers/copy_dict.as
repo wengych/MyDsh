@@ -34,7 +34,7 @@ package com.yspay.event_handlers
         var from_target_dict:Array = from_targets.GetTargetDictArr();
         var to_target_dict:Array = to_targets.GetTargetDictArr();
 
-        for (var idx:int = 0; idx < from_target_list.length; ++idx)
+        for (var idx:int = 0; idx < to_target_list.length; ++idx)
         {
             var from_data:PData = from_target_list[idx];
             var to_data:PData = to_target_list[idx];

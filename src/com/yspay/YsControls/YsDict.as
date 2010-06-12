@@ -376,14 +376,14 @@ package com.yspay.YsControls
             //ti.inputMask = mask;
             var ti_len:int = int(dxml.display.TEXTINPUT.@length);
             if (ti.maxChars > 40)
-                ti.width = 200;
+                ti.width = 260;
             //else
             //    ti.width = ti.maxChars;
             else if (int(dxml.display.TEXTINPUT.@length) < 10 && ti.maxChars < 10)
                 //    ti.width = int(dxml.display.TEXTINPUT.@length) * 12;
-                ti.width = (ti_len * 50 > 200) ? 200 : ti_len * 50;
+                ti.width = (ti_len * 50 > 260) ? 260 : ti_len * 50;
             else
-                ti.width = 200;
+                ti.width = 260;
             ti.displayAsPassword = (dxml.display.TEXTINPUT.@displayAsPassword == 0 ? false : true);
             ti.text = dict.text;
             ti._parent = this;

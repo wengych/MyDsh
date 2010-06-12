@@ -55,14 +55,22 @@ package com.yspay.YsData
                 }
                 else if (item_text == 'hbox')
                 {
-                    var hbox:YsHBox = UtilFunc.GetParentByType(obj as DisplayObjectContainer,
-                                                               YsHBox) as YsHBox;
+                    var hbox:YsHBox;
+                    if (obj is YsHBox)
+                        hbox = obj as YsHBox;
+                    else
+                        hbox = UtilFunc.GetParentByType(obj._parent,
+                                                        YsHBox) as YsHBox;
                     curr_pdata = hbox.D_data;
                 }
                 else if (item_text == 'vbox')
                 {
-                    var vbox:YsVBox = UtilFunc.GetParentByType(obj as DisplayObjectContainer,
-                                                               YsVBox) as YsVBox;
+                    var vbox:YsVBox;
+                    if (obj is YsVBox)
+                        vbox = obj as YsVBox;
+                    else
+                        vbox = UtilFunc.GetParentByType(obj._parent,
+                                                        YsVBox) as YsVBox;
 
                     curr_pdata = vbox.D_data;
                 }
