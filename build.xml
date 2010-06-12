@@ -51,6 +51,7 @@
             <define name="CONFIG::useFlexClasses" value="${build.useFlex}" />
             <compiler.verbose-stacktraces>true</compiler.verbose-stacktraces>
             <compiler.headless-server>true</compiler.headless-server>
+            <target-player>10.0.0</target-player>
         </mxmlc>
     </target>
 
