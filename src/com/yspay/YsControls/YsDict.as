@@ -12,7 +12,6 @@ package com.yspay.YsControls
     import mx.containers.HBox;
     import mx.controls.Alert;
     import mx.controls.Label;
-    import mx.controls.TextInput;
     import mx.controls.dataGridClasses.DataGridColumn;
     import mx.events.ListEvent;
     import mx.events.PropertyChangeEvent;
@@ -23,6 +22,10 @@ package com.yspay.YsControls
     public class YsDict extends HBox implements YsControl
     {
         protected var dict_object:Object;
+
+        public var editable:Boolean;
+        public var LABEL:String;
+
         public var dict:ObjectProxy;
         public var D_data:PData = new PData;
         public var _parent:DisplayObjectContainer;
@@ -65,7 +68,8 @@ package com.yspay.YsControls
         {
             _parent = parent;
 
-            dict_object = {'text': '',
+            dict_object = {
+                    'text': '',
                     'To': new TargetList,
                     'From': new TargetList,
                     'index': 0,
@@ -119,6 +123,30 @@ package com.yspay.YsControls
             return rtn;
         }
 
+        protected function InitAttrs():void
+        {
+            var attrs:Object = YsMaps.dict_dg_attrs;
+            for (var attr_name:String in attrs)
+            {
+                if (!(this.hasOwnProperty(attr_name)))
+                {
+                    Alert.show('YsDict中没有 ' + attr_name + ' 属性');
+                    continue;
+                }
+
+                if (_xml.attribute(attr_name).length() == 0)
+                {
+                    // XML中未描述此属性，取默认值
+                    if (attrs[attr_name].hasOwnProperty('default'))
+                        this[attr_name] = attrs[attr_name]['default'];
+                }
+                else
+                {
+                    this[attr_name] = _xml.attribute(attr_name).toString();
+                }
+            }
+        }
+
         public function Init(xml:XML):void
         {
             var ys_pod:YsPod = UtilFunc.GetParentByType(_parent, YsPod) as YsPod;
@@ -140,20 +168,15 @@ package com.yspay.YsControls
                 var dg:YsDataGrid = _parent as YsDataGrid;
                 var data:ArrayCollection = dg.dataProvider as ArrayCollection;
                 var dgc:DataGridColumn =  new DataGridColumn;
+                this.editable = dg.editable;
 
-                for each (var kid:XML in _xml.attributes())
-                {
-                    if (kid.name() == "editable")
-                        dgc.editable = kid.toString();
-
-                }
-
-                var ch_name:String;
-                if (_xml.attribute('LABEL').length() == 0)
-                    ch_name = _xml.display.LABEL.@text;
+                InitAttrs();
+                dgc.editable = this.editable;
+                if (this.LABEL != null)
+                    dgc.headerText = this.LABEL;
                 else
-                    ch_name = _xml.@LABEL.toString();
-                dgc.headerText = ch_name;
+                    dgc.headerText = _xml.@LABEL.toString();
+
                 dgc.dataField = dict.name;
 
                 // P_data.AddToNotifiers(_parent, dict.name, _xml.services.@DEFAULT.toString());
@@ -205,7 +228,6 @@ package com.yspay.YsControls
                     from_data.AddToNotifiers(this, dict.name, default_value);
                 }
 
-
                 if (_xml.display.LABEL != undefined)
                 {
                     if (_xml.@LABEL != undefined)
@@ -230,15 +252,14 @@ package com.yspay.YsControls
                     if (_xml.@TextInputVisible != undefined)
                         if (_xml.@TextInputVisible == "false")
                             _text.visible = false;
+                    if (_xml.display.TEXTINPUT.@openfile != undefined &&
+                        _xml.display.TEXTINPUT.@openfile == 'true)')
+                        _text.fileable = true;
                     this.addChild(_text);
                 }
                 if (_xml.display.TEXTINPUT.list != undefined)
                 {
                     _combo = CreateComboBox(_xml);
-                    /*if (_xml.@OutputOnly != undefined)
-                       if (_xml.@OutputOnly == "true")
-                       _combo.enabled = false;
-                     */
                     if (_xml.@ComboBoxVisible != undefined)
                         if (_xml.@ComboBoxVisible == "false")
                             _combo.visible = false;
@@ -376,14 +397,12 @@ package com.yspay.YsControls
             //ti.inputMask = mask;
             var ti_len:int = int(dxml.display.TEXTINPUT.@length);
             if (ti.maxChars > 40)
-                ti.width = 260;
-            //else
-            //    ti.width = ti.maxChars;
+                ti.width = 200;
             else if (int(dxml.display.TEXTINPUT.@length) < 10 && ti.maxChars < 10)
-                //    ti.width = int(dxml.display.TEXTINPUT.@length) * 12;
-                ti.width = (ti_len * 50 > 260) ? 260 : ti_len * 50;
+                ti.width = (ti_len * 50 > 200) ? 200 : ti_len * 50;
             else
-                ti.width = 260;
+                ti.width = 200;
+            ti.width = ti.width + 60;
             ti.displayAsPassword = (dxml.display.TEXTINPUT.@displayAsPassword == 0 ? false : true);
             ti.text = dict.text;
             ti._parent = this;
