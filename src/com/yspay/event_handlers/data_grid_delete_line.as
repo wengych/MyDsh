@@ -4,6 +4,7 @@ package com.yspay.event_handlers
 {
     import com.yspay.YsControls.YsDataGrid;
     import com.yspay.YsData.PData;
+    import com.yspay.util.AdvanceArray;
     import com.yspay.util.UtilFunc;
 
     import flash.events.Event;
@@ -33,7 +34,8 @@ package com.yspay.event_handlers
             {
                 // var idx_in_data:int = to_data.data[key].indexOf(obj[key]);
                 // to_data.data[key].splice(idx_in_data, 1);
-                to_data.data[key].splice(idx, 1);
+                //var arr:AdvanceArray = (to_data.data[key]);
+                to_data.data[key].RemoveItems(idx, 1);
             }
         }
     }

@@ -41,8 +41,8 @@ package com.yspay.YsControls
             //var parent_dict:YsDict = _parent as YsDict;
             var parent_pod:YsPod = UtilFunc.GetParentByType(_parent, YsPod) as YsPod;
 
-            var P_data:PData = parent_pod.D_data;
-            var data_cont:int = P_data.datacont++;
+            // var P_data:PData = parent_pod.D_data;
+            // var data_cont:int = P_data.datacont++;
             var i:int = 0;
             var x:XML;
 
@@ -56,8 +56,8 @@ package com.yspay.YsControls
             data.name = dxml.services.@NAME.toString();
             data.index = 0;
             data.xml = dxml;
-            data_count = "data" + data_cont.toString();
-            P_data[data_count] = combo_data;
+            // data_count = "data" + data_cont.toString();
+            // P_data[data_count] = combo_data;
             if (dxml.display.TEXTINPUT.list.listarg != undefined)
                 //                            <list labelField="GENDER">
                 //                                <listarg>

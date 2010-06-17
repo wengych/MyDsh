@@ -1,14 +1,16 @@
 package com.yspay.util
 {
+    import com.yspay.YsControls.YsControl;
     import com.yspay.pool.DBTable;
     import com.yspay.pool.Pool;
+
+    import flash.display.DisplayObjectContainer;
+    import flash.utils.getDefinitionByName;
 
     import mx.collections.ArrayCollection;
     import mx.controls.Alert;
     import mx.core.Application;
-    import flash.display.DisplayObjectContainer;
     import mx.core.Container;
-    import flash.utils.getDefinitionByName;
 
     public class UtilFunc
     {
@@ -33,6 +35,24 @@ package com.yspay.util
                 }
 
                 container = container.parent as Container;
+            }
+
+            return parent;
+        }
+
+        public static function YsGetParentByType(ys_obj:Object, ys_type:Class):*
+        {
+            var parent:* = null;
+
+            while (ys_obj != null)
+            {
+                if (ys_obj is ys_type)
+                {
+                    parent = ys_obj;
+                    break;
+                }
+
+                ys_obj = ys_obj._parent;
             }
 
             return parent;
@@ -92,13 +112,13 @@ package com.yspay.util
                 //var temp:XML = new XML(dts[dts_no].__DICT_XML);
                 if (!(dts.hasOwnProperty(dts_no)))
                 {
-                	Alert.show('dts查询出错，无此dts号: ' + dts_no);
-                	return null;
+                    Alert.show('dts查询出错，无此dts号: ' + dts_no);
+                    return null;
                 }
                 if (!(dts[dts_no].hasOwnProperty('__DICT_XML')))
                 {
-                	Alert.show('dts查询出错，未找到__DICT_XML属性');
-                	return null;
+                    Alert.show('dts查询出错，未找到__DICT_XML属性');
+                    return null;
                 }
                 rtn = new XML(dts[dts_no].__DICT_XML);
 

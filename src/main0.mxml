@@ -550,7 +550,8 @@
                      width="182"
                      id="ipChoose"
                      dataProvider="{ipDP}"
-                     labelFunction="SetIpChooseLabel">
+                     labelFunction="SetIpChooseLabel"
+                     selectedIndex="4">
         </mx:ComboBox>
         <mx:Label x="39.5"
                   y="157"
@@ -561,7 +562,8 @@
                      width="182"
                      id="s_ipChoose"
                      dataProvider="{ipDP}"
-                     labelFunction="SetIpChooseLabel">
+                     labelFunction="SetIpChooseLabel"
+                     selectedIndex="4">
         </mx:ComboBox>
         <mx:Label x="37"
                   y="189"

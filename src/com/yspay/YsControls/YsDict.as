@@ -4,6 +4,7 @@ package com.yspay.YsControls
     import com.yspay.YsData.TargetList;
     import com.yspay.events.EventNextDict;
     import com.yspay.util.UtilFunc;
+    import com.yspay.util.YsClassFactory;
 
     import flash.display.DisplayObjectContainer;
     import flash.events.Event;
@@ -13,6 +14,7 @@ package com.yspay.YsControls
     import mx.controls.Alert;
     import mx.controls.Label;
     import mx.controls.dataGridClasses.DataGridColumn;
+    import mx.core.ClassFactory;
     import mx.events.ListEvent;
     import mx.events.PropertyChangeEvent;
     import mx.managers.FocusManager;
@@ -171,17 +173,21 @@ package com.yspay.YsControls
                 this.editable = dg.editable;
 
                 InitAttrs();
+
                 dgc.editable = this.editable;
                 if (this.LABEL != null)
                     dgc.headerText = this.LABEL;
                 else
                     dgc.headerText = _xml.@LABEL.toString();
-
                 dgc.dataField = dict.name;
+                //if (_xml.display.TEXTINPUT.list != undefined)
+                {
+                    dgc.itemEditor = new YsClassFactory(YsDgListItem, this, _xml);
+                }
 
-                // P_data.AddToNotifiers(_parent, dict.name, _xml.services.@DEFAULT.toString());
                 dg.fromDataObject[dict.name] = new TargetList;
                 dg.fromDataObject[dict.name].Init(_parent, _xml.From);
+                // 初始化from data
                 for each (var dg_from_data:PData in dg.fromDataObject[dict.name].GetAllTarget())
                 {
                     dg_from_data.AddToNotifiers(_parent, dict.name);
@@ -190,9 +196,12 @@ package com.yspay.YsControls
                 dg.toDataObject[dict.name] = new TargetList;
                 dg.toDataObject[dict.name].Init(_parent, _xml.To);
 
-
                 dg.columns = dg.columns.concat(dgc);
                 dg.dict_arr.push(this);
+                this.visible = false;
+                this.height = 0;
+                this.width = 0;
+                dg.addChild(this);
                     // TODO:针对DataGrid的处理方�
                     //(_parent as DataGrid); // 添加�
             }
