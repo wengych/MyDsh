@@ -22,9 +22,6 @@ package com.yspay.event_handlers
                     if (child is YsDict)
                     {
                         child.dict.text = '';
-
-//                        var Pod_data:PData = ys_pod._M_data.TRAN[ys_pod.P_cont];
-//                        Pod_data.data[child.data.name][child.data.index] = '';
                     }
                     else if (child is Container)
                     {
