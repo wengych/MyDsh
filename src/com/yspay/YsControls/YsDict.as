@@ -14,7 +14,6 @@ package com.yspay.YsControls
     import mx.controls.Alert;
     import mx.controls.Label;
     import mx.controls.dataGridClasses.DataGridColumn;
-    import mx.core.ClassFactory;
     import mx.events.ListEvent;
     import mx.events.PropertyChangeEvent;
     import mx.managers.FocusManager;
@@ -27,6 +26,7 @@ package com.yspay.YsControls
 
         public var editable:Boolean;
         public var LABEL:String;
+        public var openfile:Boolean;
 
         public var dict:ObjectProxy;
         public var D_data:PData = new PData;
@@ -261,8 +261,12 @@ package com.yspay.YsControls
                     if (_xml.@TextInputVisible != undefined)
                         if (_xml.@TextInputVisible == "false")
                             _text.visible = false;
-                    if (_xml.display.TEXTINPUT.@openfile != undefined &&
-                        _xml.display.TEXTINPUT.@openfile == 'true)')
+
+                    if (_xml.@openfile != undefined &&
+                        _xml.@openfile == 'true')
+                        _text.fileable = true;
+                    else if (_xml.display.TEXTINPUT.@openfile != undefined &&
+                        _xml.display.TEXTINPUT.@openfile == 'true')
                         _text.fileable = true;
                     this.addChild(_text);
                 }
