@@ -25,7 +25,7 @@ package com.yspay.YsControls
         protected var dict_object:Object;
 
         public var editable:Boolean;
-        public var LABEL:String;
+        public var LABEL:String = '';
         public var openfile:Boolean;
 
         public var dict:ObjectProxy;
@@ -165,6 +165,11 @@ package com.yspay.YsControls
             if (_xml.services.@NAME != undefined)
                 dict.name = _xml.services.@NAME.toString();
 
+            if (_xml.@LABEL != undefined)
+                this.LABEL = _xml.@LABEL;
+            else
+                this.LABEL = _xml.display.LABEL.@text;
+
             if (_parent is YsDataGrid) //DATAGRID
             {
                 var dg:YsDataGrid = _parent as YsDataGrid;
@@ -175,10 +180,7 @@ package com.yspay.YsControls
                 InitAttrs();
 
                 dgc.editable = this.editable;
-                if (this.LABEL != null)
-                    dgc.headerText = this.LABEL;
-                else
-                    dgc.headerText = _xml.@LABEL.toString();
+                dgc.headerText = this.LABEL;
                 dgc.dataField = dict.name;
                 if (_xml.display.TEXTINPUT.list != undefined)
                 {
