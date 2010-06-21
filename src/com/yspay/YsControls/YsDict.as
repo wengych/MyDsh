@@ -180,7 +180,7 @@ package com.yspay.YsControls
                 else
                     dgc.headerText = _xml.@LABEL.toString();
                 dgc.dataField = dict.name;
-                //if (_xml.display.TEXTINPUT.list != undefined)
+                if (_xml.display.TEXTINPUT.list != undefined)
                 {
                     dgc.itemEditor = new YsClassFactory(YsDgListItem, this, _xml);
                 }

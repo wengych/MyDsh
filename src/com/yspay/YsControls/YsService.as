@@ -186,7 +186,7 @@ package com.yspay.YsControls
                 var ys_ctrl:Object;
 
                 var parent_type:Class = To_Map[to_item_name];
-                ys_ctrl = UtilFunc.GetParentByType(this._parent, parent_type);
+                ys_ctrl = UtilFunc.YsGetParentByType(this._parent, parent_type);
 
                 return GetDData(ys_ctrl);
             }
@@ -208,7 +208,7 @@ package com.yspay.YsControls
                                            event:StackEvent,
                                            error_event:ErrorEvent):void
         {
-            var pod:YsPod = UtilFunc.GetParentByType(this._parent, YsPod) as YsPod;
+            var pod:YsPod = UtilFunc.YsGetParentByType(this._parent, YsPod) as YsPod;
             if (bus == null)
             {
                 Alert.show('服务调用出错,bus为空' + '\n' +
