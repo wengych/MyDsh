@@ -8,6 +8,7 @@
 
     import flash.display.DisplayObjectContainer;
     import flash.events.Event;
+    import flash.events.FocusEvent;
 
     import mx.collections.ArrayCollection;
     import mx.controls.Alert;
@@ -46,61 +47,6 @@
             percentHeight = 100;
             setStyle('borderStyle', 'solid');
             setStyle('fontSize', '12');
-        }
-
-        protected function RefreshColumn(P_data:PData, field_name:String):void
-        {
-            var j:int = int(dataProvider.length - 1);
-            var i:int = 0;
-
-            for each (var dgc:DataGridColumn in columns)
-            {
-                if (field_name == dgc.dataField)
-                {
-                    for (; i < P_data.data[field_name].length; ++i)
-                    {
-                        if (i >= dataProvider.length)
-                        {
-                            dataProvider.addItem(new Object);
-                            dataProvider[i][field_name] = P_data.data[field_name][i];
-                        }
-                        else
-                        {
-                            dataProvider[i][field_name] = P_data.data[field_name][i];
-                        }
-                    }
-
-                    // 清空后续元素的对应节点
-                    for (; i < dataProvider.length; ++i)
-                    {
-                        if (!dataProvider[i].hasOwnProperty(field_name))
-                            continue;
-                        dataProvider[i][field_name] = null;
-                    }
-
-                    // 删除空行
-                    for (; j >= 0; --j)
-                    {
-                        var empty_item:Boolean = true;
-                        for (var arr_key:String in dataProvider[j])
-                        {
-                            if (arr_key == 'mx_internal_uid')
-                                continue;
-
-                            if (dataProvider[j][arr_key] == null)
-                                continue;
-
-                            empty_item = false;
-                            break;
-                        }
-
-                        if (empty_item)
-                            dataProvider.removeItemAt(j);
-                    }
-
-                    dataProvider.refresh();
-                }
-            }
         }
 
         protected function OnRemoveItems(p_data:PData,

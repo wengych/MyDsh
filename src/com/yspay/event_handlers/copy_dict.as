@@ -43,6 +43,12 @@ package com.yspay.event_handlers
                 var from_dict:String = from_target_dict[idx][dict_name_idx];
                 var to_dict:String = to_target_dict[idx][dict_name_idx];
 
+                if (!from_data.data.hasOwnProperty(from_dict))
+                {
+                    to_data.data[to_dict] = new AdvanceArray;
+                    continue;
+                }
+
                 for (var dict_idx:int = 0; dict_idx < from_data.data[from_dict].length; ++dict_idx)
                 {
                     if (!to_data.data.hasOwnProperty(to_dict))
