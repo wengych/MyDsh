@@ -3,11 +3,14 @@ package com.yspay.YsControls
     import com.yspay.YsData.PData;
     import com.yspay.YsData.TargetList;
     import com.yspay.events.EventNextDict;
+    import com.yspay.util.AdvanceArray;
     import com.yspay.util.UtilFunc;
     import com.yspay.util.YsClassFactory;
+    import com.yspay.util.YsObjectProxy;
 
     import flash.display.DisplayObjectContainer;
     import flash.events.Event;
+    import flash.utils.flash_proxy;
 
     import mx.collections.ArrayCollection;
     import mx.containers.HBox;
@@ -18,7 +21,11 @@ package com.yspay.YsControls
     import mx.events.PropertyChangeEvent;
     import mx.managers.FocusManager;
     import mx.managers.IFocusManagerContainer;
-    import mx.utils.ObjectProxy;
+    import mx.utils.object_proxy;
+
+    use namespace flash_proxy;
+    use namespace object_proxy;
+
 
     public class YsDict extends HBox implements YsControl
     {
@@ -28,7 +35,7 @@ package com.yspay.YsControls
         public var LABEL:String = '';
         public var openfile:Boolean;
 
-        public var dict:ObjectProxy;
+        public var dict:YsObjectProxy;
         public var D_data:PData = new PData;
         public var _parent:DisplayObjectContainer;
         public var _focusManager:FocusManager = new FocusManager(this as IFocusManagerContainer);
@@ -72,13 +79,15 @@ package com.yspay.YsControls
 
             dict_object = {
                     'text': '',
+                    'data': new AdvanceArray,
                     'To': new TargetList,
                     'From': new TargetList,
                     'index': 0,
                     'name': '',
                     'source': null,
                     'delimiter': 100};
-            dict = new ObjectProxy(dict_object);
+            dict_object.data.push('');
+            dict = new YsObjectProxy(dict_object);
 
             dict.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, DictChange);
         }
@@ -337,23 +346,34 @@ package com.yspay.YsControls
             if (event.property == 'text')
             {
                 trace('\tdict.text = ', event.newValue);
-                for each (var p_data:PData in dict.To.GetAllTarget())
-                {
-                    if (p_data.data[dict.name] == null)
-                        p_data.data[dict.name] = [''];
-
-                    p_data.data[dict.name][0] = dict.text;
-                }
 
                 if (_text != null && _text != dict.source)
                     _text.SetText(dict.text);
+
                 //if (_combo != null && _combo != dict.source)
                 if (_combo != null) //无论是输入还是选单，都需要修改COMBOBOX，如果是选单，需要修改PROMPT
                     _combo.SetComboBox(dict.name, dict.text);
 
                 this.dispatchEvent(new EventNextDict);
-
                 dict.source = null;
+            }
+
+            if (event.source.object == dict_object.data)
+            {
+                if (event.property == '0')
+                    dict.text = event.newValue;
+
+                var idx:int = int(event.property);
+                for each (var p_data:PData in dict.To.GetAllTarget())
+                {
+                    if (p_data.data[dict.name] == null)
+                        p_data.data[dict.name] = [''];
+
+                    while (p_data.data[dict.name].length <= idx)
+                        p_data.data[dict.name].push('');
+
+                    p_data.data[dict.name][idx] = dict.data[idx];
+                }
             }
             if (event.property == 'delimiter')
             {
@@ -401,7 +421,7 @@ package com.yspay.YsControls
 
         private function CreateTextInput(dxml:XML):MultipleTextInput
         {
-            var ti:MultipleTextInput = new MultipleTextInput;
+            var ti:MultipleTextInput = new MultipleTextInput(this);
             ti.text = '';
             ti.maxChars = int(dxml.services.@LEN);
             var mask:String = '';
@@ -420,7 +440,6 @@ package com.yspay.YsControls
             ti.width = ti.width + 60;
             ti.displayAsPassword = (dxml.display.TEXTINPUT.@displayAsPassword == 0 ? false : true);
             ti.text = dict.text;
-            ti._parent = this;
 
             //ti.addEventListener(Event.CHANGE, TextInputChange);
 
