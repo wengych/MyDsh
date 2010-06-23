@@ -56,7 +56,6 @@ package com.yspay.YsControls
             _listDp.addEventListener(CollectionEvent.COLLECTION_CHANGE, ListChange);
 
             _parent = parent;
-            _listDp.addItem('');
         }
 
         protected override function createChildren():void
@@ -238,6 +237,9 @@ package com.yspay.YsControls
         public function SetText(txt:String):void
         {
             this.text = txt;
+
+            if (_listDp.length == 0)
+                _listDp.addItem('');
             _listDp[0] = txt;
         }
 
@@ -400,6 +402,10 @@ package com.yspay.YsControls
             return _fileable;
         }
 
+        public function get listDp():ArrayCollection
+        {
+            return _listDp;
+        }
     }
 }
 
