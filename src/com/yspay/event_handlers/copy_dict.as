@@ -55,7 +55,7 @@ package com.yspay.event_handlers
                         to_data.data[to_dict] = new AdvanceArray;
 
                     if (to_data.data[to_dict].length <= dict_idx)
-                        to_data.data[to_dict].push('');
+                        to_data.data[to_dict].Insert(dict_idx, '');
                     to_data.data[to_dict][dict_idx] = from_data.data[from_dict][dict_idx];
                 }
             }

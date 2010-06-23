@@ -41,8 +41,6 @@ package com.yspay.YsControls
             //var parent_dict:YsDict = _parent as YsDict;
             var parent_pod:YsPod = UtilFunc.GetParentByType(_parent, YsPod) as YsPod;
 
-            // var P_data:PData = parent_pod.D_data;
-            // var data_cont:int = P_data.datacont++;
             var i:int = 0;
             var x:XML;
 

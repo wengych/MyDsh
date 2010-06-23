@@ -27,7 +27,6 @@ package com.yspay.YsControls
     use namespace flash_proxy;
     use namespace object_proxy;
 
-
     public class YsDict extends HBox implements YsControl
     {
         protected var dict_object:Object;
@@ -86,7 +85,7 @@ package com.yspay.YsControls
                     'index': 0,
                     'name': '',
                     'source': null,
-                    'delimiter': 100};
+                    'delimiter': 200};
             dict = new YsObjectProxy(dict_object);
 
             dict.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, DictChange);
@@ -327,6 +326,11 @@ package com.yspay.YsControls
                   dict_name + ',' +
                   func_name + ',' +
                   args + ')');
+
+            if (func_name == 'Insert')
+                dict.data.Insert(args[0], args[1]);
+            else if (func_name == 'RemoveItems')
+                dict.data.RemoveItems(args[0], args[1]);
         }
 
         public function Notify(p_data:PData, dict_name:String, index:int):void
@@ -349,14 +353,32 @@ package com.yspay.YsControls
 
         protected function DictFunctionCalled(event:FunctionCallEvent):void
         {
+            if (event.function_name == 'Insert')
+            {
+                if (dict.data.length > _text.listDp)
+                    _text.listDp.addItemAt(event.args[0], event.args[1]);
+            }
+            else if (event.function_name == 'RemoveItems')
+            {
+                if (dict.data.length < _text.listDp)
+                {
+                    var cnt:int = event.args[1];
+                    while (cnt-- > 0)
+                        _text.listDp.removeItemAt(event.args[0]);
+                }
+            }
+
             for each (var p_data:PData in dict.To.GetAllTarget())
             {
                 if (event.function_name == 'Insert')
+                {
                     p_data.data[dict.name].Insert(event.args[0], event.args[1]);
+                }
                 else if (event.function_name == 'RemoveItems')
+                {
                     p_data.data[dict.name].RemoveItems(event.args[0], event.args[1]);
+                }
             }
-
         }
 
         protected function DictChange(event:PropertyChangeEvent):void
