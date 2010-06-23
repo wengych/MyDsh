@@ -24,7 +24,7 @@ package com.yspay.YsControls
         private var _showList:Boolean;
         private var _index:int = 0;
         [Bindable]
-        private var _listDp:ArrayCollection = new ArrayCollection(['']);
+        private var _listDp:ArrayCollection = new ArrayCollection;
         private var _append:Boolean = false;
         private var _listEditable:Boolean = false;
         private var _deleteable:Boolean = false;
@@ -56,6 +56,7 @@ package com.yspay.YsControls
             _listDp.addEventListener(CollectionEvent.COLLECTION_CHANGE, ListChange);
 
             _parent = parent;
+            _listDp.addItem('');
         }
 
         protected override function createChildren():void

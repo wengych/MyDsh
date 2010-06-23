@@ -4,6 +4,7 @@ package com.yspay.YsControls
     import com.yspay.YsData.TargetList;
     import com.yspay.events.EventNextDict;
     import com.yspay.util.AdvanceArray;
+    import com.yspay.util.FunctionCallEvent;
     import com.yspay.util.UtilFunc;
     import com.yspay.util.YsClassFactory;
     import com.yspay.util.YsObjectProxy;
@@ -86,10 +87,11 @@ package com.yspay.YsControls
                     'name': '',
                     'source': null,
                     'delimiter': 100};
-            dict_object.data.push('');
             dict = new YsObjectProxy(dict_object);
 
             dict.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, DictChange);
+            dict.addEventListener(FunctionCallEvent.EVENT_NAME,
+                                  DictFunctionCalled);
         }
 
         public function GetXml():XML
@@ -248,6 +250,12 @@ package com.yspay.YsControls
                     from_data.AddToNotifiers(this, dict.name, default_value);
                 }
 
+                // 初始化 ToData
+                for each (var to_data:PData in dict.To.GetAllTarget())
+                {
+                    to_data.data[dict.name] = new AdvanceArray;
+                }
+
                 if (_xml.display.LABEL != undefined)
                 {
                     if (_xml.@LABEL != undefined)
@@ -339,6 +347,17 @@ package com.yspay.YsControls
             }
         }
 
+        protected function DictFunctionCalled(event:FunctionCallEvent):void
+        {
+            for each (var p_data:PData in dict.To.GetAllTarget())
+            {
+                if (event.function_name == 'Insert')
+                    p_data.data[dict.name].Insert(event.args[0], event.args[1]);
+                else if (event.function_name == 'RemoveItems')
+                    p_data.data[dict.name].RemoveItems(event.args[0], event.args[1]);
+            }
+
+        }
 
         protected function DictChange(event:PropertyChangeEvent):void
         {
@@ -368,9 +387,6 @@ package com.yspay.YsControls
                 {
                     if (p_data.data[dict.name] == null)
                         p_data.data[dict.name] = [''];
-
-                    while (p_data.data[dict.name].length <= idx)
-                        p_data.data[dict.name].push('');
 
                     p_data.data[dict.name][idx] = dict.data[idx];
                 }
