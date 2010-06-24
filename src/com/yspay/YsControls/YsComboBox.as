@@ -285,15 +285,15 @@ package com.yspay.YsControls
             //selectedIndex = -1;
             arr_col.filterFunction = filter_func;
             arr_col.refresh();
-            if (arr_col.length == 0) //未找到符合条件记录
-            {
-                arr_col.filterFunction = null;
-                arr_col.refresh();
-                open();
-                return;
-            }
-//            validateNow();
-//            dropdown.validateNow();
+            /*
+               if (arr_col.length == 0) //未找到符合条件记录
+               {
+               arr_col.filterFunction = null;
+               arr_col.refresh();
+               open();
+               return;
+               }
+             */
             dropdown.selectedIndex = -1;
             dropdown.verticalScrollPosition = 0;
             open();
