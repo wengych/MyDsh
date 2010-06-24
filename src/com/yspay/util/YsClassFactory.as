@@ -25,6 +25,5 @@ package com.yspay.util
 
             return instance;
         }
-
     }
 }

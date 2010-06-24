@@ -3,27 +3,40 @@ package com.yspay.YsControls
     import com.yspay.YsData.PData;
     import com.yspay.YsData.TargetList;
     import com.yspay.events.EventNextDict;
+    import com.yspay.util.AdvanceArray;
+    import com.yspay.util.FunctionCallEvent;
     import com.yspay.util.UtilFunc;
+    import com.yspay.util.YsClassFactory;
+    import com.yspay.util.YsObjectProxy;
 
     import flash.display.DisplayObjectContainer;
     import flash.events.Event;
+    import flash.utils.flash_proxy;
 
     import mx.collections.ArrayCollection;
     import mx.containers.HBox;
     import mx.controls.Alert;
     import mx.controls.Label;
-    import mx.controls.TextInput;
     import mx.controls.dataGridClasses.DataGridColumn;
+    import mx.events.FlexEvent;
     import mx.events.ListEvent;
     import mx.events.PropertyChangeEvent;
     import mx.managers.FocusManager;
     import mx.managers.IFocusManagerContainer;
-    import mx.utils.ObjectProxy;
+    import mx.utils.object_proxy;
+
+    use namespace flash_proxy;
+    use namespace object_proxy;
 
     public class YsDict extends HBox implements YsControl
     {
         protected var dict_object:Object;
-        public var dict:ObjectProxy;
+
+        public var editable:Boolean;
+        public var LABEL:String = '';
+        public var openfile:Boolean;
+
+        public var dict:YsObjectProxy;
         public var D_data:PData = new PData;
         public var _parent:DisplayObjectContainer;
         public var _focusManager:FocusManager = new FocusManager(this as IFocusManagerContainer);
@@ -64,17 +77,21 @@ package com.yspay.YsControls
         public function YsDict(parent:DisplayObjectContainer)
         {
             _parent = parent;
+
             this.setStyle("borderStyle", "none");
-            dict_object = {'text': '',
+            dict_object = {
+                    'text': '',
+                    'data': new AdvanceArray,
                     'To': new TargetList,
                     'From': new TargetList,
                     'index': 0,
                     'name': '',
                     'source': null,
-                    'delimiter': 100};
-            dict = new ObjectProxy(dict_object);
-
+                    'delimiter': 200};
+            dict = new YsObjectProxy(dict_object);
             dict.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, DictChange);
+            dict.addEventListener(FunctionCallEvent.EVENT_NAME,
+                                  DictFunctionCalled);
         }
 
         public function GetXml():XML
@@ -119,6 +136,30 @@ package com.yspay.YsControls
             return rtn;
         }
 
+        protected function InitAttrs():void
+        {
+            var attrs:Object = YsMaps.dict_dg_attrs;
+            for (var attr_name:String in attrs)
+            {
+                if (!(this.hasOwnProperty(attr_name)))
+                {
+                    Alert.show('YsDict中没有 ' + attr_name + ' 属性');
+                    continue;
+                }
+
+                if (_xml.attribute(attr_name).length() == 0)
+                {
+                    // XML中未描述此属性，取默认值
+                    if (attrs[attr_name].hasOwnProperty('default'))
+                        this[attr_name] = attrs[attr_name]['default'];
+                }
+                else
+                {
+                    this[attr_name] = _xml.attribute(attr_name).toString();
+                }
+            }
+        }
+
         public function Init(xml:XML):void
         {
             var ys_pod:YsPod = UtilFunc.GetParentByType(_parent, YsPod) as YsPod;
@@ -135,30 +176,31 @@ package com.yspay.YsControls
             if (_xml.services.@NAME != undefined)
                 dict.name = _xml.services.@NAME.toString();
 
+            if (_xml.@LABEL != undefined)
+                this.LABEL = _xml.@LABEL;
+            else
+                this.LABEL = _xml.display.LABEL.@text;
+
             if (_parent is YsDataGrid) //DATAGRID
             {
                 var dg:YsDataGrid = _parent as YsDataGrid;
                 var data:ArrayCollection = dg.dataProvider as ArrayCollection;
                 var dgc:DataGridColumn =  new DataGridColumn;
+                this.editable = dg.editable;
 
-                for each (var kid:XML in _xml.attributes())
+                InitAttrs();
+
+                dgc.editable = this.editable;
+                dgc.headerText = this.LABEL;
+                dgc.dataField = dict.name;
+                if (_xml.display.TEXTINPUT.list != undefined)
                 {
-                    if (kid.name() == "editable")
-                        dgc.editable = kid.toString();
-
+                    dgc.itemEditor = new YsClassFactory(YsDgListItem, this, _xml);
                 }
 
-                var ch_name:String;
-                if (_xml.attribute('LABEL').length() == 0)
-                    ch_name = _xml.display.LABEL.@text;
-                else
-                    ch_name = _xml.@LABEL.toString();
-                dgc.headerText = ch_name;
-                dgc.dataField = dict.name;
-
-                // P_data.AddToNotifiers(_parent, dict.name, _xml.services.@DEFAULT.toString());
                 dg.fromDataObject[dict.name] = new TargetList;
                 dg.fromDataObject[dict.name].Init(_parent, _xml.From);
+                // 初始化from data
                 for each (var dg_from_data:PData in dg.fromDataObject[dict.name].GetAllTarget())
                 {
                     dg_from_data.AddToNotifiers(_parent, dict.name);
@@ -167,9 +209,12 @@ package com.yspay.YsControls
                 dg.toDataObject[dict.name] = new TargetList;
                 dg.toDataObject[dict.name].Init(_parent, _xml.To);
 
-
                 dg.columns = dg.columns.concat(dgc);
                 dg.dict_arr.push(this);
+                this.visible = false;
+                this.height = 0;
+                this.width = 0;
+                dg.addChild(this);
                     // TODO:针对DataGrid的处理方�
                     //(_parent as DataGrid); // 添加�
             }
@@ -188,6 +233,7 @@ package com.yspay.YsControls
                 //       to="dict"
                 //       to="parent"
                 //>
+                _parent.addChild(this);
 
                 // if (_xml.From != undefined)
                 dict.From.Init(this, _xml.From);
@@ -204,7 +250,11 @@ package com.yspay.YsControls
                     from_data.AddToNotifiers(this, dict.name, default_value);
                 }
 
-                _parent.addChild(this);
+                // 初始化 ToData
+                for each (var to_data:PData in dict.To.GetAllTarget())
+                {
+                    to_data.data[dict.name] = new AdvanceArray;
+                }
 
                 if (_xml.display.LABEL != undefined)
                 {
@@ -231,15 +281,18 @@ package com.yspay.YsControls
                     if (_xml.@TextInputVisible != undefined)
                         if (_xml.@TextInputVisible == "false")
                             _text.visible = false;
+
+                    if (_xml.@openfile != undefined &&
+                        _xml.@openfile == 'true')
+                        _text.fileable = true;
+                    else if (_xml.display.TEXTINPUT.@openfile != undefined &&
+                        _xml.display.TEXTINPUT.@openfile == 'true')
+                        _text.fileable = true;
                     this.addChild(_text);
                 }
                 if (_xml.display.TEXTINPUT.list != undefined)
                 {
                     _combo = CreateComboBox(_xml);
-                    /*if (_xml.@OutputOnly != undefined)
-                       if (_xml.@OutputOnly == "true")
-                       _combo.enabled = false;
-                     */
                     if (_xml.@ComboBoxVisible != undefined)
                         if (_xml.@ComboBoxVisible == "false")
                             _combo.visible = false;
@@ -275,6 +328,11 @@ package com.yspay.YsControls
                   dict_name + ',' +
                   func_name + ',' +
                   args + ')');
+
+            if (func_name == 'Insert')
+                dict.data.Insert(args[0], args[1]);
+            else if (func_name == 'RemoveItems')
+                dict.data.RemoveItems(args[0], args[1]);
         }
 
         public function Notify(p_data:PData, dict_name:String, index:int):void
@@ -295,6 +353,35 @@ package com.yspay.YsControls
             }
         }
 
+        protected function DictFunctionCalled(event:FunctionCallEvent):void
+        {
+            if (event.function_name == 'Insert')
+            {
+                if (dict.data.length > _text.listDp)
+                    _text.listDp.addItemAt(event.args[0], event.args[1]);
+            }
+            else if (event.function_name == 'RemoveItems')
+            {
+                if (dict.data.length < _text.listDp)
+                {
+                    var cnt:int = event.args[1];
+                    while (cnt-- > 0)
+                        _text.listDp.removeItemAt(event.args[0]);
+                }
+            }
+
+            for each (var p_data:PData in dict.To.GetAllTarget())
+            {
+                if (event.function_name == 'Insert')
+                {
+                    p_data.data[dict.name].Insert(event.args[0], event.args[1]);
+                }
+                else if (event.function_name == 'RemoveItems')
+                {
+                    p_data.data[dict.name].RemoveItems(event.args[0], event.args[1]);
+                }
+            }
+        }
 
         protected function DictChange(event:PropertyChangeEvent):void
         {
@@ -302,23 +389,31 @@ package com.yspay.YsControls
             if (event.property == 'text')
             {
                 trace('\tdict.text = ', event.newValue);
-                for each (var p_data:PData in dict.To.GetAllTarget())
-                {
-                    if (p_data.data[dict.name] == null)
-                        p_data.data[dict.name] = [''];
-
-                    p_data.data[dict.name][0] = dict.text;
-                }
 
                 if (_text != null && _text != dict.source)
                     _text.SetText(dict.text);
+
                 //if (_combo != null && _combo != dict.source)
                 if (_combo != null) //无论是输入还是选单，都需要修改COMBOBOX，如果是选单，需要修改PROMPT
                     _combo.SetComboBox(dict.name, dict.text);
 
                 this.dispatchEvent(new EventNextDict);
-
                 dict.source = null;
+            }
+
+            if (event.source.object == dict_object.data)
+            {
+                if (event.property == '0')
+                    dict.text = event.newValue;
+
+                var idx:int = int(event.property);
+                for each (var p_data:PData in dict.To.GetAllTarget())
+                {
+                    if (p_data.data[dict.name] == null)
+                        p_data.data[dict.name] = [''];
+
+                    p_data.data[dict.name][idx] = dict.data[idx];
+                }
             }
             if (event.property == 'delimiter')
             {
@@ -366,7 +461,7 @@ package com.yspay.YsControls
 
         private function CreateTextInput(dxml:XML):MultipleTextInput
         {
-            var ti:MultipleTextInput = new MultipleTextInput;
+            var ti:MultipleTextInput = new MultipleTextInput(this);
             ti.text = '';
             ti.maxChars = int(dxml.services.@LEN);
             var mask:String = '';
@@ -378,19 +473,21 @@ package com.yspay.YsControls
             var ti_len:int = int(dxml.display.TEXTINPUT.@length);
             if (ti.maxChars > 40)
                 ti.width = 200;
-            //else
-            //    ti.width = ti.maxChars;
             else if (int(dxml.display.TEXTINPUT.@length) < 10 && ti.maxChars < 10)
-                //    ti.width = int(dxml.display.TEXTINPUT.@length) * 12;
                 ti.width = (ti_len * 50 > 200) ? 200 : ti_len * 50;
             else
                 ti.width = 200;
-            ti.width += 60;
+            ti.width = ti.width + 60;
             ti.displayAsPassword = (dxml.display.TEXTINPUT.@displayAsPassword == 0 ? false : true);
             ti.text = dict.text;
-            ti._parent = this;
             //ti.addEventListener(Event.CHANGE, TextInputChange);
+            ti.addEventListener(FlexEvent.ENTER, TiEnter);
             return ti;
+        }
+
+        protected function TiEnter(event:FlexEvent):void
+        {
+            this.dispatchEvent(new EventNextDict);
         }
 
         private function CreateComboBox(dxml:XML):YsComboBox

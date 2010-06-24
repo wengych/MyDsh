@@ -1,7 +1,9 @@
 // ActionScript file
 package com.yspay.event_handlers
 {
+    import com.yspay.YsData.PData;
     import com.yspay.YsData.TargetList;
+    import com.yspay.util.AdvanceArray;
 
     import flash.events.Event;
 
@@ -32,12 +34,30 @@ package com.yspay.event_handlers
         var from_target_dict:Array = from_targets.GetTargetDictArr();
         var to_target_dict:Array = to_targets.GetTargetDictArr();
 
-        for (var idx:int = 0; idx < from_target_list.length; ++idx)
+        for (var idx:int = 0; idx < to_target_list.length; ++idx)
         {
-            for (var dict_idx:int = 0; dict_idx < from_target_dict[idx].length; ++dict_idx)
+            var from_data:PData = from_target_list[idx];
+            var to_data:PData = to_target_list[idx];
+            for (var dict_name_idx:int = 0; dict_name_idx < from_target_dict[idx].length; ++dict_name_idx)
             {
-                to_target_list[idx].data[to_target_dict[dict_idx]] =
-                    from_target_list[idx].data[from_target_dict[dict_idx]];
+                var from_dict:String = from_target_dict[idx][dict_name_idx];
+                var to_dict:String = to_target_dict[idx][dict_name_idx];
+
+                if (!from_data.data.hasOwnProperty(from_dict))
+                {
+                    to_data.data[to_dict] = new AdvanceArray;
+                    continue;
+                }
+
+                for (var dict_idx:int = 0; dict_idx < from_data.data[from_dict].length; ++dict_idx)
+                {
+                    if (!to_data.data.hasOwnProperty(to_dict))
+                        to_data.data[to_dict] = new AdvanceArray;
+
+                    if (to_data.data[to_dict].length <= dict_idx)
+                        to_data.data[to_dict].Insert(dict_idx, '');
+                    to_data.data[to_dict][dict_idx] = from_data.data[from_dict][dict_idx];
+                }
             }
         }
     }

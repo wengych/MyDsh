@@ -37,8 +37,8 @@ echo ''
 echo "sshpass -p g scp out/MyDsh.swf guest@192.168.0.77:$file_path$file_name"
 sshpass -p g scp out/MyDsh.swf guest@192.168.0.77:$file_path$file_name
 
-echo 'sshpass -p g ssh guest@192.168.0.77 "ln -f /home/guest/$file_path$file_name /home/guest/MapClient/MyDsh.swf"'
-sshpass -p g ssh guest@192.168.0.77 "ln -f /home/guest/$file_path$file_name /home/guest/MapClient/MyDsh.swf"
+echo 'sshpass -p g ssh guest@192.168.0.77 "scp out/MyDsh.swf /home/guest/MapClient/MyDsh.swf"'
+sshpass -p g scp  out/MyDsh.swf guest@192.168.0.77:MapClient/MyDsh.swf
 
 echo 'end'
 

@@ -54,7 +54,7 @@
             private var podLayoutManagers:Array = new Array();
             public var _pool:Pool = new Pool;
             public var M_data:MData = new MData; //xingj
-            public var monsterDebugger:MonsterDebugger = new MonsterDebugger(this);
+            //public var monsterDebugger:MonsterDebugger = new MonsterDebugger(this);
 
             protected var pod_xml:XML = new XML('<?xml version="1.0" encoding="utf-8"?> \
 <views>\
@@ -564,7 +564,8 @@
                      width="182"
                      id="ipChoose"
                      dataProvider="{ipDP}"
-                     labelFunction="SetIpChooseLabel">
+                     labelFunction="SetIpChooseLabel"
+                     selectedIndex="4">
         </mx:ComboBox>
         <mx:Label x="39.5"
                   y="157"
@@ -575,7 +576,8 @@
                      width="182"
                      id="s_ipChoose"
                      dataProvider="{ipDP}"
-                     labelFunction="SetIpChooseLabel">
+                     labelFunction="SetIpChooseLabel"
+                     selectedIndex="4">
         </mx:ComboBox>
         <mx:Label x="37"
                   y="189"

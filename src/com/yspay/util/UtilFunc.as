@@ -1,11 +1,13 @@
 package com.yspay.util
 {
+    import com.yspay.YsControls.YsControl;
     import com.yspay.pool.DBTable;
     import com.yspay.pool.Pool;
 
     import flash.display.DisplayObjectContainer;
     import flash.utils.getDefinitionByName;
     import flash.system.Capabilities;
+
     import mx.collections.ArrayCollection;
     import mx.controls.Alert;
     import mx.core.Application;
@@ -34,6 +36,24 @@ package com.yspay.util
                 }
                 container = container.parent as Container;
             }
+            return parent;
+        }
+
+        public static function YsGetParentByType(ys_obj:Object, ys_type:Class):*
+        {
+            var parent:* = null;
+
+            while (ys_obj != null)
+            {
+                if (ys_obj is ys_type)
+                {
+                    parent = ys_obj;
+                    break;
+                }
+
+                ys_obj = ys_obj._parent;
+            }
+
             return parent;
         }
 

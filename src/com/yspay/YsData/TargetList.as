@@ -1,10 +1,12 @@
 package com.yspay.YsData
 {
     import com.yspay.YsControls.YsDataGrid;
+    import com.yspay.YsControls.YsDgListItem;
     import com.yspay.YsControls.YsDict;
     import com.yspay.YsControls.YsHBox;
     import com.yspay.YsControls.YsPod;
     import com.yspay.YsControls.YsTitleWindow;
+    import com.yspay.YsControls.YsVBox;
     import com.yspay.pool.Pool;
     import com.yspay.util.UtilFunc;
 
@@ -37,7 +39,10 @@ package com.yspay.YsData
                     if (obj is YsDict)
                         dict = obj as YsDict;
                     else
-                        dict = UtilFunc.GetParentByType(obj._parent, YsDict) as YsDict;
+                        dict = UtilFunc.YsGetParentByType(obj._parent, YsDict) as YsDict;
+
+                    if (dict == null)
+                        continue;
 
                     curr_pdata = dict.D_data;
                 }
@@ -47,24 +52,49 @@ package com.yspay.YsData
                     if (obj is YsDataGrid)
                         dg = obj as YsDataGrid;
                     else
-                        dg = UtilFunc.GetParentByType(obj._parent, YsDataGrid) as YsDataGrid;
+                        dg = UtilFunc.YsGetParentByType(obj._parent, YsDataGrid) as YsDataGrid;
                     curr_pdata = dg.D_data;
+                }
+                else if (item_text == 'dg_list')
+                {
+                    var dg_list:YsDgListItem;
+                    if (obj is YsDgListItem)
+                        dg_list = obj as YsDgListItem;
+                    else
+                        dg_list = UtilFunc.YsGetParentByType(obj._parent, YsDgListItem) as YsDgListItem;
+
+                    curr_pdata = dg_list.D_data;
                 }
                 else if (item_text == 'hbox')
                 {
-                    var hbox:YsHBox = UtilFunc.GetParentByType(obj._parent,
-                                                               YsHBox) as YsHBox;
+                    var hbox:YsHBox;
+                    if (obj is YsHBox)
+                        hbox = obj as YsHBox;
+                    else
+                        hbox = UtilFunc.YsGetParentByType(obj._parent,
+                                                          YsHBox) as YsHBox;
                     curr_pdata = hbox.D_data;
+                }
+                else if (item_text == 'vbox')
+                {
+                    var vbox:YsVBox;
+                    if (obj is YsVBox)
+                        vbox = obj as YsVBox;
+                    else
+                        vbox = UtilFunc.YsGetParentByType(obj._parent,
+                                                          YsVBox) as YsVBox;
+
+                    curr_pdata = vbox.D_data;
                 }
                 else if (item_text == 'windows')
                 {
-                    var wnd:YsTitleWindow = UtilFunc.GetParentByType(obj._parent,
-                                                                     YsTitleWindow) as YsTitleWindow;
+                    var wnd:YsTitleWindow = UtilFunc.YsGetParentByType(obj._parent,
+                                                                       YsTitleWindow) as YsTitleWindow;
                     curr_pdata = wnd.D_data;
                 }
                 else if (item_text == 'pod')
                 {
-                    var pod:YsPod = UtilFunc.GetParentByType(obj._parent, YsPod) as YsPod;
+                    var pod:YsPod = UtilFunc.YsGetParentByType(obj._parent, YsPod) as YsPod;
                     curr_pdata = pod.D_data;
                 }
                 else if (item_text == 'parent')

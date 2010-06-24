@@ -89,7 +89,12 @@ package com.yspay.YsControls
         public override function Do(stack_event:StackEvent, source_event:Event):void
         {
             var pod:YsPod = UtilFunc.GetParentByType(this._parent, YsPod) as YsPod;
-            pod.enabled = false;
+            if (pod != null)
+                pod.enabled = false;
+            if ((this._parent as YsButton)._parent is YsDgListItem)
+            {
+                pod.enabled = true;
+            }
 
             var bus_in_name_args:Array = new Array;
             var bus_in_type_args:Array = new Array;
@@ -163,7 +168,8 @@ package com.yspay.YsControls
         }
 
         protected var To_Map:Object = {'pod': YsPod, 'windows': YsTitleWindow,
-                'dict': YsDict, 'event': YsXmlEvent, 'hbox': YsHBox};
+                'dict': YsDict, 'event': YsXmlEvent, 'hbox': YsHBox, 'vbox': YsVBox,
+                'dg_list': YsDgListItem};
 
         protected function GetDData(obj:Object):Object
         {
@@ -180,7 +186,7 @@ package com.yspay.YsControls
                 var ys_ctrl:Object;
 
                 var parent_type:Class = To_Map[to_item_name];
-                ys_ctrl = UtilFunc.GetParentByType(_parent, parent_type);
+                ys_ctrl = UtilFunc.YsGetParentByType(this._parent, parent_type);
 
                 return GetDData(ys_ctrl);
             }
@@ -190,7 +196,7 @@ package com.yspay.YsControls
             }
             else if (to_item_name.search('parent') == 0)
             {
-                return GetDData(_parent);
+                return GetDData(this._parent);
             }
             else
             {
@@ -202,12 +208,12 @@ package com.yspay.YsControls
                                            event:StackEvent,
                                            error_event:ErrorEvent):void
         {
-            var pod:YsPod = UtilFunc.GetParentByType(this._parent, YsPod) as YsPod;
+            var pod:YsPod = UtilFunc.YsGetParentByType(this._parent, YsPod) as YsPod;
             if (bus == null)
             {
                 Alert.show('服务调用出错,bus为空' + '\n' +
                            '            服务名:' + action_name);
-                _parent.dispatchEvent(event);
+                this._parent.dispatchEvent(event);
                 pod.enabled = true;
                 return;
             }
@@ -232,7 +238,7 @@ package com.yspay.YsControls
 
             if (user_rtn != 0 || scall_rtn != 0)
             {
-                _parent.dispatchEvent(event);
+                this._parent.dispatchEvent(event);
                 pod.enabled = true;
                 return;
             }
@@ -273,9 +279,10 @@ package com.yspay.YsControls
                 }
             }
 
-            pod.enabled = true;
+            if (pod != null)
+                pod.enabled = true;
 
-            _parent.dispatchEvent(event);
+            this._parent.dispatchEvent(event);
         }
 
 

@@ -1,47 +1,25 @@
 package com.yspay.YsControls
 {
-    import com.yspay.YsData.PData;
     import com.yspay.pool.Pool;
+    import com.yspay.YsData.PData;
 
     import flash.display.DisplayObjectContainer;
 
-    import mx.containers.HBox;
+    import mx.containers.VBox;
     import mx.core.Application;
 
-    public class YsHBox extends HBox implements YsControl
+    public class YsVBox extends VBox implements YsControl
     {
         protected var _pool:Pool;
         protected var _xml:XML;
         public var _parent:DisplayObjectContainer;
         public var D_data:PData = new PData;
 
-        public function YsHBox(parent:DisplayObjectContainer)
+        public function YsVBox(parent:DisplayObjectContainer)
         {
             super();
             _pool = Application.application._pool;
             _parent = parent;
-        }
-
-        public function GetXml():XML
-        {
-            return _xml;
-        }
-
-        public function GetSaveXml():XML
-        {
-            if (_xml.@save == 'false')
-                return null;
-            return null;
-        }
-
-        public function GetLinkXml():XML
-        {
-            return null;
-        }
-
-        public function get type():String
-        {
-            return _xml.name().toString();
         }
 
         public function Init(xml:XML):void
@@ -62,7 +40,12 @@ package com.yspay.YsControls
             {
                 _parent.addChild(this);
             }
+
+
             percentWidth = 100;
+            setStyle('borderStyle', 'solid');
+            setStyle('fontSize', '12');
+
             var child_name:String;
             for each (var child:XML in _xml.elements())
             {
@@ -76,5 +59,26 @@ package com.yspay.YsControls
                 child_ctrl.Init(child);
             }
         }
+
+        public function GetXml():XML
+        {
+            return _xml;
+        }
+
+        public function GetSaveXml():XML
+        {
+            return null;
+        }
+
+        public function GetLinkXml():XML
+        {
+            return null;
+        }
+
+        public function get type():String
+        {
+            return _xml.name().toString();
+        }
+
     }
 }

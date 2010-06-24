@@ -8,10 +8,11 @@ package com.yspay.YsControls
     import flash.net.FileReference;
     import flash.utils.ByteArray;
 
-    import mx.binding.utils.BindingUtils;
     import mx.collections.ArrayCollection;
     import mx.controls.Button;
     import mx.controls.TextInput;
+    import mx.events.CollectionEvent;
+    import mx.events.CollectionEventKind;
     import mx.managers.PopUpManager;
     import mx.utils.StringUtil;
 
@@ -23,7 +24,7 @@ package com.yspay.YsControls
         private var _showList:Boolean;
         private var _index:int = 0;
         [Bindable]
-        private var _listDp:ArrayCollection = new ArrayCollection(['']);
+        private var _listDp:ArrayCollection = new ArrayCollection;
         private var _append:Boolean = false;
         private var _listEditable:Boolean = false;
         private var _deleteable:Boolean = false;
@@ -33,7 +34,7 @@ package com.yspay.YsControls
         private var fr:FileReference;
         private var fileType:FileFilter;
 
-        public function MultipleTextInput()
+        public function MultipleTextInput(parent:YsDict)
         {
             super();
             this.toolTip = "Ctrl+Home 打开\nCtrl+Insert 增加行\nCtrl+Delete 删除行";
@@ -48,9 +49,13 @@ package com.yspay.YsControls
             _btn.label = '...';
             _showList = false;
             _backList = new MyList;
+            _backList.dataProvider = _listDp;
             addEventListener(Event.CHANGE, changeHandler);
             addEventListener(KeyboardEvent.KEY_DOWN, keydownHandler);
             _btn.addEventListener(MouseEvent.CLICK, btnClickHandler);
+            _listDp.addEventListener(CollectionEvent.COLLECTION_CHANGE, ListChange);
+
+            _parent = parent;
         }
 
         protected override function createChildren():void
@@ -96,6 +101,20 @@ package com.yspay.YsControls
             fr.load();
         }
 
+        protected function ListChange(event:CollectionEvent):void
+        {
+            if (event.kind == CollectionEventKind.ADD)
+                _parent.dict.data.Insert(event.location, '');
+            else if (event.kind == CollectionEventKind.REMOVE)
+                _parent.dict.data.RemoveItems(event.location, 1);
+            else if (event.kind == CollectionEventKind.UPDATE)
+                _parent.dict.data[event.location] =
+                    event.target[event.location];
+            else if (event.kind == CollectionEventKind.REPLACE)
+                _parent.dict.data[event.location] =
+                    event.target[event.location];
+        }
+
         private function onLoadComplete(e:Event):void
         {
             cursorManager.setBusyCursor();
@@ -108,7 +127,21 @@ package com.yspay.YsControls
             {
                 arr[i] = StringUtil.trim(arr[i]);
             }
-            listDp = new ArrayCollection(arr);
+
+            for (var idx:int = 0; idx < arr.length; ++idx)
+            {
+                if (_listDp.length <= idx)
+                {
+                    _listDp.addItem('');
+                    _listDp[idx] = arr[idx];
+                }
+                else
+                    _listDp[idx] = arr[idx];
+            }
+
+            while (_listDp.length > arr.length)
+                _listDp.removeItemAt(arr.length);
+
             if (!_showList)
                 popUpList();
             cursorManager.removeBusyCursor();
@@ -195,7 +228,7 @@ package com.yspay.YsControls
             if (event.keyCode == 45 && event.ctrlKey && _append)
             {
                 removePopList();
-                _listDp.source.splice(temp + 1, 0, "");
+                _listDp.addItemAt("", temp + 1);
                 popUpList();
                 _backList.editedItemPosition = {columnIndex: 0, rowIndex: temp + 1};
             }
@@ -204,6 +237,9 @@ package com.yspay.YsControls
         public function SetText(txt:String):void
         {
             this.text = txt;
+
+            if (_listDp.length == 0)
+                _listDp.addItem('');
             _listDp[0] = txt;
         }
 
@@ -211,7 +247,6 @@ package com.yspay.YsControls
         private function changeHandler(event:Event):void
         {
             _listDp[0] = text;
-            _listDp.refresh();
 
             _parent.dict.source = this;
             _parent.dict.text = text;
@@ -324,19 +359,6 @@ package com.yspay.YsControls
             return bytes.readMultiByte(bytes.length, "gb2312");
         }
 
-        //set get
-        public function set listDp(value:ArrayCollection):void
-        {
-            _listDp = value;
-            BindingUtils.bindProperty(this, "text", _listDp, "0");
-            invalidateProperties();
-        }
-
-        public function get listDp():ArrayCollection
-        {
-            return _listDp;
-        }
-
         public function set append(value:Boolean):void
         {
             _append = value;
@@ -380,6 +402,10 @@ package com.yspay.YsControls
             return _fileable;
         }
 
+        public function get listDp():ArrayCollection
+        {
+            return _listDp;
+        }
     }
 }
 
