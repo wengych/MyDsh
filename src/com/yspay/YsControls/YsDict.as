@@ -214,6 +214,7 @@ package com.yspay.YsControls
                         dict.label = _xml.display.LABEL.@text;
 
                     _label = new Label;
+                    _label.setStyle("textAlign", "right");
                     _label.text = dict.label;
                     _label.width = dict.delimiter;
                     if (_xml.@LabelVisible != undefined)

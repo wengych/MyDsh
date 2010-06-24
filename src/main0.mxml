@@ -70,15 +70,19 @@
                 var arr:Array = UtilFunc.getRatio();
                 if (arr[0] == 1280 && arr[1] == 1024)
                 {
-                    styleURL = "assets/styles.swf";
+                    styleURL = "assets/styles_1280_1024.swf";
                 }
                 else if (arr[0] == 1024 && arr[1] == 768)
                 {
-                    styleURL = "assets/styles1.swf";
+                    styleURL = "assets/styles_1024_768.swf";
                 }
                 else if (arr[0] == 1440 && arr[1] == 900)
                 {
-                    styleURL = "assets/styles2.swf";
+                    styleURL = "assets/styles_1440_900.swf";
+                }
+                else if (arr[0] == 1600 && arr[1] == 1200)
+                {
+                    styleURL = "assets/styles_1600_1200.swf";
                 }
                 if (styleURL != null)
                     StyleManager.loadStyleDeclarations(styleURL);
