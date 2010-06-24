@@ -64,7 +64,7 @@ package com.yspay.YsControls
         public function YsDict(parent:DisplayObjectContainer)
         {
             _parent = parent;
-
+            this.setStyle("borderStyle", "none");
             dict_object = {'text': '',
                     'To': new TargetList,
                     'From': new TargetList,
@@ -384,26 +384,21 @@ package com.yspay.YsControls
                 ti.width = (ti_len * 50 > 200) ? 200 : ti_len * 50;
             else
                 ti.width = 200;
+            ti.width += 60;
             ti.displayAsPassword = (dxml.display.TEXTINPUT.@displayAsPassword == 0 ? false : true);
             ti.text = dict.text;
             ti._parent = this;
-
             //ti.addEventListener(Event.CHANGE, TextInputChange);
-
             return ti;
         }
 
         private function CreateComboBox(dxml:XML):YsComboBox
         {
             var coboBox:YsComboBox = new YsComboBox(this);
-
             // coboBox.addEventListener("close", ComboChange);
             coboBox.addEventListener(ListEvent.CHANGE, ComboChange);
-
             // TODO:ComboBox和YsPod.P_data.ctrls_proxy[index][name]
-
             coboBox.Init(dxml);
-
             return coboBox;
         }
 

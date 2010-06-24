@@ -34,8 +34,6 @@ package com.yspay.YsControls
             _parent = parent;
             this.percentHeight = 100;
             this.percentWidth = 100;
-            this.setStyle("headerHeight", "10");
-            this.setStyle("fontSize", "12");
             this.showCloseButton = true;
             //this.setStyle("horizontalAlign", "center");
             this.addEventListener(CloseEvent.CLOSE, closeHandler);

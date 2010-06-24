@@ -2,9 +2,34 @@ Application
 {
    background-gradient-colors:	#ffffff, #ffffff;
    color: 						#000000;
+   padding-left:                41px;
+   padding-right:               36px;
+   padding-bottom:              0px;
+   padding-top :                38px;                            
    background-image: 			Embed(source="/assets/application_background.png",
 								scaleGridTop="0", scaleGridBottom="791", scaleGridLeft="350", scaleGridRight="690");
 }
+Button {
+ 
+}
+Label {
+   fontWeight: bold;
+}
+DataGrid {
+   borderStyle: solid;
+   fontSize: 12;
+}
+HBox {
+borderStyle: bold;
+   fontSize: 12;
+}
+TitleWindow {
+   headerHeight: 10;
+  fontSize: 12;
+verticalGap: 1;
+ 
+}
+
 .maximizeRestoreButton
 {
 	up-skin:        	Embed("/assets/maximize_up.png");

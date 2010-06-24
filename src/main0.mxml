@@ -8,12 +8,9 @@
                 height="100%"
                 backgroundSize="100%"
                 backgroundColor="#ffffff"
-                paddingLeft="55"
-                paddingRight="55"
-                paddingBottom="0"
-                paddingTop="4"
-                xmlns:flexlib="http://code.google.com/p/flexlib/">
-    <mx:Style source="/assets/styles.css"/>
+                xmlns:flexlib="http://code.google.com/p/flexlib/"
+                initialize="loadStyles()">
+    <!-- <mx:Style source="/assets/styles.css"/>-->
     <mx:Script>
         <![CDATA[
             import mx.events.PropertyChangeEvent;
@@ -44,10 +41,12 @@
             import com.yspay.YsPodLayoutManager;
             import com.yspay.events.EventNewPod;
             import com.yspay.util.EncryptUtil;
+            import com.yspay.util.UtilFunc;
             import com.yspay.UserBus;
             import com.yspay.event_handlers.EventHandlerFactory;
             import com.yspay.*;
             import com.yspay.YsData.MData;
+            import mx.styles.StyleManager;
             import com.yspay.YsData.PData;
             import nl.demonsters.debugger.MonsterDebugger;
 
@@ -64,6 +63,27 @@
     <view id="view1">\
     </view>\
 </views>');
+
+            private function loadStyles():void
+            {
+                var styleURL:String;
+                var arr:Array = UtilFunc.getRatio();
+                if (arr[0] == 1280 && arr[1] == 1024)
+                {
+                    styleURL = "assets/styles.swf";
+                }
+                else if (arr[0] == 1024 && arr[1] == 768)
+                {
+                    styleURL = "assets/styles1.swf";
+                }
+                else if (arr[0] == 1440 && arr[1] == 900)
+                {
+                    styleURL = "assets/styles2.swf";
+                }
+                if (styleURL != null)
+                    StyleManager.loadStyleDeclarations(styleURL);
+
+            }
 
             private function onEnterState():void
             {
@@ -82,7 +102,6 @@
             {
                 trace(event.property);
                 trace(event.source[event.property]);
-
                 if (event.property == 'SCALL_RTN')
                     SCALL_RTN.text = event.source.SCALL_RTN;
                 else if (event.property == 'USER_RTN')
@@ -235,10 +254,6 @@
                                  close="comboboxClickHandler(event)"/>
                 </mx:ApplicationControlBar>
             </mx:AddChild>
-            <mx:AddChild>
-                <mx:Canvas height="32"
-                           enabled="false"/>
-            </mx:AddChild>
             <!--添加新的组件-->
             <!--
                  <mx:AddChild position="lastChild">
@@ -266,7 +281,7 @@
             </mx:AddChild>
             <mx:AddChild>
                 <mx:ControlBar width="100%"
-                               height="5%"
+                               height="1%"
                                barColor="red"
                                horizontalAlign="center"
                                fontSize="11">
@@ -284,11 +299,6 @@
                               width="300"/>
                 </mx:ControlBar>
             </mx:AddChild>
-            <mx:AddChild>
-                <mx:Canvas height="2%"/>
-            </mx:AddChild>
-
-
         </mx:State>
     </mx:states>
     <mx:Script>
