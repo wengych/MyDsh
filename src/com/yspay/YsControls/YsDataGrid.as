@@ -45,8 +45,6 @@
 
             percentWidth = 100;
             percentHeight = 100;
-            setStyle('borderStyle', 'solid');
-            setStyle('fontSize', '12');
         }
 
         protected function OnRemoveItems(p_data:PData,
@@ -346,7 +344,7 @@
         protected function CheckEmptyObject(obj:Object):Boolean
         {
             var rtn:Boolean = true;
-            for each (var obj_property:* in obj)
+            for each (var obj_property:*in obj)
             {
                 rtn = false;
                 break;

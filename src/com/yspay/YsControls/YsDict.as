@@ -78,6 +78,7 @@ package com.yspay.YsControls
         {
             _parent = parent;
 
+            this.setStyle("borderStyle", "none");
             dict_object = {
                     'text': '',
                     'data': new AdvanceArray,
@@ -88,7 +89,6 @@ package com.yspay.YsControls
                     'source': null,
                     'delimiter': 200};
             dict = new YsObjectProxy(dict_object);
-
             dict.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, DictChange);
             dict.addEventListener(FunctionCallEvent.EVENT_NAME,
                                   DictFunctionCalled);
@@ -264,6 +264,7 @@ package com.yspay.YsControls
                         dict.label = _xml.display.LABEL.@text;
 
                     _label = new Label;
+                    _label.setStyle("textAlign", "right");
                     _label.text = dict.label;
                     _label.width = dict.delimiter;
                     if (_xml.@LabelVisible != undefined)
@@ -479,10 +480,8 @@ package com.yspay.YsControls
             ti.width = ti.width + 60;
             ti.displayAsPassword = (dxml.display.TEXTINPUT.@displayAsPassword == 0 ? false : true);
             ti.text = dict.text;
-
             //ti.addEventListener(Event.CHANGE, TextInputChange);
             ti.addEventListener(FlexEvent.ENTER, TiEnter);
-
             return ti;
         }
 
@@ -494,14 +493,10 @@ package com.yspay.YsControls
         private function CreateComboBox(dxml:XML):YsComboBox
         {
             var coboBox:YsComboBox = new YsComboBox(this);
-
             // coboBox.addEventListener("close", ComboChange);
             coboBox.addEventListener(ListEvent.CHANGE, ComboChange);
-
             // TODO:ComboBox和YsPod.P_data.ctrls_proxy[index][name]
-
             coboBox.Init(dxml);
-
             return coboBox;
         }
 

@@ -6,6 +6,7 @@ package com.yspay.util
 
     import flash.display.DisplayObjectContainer;
     import flash.utils.getDefinitionByName;
+    import flash.system.Capabilities;
 
     import mx.collections.ArrayCollection;
     import mx.controls.Alert;
@@ -33,10 +34,8 @@ package com.yspay.util
                     parent = container as parent_type;
                     break;
                 }
-
                 container = container.parent as Container;
             }
-
             return parent;
         }
 
@@ -131,8 +130,14 @@ package com.yspay.util
                     rtn.appendChild(val);
                 }
             }
-
             return rtn;
+        }
+
+        public static function getRatio():Array
+        {
+            var resX:int = Capabilities.screenResolutionX;
+            var resY:int = Capabilities.screenResolutionY;
+            return [resX, resY];
         }
 
     }

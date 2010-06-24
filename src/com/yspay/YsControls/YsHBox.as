@@ -62,12 +62,7 @@ package com.yspay.YsControls
             {
                 _parent.addChild(this);
             }
-
-
             percentWidth = 100;
-            setStyle('borderStyle', 'solid');
-            setStyle('fontSize', '12');
-
             var child_name:String;
             for each (var child:XML in _xml.elements())
             {

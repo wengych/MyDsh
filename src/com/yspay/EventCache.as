@@ -2,10 +2,8 @@ package com.yspay
 {
     import com.yspay.events.EventCacheComplete;
     import com.yspay.pool.*;
-
     import flash.events.EventDispatcher;
     import flash.events.IEventDispatcher;
-
     import mx.controls.Alert;
 
     public class EventCache extends EventDispatcher
@@ -91,7 +89,7 @@ package com.yspay
 
                 return rtn;
             }
-            
+
             if (xml.text().length() > 0 &&
                 IsLink(xml.text()[0].toString()))
                 rtn += QueryLink(xml.text()[0].toString());
