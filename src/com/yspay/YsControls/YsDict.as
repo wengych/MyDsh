@@ -18,6 +18,7 @@ package com.yspay.YsControls
     import mx.controls.Alert;
     import mx.controls.Label;
     import mx.controls.dataGridClasses.DataGridColumn;
+    import mx.events.FlexEvent;
     import mx.events.ListEvent;
     import mx.events.PropertyChangeEvent;
     import mx.managers.FocusManager;
@@ -480,8 +481,14 @@ package com.yspay.YsControls
             ti.text = dict.text;
 
             //ti.addEventListener(Event.CHANGE, TextInputChange);
+            ti.addEventListener(FlexEvent.ENTER, TiEnter);
 
             return ti;
+        }
+
+        protected function TiEnter(event:FlexEvent):void
+        {
+            this.dispatchEvent(new EventNextDict);
         }
 
         private function CreateComboBox(dxml:XML):YsComboBox
