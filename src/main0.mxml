@@ -369,6 +369,38 @@
                  }
                 ]);
             [Bindable]
+            private var users:ArrayCollection =
+                new ArrayCollection(
+                [{
+                     user: "admin",
+                     pwd: "admin"
+                 },
+                 {
+                     user: "001",
+                     pwd: "001"
+                 },
+                 {
+                     user: "002",
+                     pwd: "002"
+                 },
+                 {
+                     user: "003",
+                     pwd: "003"
+                 },
+                 {
+                     user: "004",
+                     pwd: "004"
+                 },
+                 {
+                     user: "005",
+                     pwd: "005"
+                 },
+                 {
+                     user: "006",
+                     pwd: "006"
+                 }
+                ]);
+            [Bindable]
             private var ver_prvd:ArrayCollection = new ArrayCollection(
                 [{text: '开发版本'},
                  {text: '生产版本', isused: '1'}]);
@@ -446,6 +478,34 @@
                 service_call.Send(send_bus, ip, port, OnLoginCallBack);
             }
 
+            private function changeIP():void
+            {
+                if (ipChoose.selectedIndex < ipDP.length - 1)
+                {
+                    ipChoose.selectedIndex++;
+                    s_ipChoose.selectedIndex = ipChoose.selectedIndex;
+                }
+                else
+                {
+                    ipChoose.selectedIndex = 0;
+                    s_ipChoose.selectedIndex = 0;
+                }
+            }
+
+            private function changeUser():void
+            {
+                for (var i:int = 0; i < users.length; i++)
+                {
+                    if (txtUsername.text == users[i].user)
+                    {
+                        i = (i == users.length - 1) ? 0 : i + 1;
+                        break;
+                    }
+                }
+                txtUsername.text = users[i].user;
+                txtPassword.text = users[i].pwd
+            }
+
             public function GetServiceIp(service_name:String):String
             {
                 var ip_table:Object = {'TestService': '192.168.0.77'};
@@ -478,7 +538,7 @@
             {
                 txtUsername.text = "";
                 txtPassword.text = "";
-                txtCheckCode.text = "";
+                //   txtCheckCode.text = "";
             }
 
             private function GenerateCheckCode():String
@@ -550,27 +610,28 @@
                    id="btnReset"
                    click="resetHandle()"/>
         <!-- "校验码"标签 -->
-        <mx:Label x="165.5"
-                  y="125"
-                  id="lblCheckCode"
-                  width="42.5"
-                  color="#377CD0"/>
-        <mx:LinkButton x="216"
-                       y="123"
-                       label="看不清楚?"
-                       id="linkbtnReGenerate"
-                       click="lblCheckCode.text=GenerateCheckCode();"
-                       fontFamily="Georgia"
-                       fontSize="11"/>
-        <mx:Label x="39.5"
-                  y="123"
-                  text="校验码"/>
-        <!-- "校验码"输入框 -->
-        <mx:TextInput x="96.5"
-                      y="121"
-                      id="txtCheckCode"
-                      width="61"
-                      maxChars="4"/>
+        <mx:Button x="95.5"
+                   y="122"
+                   label="交换User?"
+                   id="lblCheckCode"
+                   click="changeUser()"/>
+        <mx:Button x="179.5"
+                   y="123"
+                   label="交换IP?"
+                   id="linkbtnReGenerate"
+                   click="changeIP();"
+                   fontFamily="Georgia"
+                   fontSize="11"/>
+        <!-- "校验码"输入框
+             <mx:Label x="39.5"
+             y="123"
+             text="校验码"/>
+             "校验码"输入框 -->
+        <!--<mx:TextInput x="96.5"
+             y="121"
+             id="txtCheckCode"
+             width="61"
+             maxChars="4"/>-->
         <mx:CheckBox x="96"
                      y="251"
                      label="记住密码"
