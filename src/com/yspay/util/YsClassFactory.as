@@ -6,7 +6,7 @@ package com.yspay.util
 
     public class YsClassFactory implements IFactory
     {
-        protected var generator:Class;
+        public var generator:Class;
         protected var xml:XML;
         protected var parent:DisplayObject;
 
