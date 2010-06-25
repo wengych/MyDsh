@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <actionScriptProperties mainApplicationPath="main0.mxml" version="3">
   <compiler additionalCompilerArguments="-locale en_US" copyDependentFiles="true" enableModuleDebug="true" generateAccessible="true" htmlExpressInstall="true" htmlGenerate="true" htmlHistoryManagement="true" htmlPlayerVersion="10.0.0" htmlPlayerVersionCheck="true" outputFolderPath="bin-debug" sourceFolderPath="src" strict="true" useApolloConfig="false" verifyDigests="true" warn="true">
     <compilerSourcePath/>
     <libraryPath defaultLinkType="1">
-      <libraryPathEntry kind="4" path="" />
+      <libraryPathEntry kind="4" path=""/>
       <libraryPathEntry kind="1" linkType="1" path="libs"/>
     </libraryPath>
     <sourceAttachmentPath/>
@@ -14,12 +14,12 @@
   </applications>
   <modules/>
   <buildCSSFiles>
-    <buildCSSFileEntry destPath="bin-debug" sourcePath="src/assets/styles.css"/>
-    <buildCSSFileEntry destPath="bin-debug" sourcePath="src/assets/styles_1024_768.css"/>
-    <buildCSSFileEntry destPath="bin-debug" sourcePath="src/assets/styles1.css"/>
     <buildCSSFileEntry destPath="bin-debug" sourcePath="src/assets/styles_1280_1024.css"/>
-    <buildCSSFileEntry destPath="bin-debug" sourcePath="src/assets/styles_1440_900.css"/>
+    <buildCSSFileEntry destPath="bin-debug" sourcePath="src/assets/styles.css"/>
     <buildCSSFileEntry destPath="bin-debug" sourcePath="src/assets/styles_1600_1200.css"/>
+    <buildCSSFileEntry destPath="bin-debug" sourcePath="src/assets/styles1.css"/>
+    <buildCSSFileEntry destPath="bin-debug" sourcePath="src/assets/styles_1440_900.css"/>
     <buildCSSFileEntry destPath="bin-debug" sourcePath="src/assets/styles2.css"/>
+    <buildCSSFileEntry destPath="bin-debug" sourcePath="src/assets/styles_1024_768.css"/>
   </buildCSSFiles>
 </actionScriptProperties>
