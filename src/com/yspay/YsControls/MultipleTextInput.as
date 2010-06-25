@@ -246,6 +246,8 @@ package com.yspay.YsControls
         //同步
         private function changeHandler(event:Event):void
         {
+        	if (_listDp.length == 0)
+        		_listDp.addItem('');
             _listDp[0] = text;
 
             _parent.dict.source = this;

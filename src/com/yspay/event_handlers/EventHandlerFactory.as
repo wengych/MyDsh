@@ -16,7 +16,8 @@ package com.yspay.event_handlers
                                    data_grid_delete_line,
                                    data_grid_insert_line,
                                    data_grid_append_line,
-                                   copy_dict];
+                                   copy_dict,
+                                   check_not_init];
 
         /*
            clean_text(null, null);

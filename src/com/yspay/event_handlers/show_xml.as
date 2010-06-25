@@ -11,7 +11,7 @@ package com.yspay.event_handlers
     import mx.core.UIComponent;
     import flash.events.Event;
 
-    public function show_xml(ui_comp:UIComponent, source_event:Event, action_info:XML):void
+    public function show_xml(ui_comp:UIComponent, source_event:Event, action_info:XML):Boolean
     {
         var ys_pod:YsPod = UtilFunc.GetParentByType(ui_comp.parent, YsPod) as YsPod;
         trace('show_xml');
@@ -31,5 +31,7 @@ package com.yspay.event_handlers
             xml.@MEMO = new_xml.A.(@KEYNAME == 'Title').@VALUE;
         }
         Alert.show(xml.toXMLString());
+
+        return true;
     }
 }

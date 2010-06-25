@@ -11,7 +11,7 @@ package com.yspay.event_handlers
 
     public function copy_dict(ui_comp:UIComponent,
                               source_event:Event,
-                              action_info:XML):void
+                              action_info:XML):Boolean
     {
         /*
            <action>copy_dict
@@ -60,5 +60,7 @@ package com.yspay.event_handlers
                 }
             }
         }
+
+        return true;
     }
 }

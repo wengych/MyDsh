@@ -6,16 +6,17 @@ package com.yspay.event_handlers
 
     import mx.core.UIComponent;
 
-    public function bus2window(ui_comp:UIComponent, source_event:Event, action_info:XML):void
+    public function bus2window(ui_comp:UIComponent, source_event:Event, action_info:XML):Boolean
     {
-    /*
-       for each (var obj:Object in children)
-       {
-       var ti:TextInput = obj as TextInput;
-       if (ti != null && ti.data.key == '')
+        /*
+           for each (var obj:Object in children)
+           {
+           var ti:TextInput = obj as TextInput;
+           if (ti != null && ti.data.key == '')
 
-       }
-     */
-         //Alert.show(wnd.main_bus.toString());
+           }
+         */
+        //Alert.show(wnd.main_bus.toString());
+        return true;
     }
 }

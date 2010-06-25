@@ -19,7 +19,7 @@ package com.yspay.event_handlers
     import mx.core.UIComponent;
     import mx.events.DragEvent;
 
-    public function drag_drop(ui_comp:UIComponent, source_event:Event, action_info:XML):void
+    public function drag_drop(ui_comp:UIComponent, source_event:Event, action_info:XML):Boolean
     {
         var get_dts_func:Function = function(event:DBTableQueryEvent):void
             {
@@ -74,7 +74,7 @@ package com.yspay.event_handlers
         if (drag_event == null)
         {
             trace("事件类型不匹配");
-            return;
+            return false;
         }
 
         // var drag_object:Object = (drag_event.dragInitiator as ListBase).selectedItem;
@@ -89,5 +89,7 @@ package com.yspay.event_handlers
             dts.AddQuery(drag_item.DTS, Query, drag_item.DTS, ui_comp);
             dts.DoQuery(drag_item.DTS);
         }
+
+        return true;
     }
 }

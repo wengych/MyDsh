@@ -10,7 +10,9 @@ package com.yspay.event_handlers
     import mx.core.Container;
     import mx.core.UIComponent;
 
-    public function make_tran_xml(ui_comp:UIComponent, source_event:Event, action_info:XML):void
+    public function make_tran_xml(ui_comp:UIComponent,
+                                  source_event:Event,
+                                  action_info:XML):Boolean
     {
         trace('event_make_tran_xml');
         var ys_pod:YsPod = UtilFunc.GetParentByType(ui_comp.parent as Container,
@@ -47,5 +49,7 @@ package com.yspay.event_handlers
             ys_pod.main_bus.RemoveByKey('__DICT_XML');
         }
         ys_pod.main_bus.Add('__DICT_XML', xml_head + xml.toXMLString());
+
+        return true;
     }
 }

@@ -43,6 +43,7 @@ package com.yspay.YsControls
             {
                 if (from_item.data.hasOwnProperty(key))
                 {
+                	trace('YsService.AddBusDataFromPData:: ', key);
                     for each (var data_item:* in from_item.data[key])
                     {
                         if (type == 'STRING')

@@ -29,6 +29,7 @@ package com.yspay.YsControls
 
         public var action_list:Array = new Array;
         public var D_data:PData = new PData;
+        public var interruptable:Boolean;
 
         public function get type():String
         {
@@ -57,6 +58,26 @@ package com.yspay.YsControls
             }
             _xml = xml;
 
+            var attrs:Object = YsMaps.button_attrs;
+            for (var attr_name:String in attrs)
+            {
+                if (!(this.hasOwnProperty(attr_name)))
+                {
+                    continue;
+                }
+
+                if (_xml.attribute(attr_name).length() == 0)
+                {
+                    // XML中未描述此属性，取默认值
+                    this[attr_name] = attrs[attr_name]['default'];
+                }
+                else
+                {
+                    this[attr_name] = _xml.attribute(attr_name).toString();
+                }
+            }
+
+            this.setStyle('fontWeight', 'normal');
             this.label = _xml.@LABEL;
             var child_name:String;
             for each (var child:XML in _xml.elements())
@@ -101,16 +122,27 @@ package com.yspay.YsControls
 
         protected function DoActions(e:StackEvent):void
         {
-            var curr_action:YsAction = e.NextEvent() as YsAction;
-            if (curr_action != null)
+            if (this.interruptable == true &&
+                e.result == false)
             {
-                this.label = action_list.length.toString();
-                curr_action.Do(e, e.source);
+                // 可中断的事件遇到前一次的action返回false
+                this.label = _xml.@LABEL;
+                this.btn.enabled = true;
             }
             else
             {
-                this.label = _xml.@LABEL;
-                this.btn.enabled = true;
+                var curr_action:YsAction = e.NextEvent() as YsAction;
+                if (curr_action != null)
+                {
+                    this.label = action_list.length.toString();
+                    curr_action.Do(e, e.source);
+                }
+                else
+                {
+                    // 全部事件执行完毕
+                    this.label = _xml.@LABEL;
+                    this.btn.enabled = true;
+                }
             }
         }
 

@@ -15,11 +15,13 @@ package com.yspay.events
         protected var _source:Event;
 
         public var event_data:Object;
+        public var result:Boolean; // 当前action执行结果，为可中断的事件使用
 
         public function StackEvent(data:Array, bubbles:Boolean=false, cancelable:Boolean=false)
         {
             super(EVENT_NAME, bubbles, cancelable);
 
+            this.result = true;
             this._event_list = data;
             this.event_data = new Object;
 
@@ -62,6 +64,7 @@ package com.yspay.events
             var e:StackEvent = new StackEvent(_event_list);
             e.source = _source;
             e.target_component = _target;
+            e.result = result;
             return e;
         }
     }

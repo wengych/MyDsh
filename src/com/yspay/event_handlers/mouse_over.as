@@ -9,12 +9,14 @@ package com.yspay.event_handlers
 
     import mx.core.UIComponent;
 
-    public function mouse_over(ui_comp:UIComponent, source_event:Event, action_info:XML):void
+    public function mouse_over(ui_comp:UIComponent,
+                               source_event:Event,
+                               action_info:XML):Boolean
     {
         if (!(source_event is MouseEvent))
         {
             trace('事件类型不匹配，不是MouseEvent');
-            return;
+            return false;
         }
 
         var mouse_event:MouseEvent = source_event as MouseEvent;
@@ -34,5 +36,7 @@ package com.yspay.event_handlers
             }
             ui_comp.toolTip = tool_tip_str;
         }
+
+        return true;
     }
 }

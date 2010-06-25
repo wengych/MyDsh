@@ -14,13 +14,13 @@ package com.yspay.event_handlers
 
     public function data_grid_insert_line(ui_comp:UIComponent,
                                           source_event:Event,
-                                          action_info:XML):void
+                                          action_info:XML):Boolean
     {
         var data_grid:YsDataGrid = UtilFunc.GetParentByType(ui_comp.parent, YsDataGrid) as YsDataGrid;
         if (data_grid == null)
         {
             Alert.show('data_grid_insert_line: 控件类型不匹配');
-            return;
+            return false;
         }
 
         var idx:int = data_grid.selectedIndex;
@@ -36,5 +36,7 @@ package com.yspay.event_handlers
         }
 
         arr.addItemAt(new_obj, idx);
+
+        return true;
     }
 }

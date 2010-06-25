@@ -4,10 +4,9 @@ package com.yspay.YsControls
 
     import flash.display.DisplayObjectContainer;
     import flash.events.Event;
+
     import mx.controls.ComboBox;
     import mx.controls.DataGrid;
-    import flash.events.MouseEvent;
-
     import mx.core.UIComponent;
 
     public class YsXmlEvent extends YsButton implements YsControl
@@ -27,18 +26,31 @@ package com.yspay.YsControls
             this.visible = false;
 
             if (_parent is DataGrid)
-            {
                 ;
-            }
             else if (_parent is ComboBox)
-            {
                 _parent.addChild(this);
-            }
             else
-            {
                 _parent.addChild(this);
-            }
             _xml = xml;
+
+            var attrs:Object = YsMaps.event_attrs;
+            for (var attr_name:String in attrs)
+            {
+                if (!(this.hasOwnProperty(attr_name)))
+                {
+                    continue;
+                }
+
+                if (_xml.attribute(attr_name).length() == 0)
+                {
+                    // XML中未描述此属性，取默认值
+                    this[attr_name] = attrs[attr_name]['default'];
+                }
+                else
+                {
+                    this[attr_name] = _xml.attribute(attr_name).toString();
+                }
+            }
 
             this.setStyle('fontWeight', 'normal');
             this.label = _xml.@LABEL;
@@ -59,7 +71,6 @@ package com.yspay.YsControls
             // 默认不显示
             //this.visible = xml.@VISABLE;
             this.label = event_name;
-
             need_save = false;
 
             this._parent.addEventListener(event_name, EventActived); //fd.create(func, _parent));
@@ -75,7 +86,7 @@ package com.yspay.YsControls
 
         protected function EventActived(event:Event):void
         {
-            trace('YsXmlEvent.EventActived' + _xml.text().toString());
+            trace('YsXmlEvent.EventActived ' + _xml.text().toString());
             var stack_event:StackEvent = new StackEvent(action_list.concat());
             stack_event.target_component = _parent as UIComponent;
             stack_event.source = event;

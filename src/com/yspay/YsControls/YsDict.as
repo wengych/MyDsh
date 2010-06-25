@@ -86,6 +86,7 @@ package com.yspay.YsControls
                     'From': new TargetList,
                     'index': 0,
                     'name': '',
+                    'labelFields': null,
                     'source': null,
                     'delimiter': 200};
             dict = new YsObjectProxy(dict_object);
@@ -160,6 +161,96 @@ package com.yspay.YsControls
             }
         }
 
+        protected function FindInArr(arr:ArrayCollection, key:String, value:Object):int
+        {
+            for (var idx = 0; idx < arr.length; ++idx)
+            {
+                if (arr[idx][key] == value)
+                    return idx;
+            }
+
+            return -1;
+        }
+
+        protected function DgComboLabelFunc(item:Object, column:DataGridColumn):String
+        {
+            trace(item);
+
+            if (dict.labelFields == null)
+                return item[dict.name];
+
+            var rtn:String = '';
+            var label_arr:Array;
+            var field_name:String;
+
+            label_arr = dict_object.labelFields;
+
+            var list_key:String = dict.name + '_list_data';
+            var list_datas:ArrayCollection = item[list_key];
+            if (list_datas == null)
+                return item[dict.name];
+
+            var idx:int = FindInArr(list_datas, dict.name, item[dict.name]);
+            if (idx < 0)
+                return item[dict.name];
+
+            for each (field_name in label_arr)
+            {
+                if (list_datas[idx].hasOwnProperty(field_name) &&
+                    list_datas[idx][field_name].length > 0)
+                {
+                    rtn += list_datas[idx][field_name] + ' ';
+                }
+            }
+
+            // 返回时删除字符串末尾的空格
+            return (rtn.substring(0, rtn.length - 1));
+        }
+
+        protected function InitAsDgChild():void
+        {
+            var dg:YsDataGrid = _parent as YsDataGrid;
+            var data:ArrayCollection = dg.dataProvider as ArrayCollection;
+            var dgc:DataGridColumn =  new DataGridColumn;
+            this.editable = dg.editable;
+
+            InitAttrs();
+
+            dgc.editable = this.editable;
+            dgc.headerText = this.LABEL;
+            dgc.dataField = dict.name;
+            if (_xml.display.TEXTINPUT.list != undefined)
+            {
+                dgc.itemEditor = new YsClassFactory(YsDgListItem, this, _xml);
+                dgc.labelFunction = DgComboLabelFunc;
+            }
+
+            dg.fromDataObject[dict.name] = new TargetList;
+            dg.fromDataObject[dict.name].Init(_parent, _xml.From);
+            // 初始化from data
+            for each (var dg_from_data:PData in dg.fromDataObject[dict.name].GetAllTarget())
+            {
+                dg_from_data.AddToNotifiers(_parent, dict.name);
+
+            }
+            if (_xml.display.TEXTINPUT.list.attribute('labelField').length() > 0)
+            {
+                var label_str:String = _xml.display.TEXTINPUT.list.@labelField;
+                dict.labelFields = new Array;
+                dict.labelFields = label_str.split(',');
+            }
+
+            dg.toDataObject[dict.name] = new TargetList;
+            dg.toDataObject[dict.name].Init(_parent, _xml.To);
+
+            dg.columns = dg.columns.concat(dgc);
+            dg.dict_arr.push(this);
+            this.visible = false;
+            this.height = 0;
+            this.width = 0;
+            dg.addChild(this);
+        }
+
         public function Init(xml:XML):void
         {
             var ys_pod:YsPod = UtilFunc.GetParentByType(_parent, YsPod) as YsPod;
@@ -183,40 +274,7 @@ package com.yspay.YsControls
 
             if (_parent is YsDataGrid) //DATAGRID
             {
-                var dg:YsDataGrid = _parent as YsDataGrid;
-                var data:ArrayCollection = dg.dataProvider as ArrayCollection;
-                var dgc:DataGridColumn =  new DataGridColumn;
-                this.editable = dg.editable;
-
-                InitAttrs();
-
-                dgc.editable = this.editable;
-                dgc.headerText = this.LABEL;
-                dgc.dataField = dict.name;
-                if (_xml.display.TEXTINPUT.list != undefined)
-                {
-                    dgc.itemEditor = new YsClassFactory(YsDgListItem, this, _xml);
-                }
-
-                dg.fromDataObject[dict.name] = new TargetList;
-                dg.fromDataObject[dict.name].Init(_parent, _xml.From);
-                // 初始化from data
-                for each (var dg_from_data:PData in dg.fromDataObject[dict.name].GetAllTarget())
-                {
-                    dg_from_data.AddToNotifiers(_parent, dict.name);
-                }
-
-                dg.toDataObject[dict.name] = new TargetList;
-                dg.toDataObject[dict.name].Init(_parent, _xml.To);
-
-                dg.columns = dg.columns.concat(dgc);
-                dg.dict_arr.push(this);
-                this.visible = false;
-                this.height = 0;
-                this.width = 0;
-                dg.addChild(this);
-                    // TODO:针对DataGrid的处理方�
-                    //(_parent as DataGrid); // 添加�
+                InitAsDgChild();
             }
             else //COMBOBOX || TEXTINPUT
             { //<DICT LABEL="CNAME" 

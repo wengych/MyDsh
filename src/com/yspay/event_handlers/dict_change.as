@@ -15,7 +15,7 @@ package com.yspay.event_handlers
     import mx.core.Application;
     import mx.core.UIComponent;
 
-    public function dict_change(ui_comp:UIComponent, event:Event, action_info:XML):void
+    public function dict_change(ui_comp:UIComponent, event:Event, action_info:XML):Boolean
     {
 
         var get_dts_func:Function = function(event:DBTableQueryEvent):void
@@ -58,5 +58,7 @@ package com.yspay.event_handlers
         dts.AddQuery(dts_no, Query, dts_no, ui_comp);
         ui_comp.addEventListener(dts.select_event_name, get_dts_func);
         dts.DoQuery(dts_no);
+
+        return true;
     }
 }

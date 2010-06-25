@@ -106,6 +106,10 @@ package com.yspay.YsData
                     var pool:Pool = Application.application._pool;
                     curr_pdata = pool.D_data;
                 }
+                else if (item_text == 'self')
+                {
+                    curr_pdata = obj.D_data;
+                }
 
                 target_arr.push(curr_pdata);
                 target_name_arr.push(item_text);

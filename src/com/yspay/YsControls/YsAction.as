@@ -36,7 +36,8 @@ package com.yspay.YsControls
         public function Do(stack_event:StackEvent, source_event:Event):void
         {
             var action_func:Function = EventHandlerFactory.get_handler(action_name);
-            action_func(stack_event.target_component, stack_event.source, _xml);
+            stack_event.result =
+                action_func(stack_event.target_component, stack_event.source, _xml);
             _parent.dispatchEvent(stack_event);
         }
     }
