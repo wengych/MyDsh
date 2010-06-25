@@ -52,7 +52,6 @@
             <compiler.verbose-stacktraces>true</compiler.verbose-stacktraces>
             <compiler.headless-server>true</compiler.headless-server>
             <compiler.accessible>true</compiler.accessible>
-            <use-resource-bundle-metadata>true</use-resource-bundle-metadata>
             <target-player>10.0.0</target-player>
         </mxmlc>
     </target>
