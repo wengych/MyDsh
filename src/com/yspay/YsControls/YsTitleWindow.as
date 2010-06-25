@@ -10,6 +10,7 @@ package com.yspay.YsControls
     import mx.collections.ArrayCollection;
     import mx.containers.TitleWindow;
     import mx.controls.Alert;
+    import mx.controls.DataGrid;
     import mx.core.Application;
     import mx.events.*;
 
@@ -36,11 +37,22 @@ package com.yspay.YsControls
             this.showCloseButton = true;
             //this.setStyle("horizontalAlign", "center");
             this.addEventListener(CloseEvent.CLOSE, closeHandler);
-
-
             _pool = Application.application._pool;
 
             this.addEventListener(EventWindowShowXml.EVENT_NAME, OnShow);
+        }
+
+        protected override function measure():void
+        {
+            for each (var o:Object in getChildren())
+            {
+                if (o is DataGrid)
+                {
+                    this.percentHeight = 100;
+                    break;
+                }
+            }
+            super.measure();
         }
 
         public function set ename(str:String):void

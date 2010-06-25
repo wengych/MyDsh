@@ -51,6 +51,7 @@ package com.yspay.YsControls
             _btn.height = _btn.width = 0;
             _showList = false;
             _backList = new MyList;
+            _backList.setStyle('fontSize', 12);
             _backList.dataProvider = _listDp;
             addEventListener(Event.CHANGE, changeHandler);
             addEventListener(KeyboardEvent.KEY_DOWN, keydownHandler);
@@ -248,8 +249,8 @@ package com.yspay.YsControls
         //同步
         private function changeHandler(event:Event):void
         {
-        	if (_listDp.length == 0)
-        		_listDp.addItem('');
+            if (_listDp.length == 0)
+                _listDp.addItem('');
             _listDp[0] = text;
 
             _parent.dict.source = this;

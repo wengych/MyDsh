@@ -36,7 +36,10 @@ TitleWindow {
    borderThickness: 2;
  
 }
-YSDict{
+MultipleTextInput{
+fontSize:12;
+}
+/*YSDict{
     borderStyle: none;
 }
 YSVBox{
@@ -46,6 +49,14 @@ YSVBox{
 YsXmlEvent{
 fontWeight: normal;
 }
+TabBar
+{
+	selected-tab-text-style-name: 	tabBarButtonSelected;
+	tab-style-name: 				tabBarButton;
+	padding-top:			0px;
+    tabHeight: 32px;
+    tabWidth: 80px;
+}*/
 .maximizeRestoreButton
 {
 	up-skin:        	Embed("/assets/maximize_up.png");
@@ -69,14 +80,7 @@ fontWeight: normal;
 	down-skin:      Embed("/assets/close_up.png");
 }
 
-TabBar
-{
-	selected-tab-text-style-name: 	tabBarButtonSelected;
-	tab-style-name: 				tabBarButton;
-	padding-top:			0px;
-    tabHeight: 32px;
-    tabWidth: 80px;
-}
+
 
 .tabBarButton
 {
