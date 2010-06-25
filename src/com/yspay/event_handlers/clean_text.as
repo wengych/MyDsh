@@ -12,7 +12,7 @@ package com.yspay.event_handlers
     import mx.core.Container;
     import mx.core.UIComponent;
 
-    public function clean_text(ui_comp:UIComponent, source_event:Event, action_info:XML):void
+    public function clean_text(ui_comp:UIComponent, source_event:Event, action_info:XML):Boolean
     {
         var clean_all_child_text:Function = function(container:Container, ys_pod:YsPod):void
             {
@@ -45,8 +45,9 @@ package com.yspay.event_handlers
         }
 
         if (target == null || pod == null)
-            return;
+            return true;
 
         clean_all_child_text(target, pod);
+        return true;
     }
 }

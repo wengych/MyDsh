@@ -119,7 +119,7 @@
                           ip, port);
                 var info:DBTable = _pool.info as DBTable;
                 var arr:Array = ['DICT', 'WINDOWS', 'BUTTON', 'SERVICES', 'TRAN',
-                                 'ACTION', 'HBOX', 'EVENT', 'DATAGRID', 'SCRIPT'];
+                                 'ACTION', 'HBOX', 'EVENT', 'DATAGRID'];
                 this.addEventListener(info.select_event_name, InfoQueryComplete);
                 CursorManager.setBusyCursor();
 
@@ -144,6 +144,7 @@
             private function InfoQueryComplete(event:DBTableQueryEvent):void
             {
                 CursorManager.removeBusyCursor();
+                trace('main0.mxml', event.query_name);
                 if (M_data.POOL.INFO[event.query_name] != null)
                     M_data.POOL.INFO[event.query_name].removeAll();
 

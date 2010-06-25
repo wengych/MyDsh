@@ -11,7 +11,9 @@ package com.yspay.event_handlers
     import mx.core.Container;
     import mx.core.UIComponent;
 
-    public function make_windows_xml(ui_comp:UIComponent, source_event:Event, action_info:XML):void
+    public function make_windows_xml(ui_comp:UIComponent,
+                                     source_event:Event,
+                                     action_info:XML):Boolean
     {
         var ys_pod:YsPod = UtilFunc.GetParentByType(ui_comp.parent as Container,
                                                     YsPod) as YsPod;
@@ -36,7 +38,7 @@ package com.yspay.event_handlers
 
             var new_xml:XML = new_wnd.GetSaveXml();
             if (new_xml == null)
-                return;
+                return true;
 
             xml.appendChild(new_xml);
             xml.@NAME = new_wnd.ename;
@@ -50,5 +52,7 @@ package com.yspay.event_handlers
             ys_pod.main_bus.RemoveByKey('__DICT_XML');
         }
         ys_pod.main_bus.Add('__DICT_XML', xml_head + xml.toXMLString());
+
+        return true;
     }
 }

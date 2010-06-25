@@ -11,18 +11,19 @@ package com.yspay.event_handlers
     import mx.events.DragEvent;
 
     public function drag_object_to_datagrid(ui_comp:UIComponent, source_event:Event,
-                                            action_info:XML):void
+                                            action_info:XML):Boolean
     {
         var data_grid:YsDataGrid = ui_comp as YsDataGrid;
         if (data_grid == null)
         {
             Alert.show('drag_obj_to_dg: 控件类型不匹配');
-            return;
+            return false;
         }
         var drag_event:DragEvent = source_event as DragEvent;
         if (drag_event == null)
         {
             Alert.show('drag_obj_to_dg: 事件类型不匹配');
+            return false;
         }
 
 
@@ -57,7 +58,7 @@ package com.yspay.event_handlers
         }
 
         if (drag_column_arr.length == 0)
-            return;
+            return true;
 
         for each (var drag_item:Object in drag_items)
         {
@@ -84,25 +85,14 @@ package com.yspay.event_handlers
                 if (item_exist)
                 {
                     Alert.show('对象已存在!');
-                    return;
+                    return true;
                 }
             }
 
             data_grid.dataProvider.addItem(new_item);
-            /*
-               for (key in new_item)
-               {
-               for each (var to_data:PData in data_grid.toDataObject[key].GetAllTarget())
-               {
-               to_data.data[key].push('');
-               to_data.data[key][to_data.data[key].length - 1] = new_item[key]
-               }
-             }*/
         }
 
-    /*var arr:ArrayCollection = data_grid.dataProvider as ArrayCollection;
-       arr.addItem(new_item);
-     arr.refresh();*/
+        return true;
     }
 }
 

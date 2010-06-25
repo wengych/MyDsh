@@ -11,19 +11,22 @@ package com.yspay.event_handlers
     import mx.core.Container;
     import mx.core.UIComponent;
 
-    public function make_datagrid_xml(ui_comp:UIComponent, source_event:Event, action_info:XML):void
+    public function make_datagrid_xml(ui_comp:UIComponent,
+                                      source_event:Event,
+                                      action_info:XML):Boolean
     {
-        var ys_pod:YsPod = UtilFunc.GetParentByType(ui_comp.parent as Container, YsPod) as YsPod;
+        var ys_pod:YsPod = UtilFunc.GetParentByType(ui_comp.parent as Container,
+                                                    YsPod) as YsPod;
         var P_data:Object = ys_pod._M_data.TRAN[ys_pod.P_cont];
 
         if (!P_data.data.hasOwnProperty('__W_ENAME') || !P_data.data.hasOwnProperty('__W_CNAME'))
-            return;
+            return false;
 
         var ename:Object = P_data._data["__W_ENAME"][0]; // wnd.main_bus.GetFirst("__W_ENAME");
         var cname:Object = P_data._data["__W_CNAME"][0]; // wnd.main_bus.GetFirst("__W_CNAME");
 
         trace('event_make_windows_xml');
-        var xml:XML = <L TYPE="DATAGRID" NAME="" VER="" ISUSED="0" APPNAME="MapServer" CUSER="xing" />
+        var xml:XML = <L TYPE="DATAGRID" NAME="" VER="" ISUSED="0" APPNAME="MapServer" CUSER="xing"/>
 //                <L KEY="DATAGRID" KEYNAME="" />
 //            </L>;
         var child_wnd:Object;
@@ -51,5 +54,7 @@ package com.yspay.event_handlers
             ys_pod.main_bus.RemoveByKey('__DICT_XML');
         }
         ys_pod.main_bus.Add('__DICT_XML', xml_head + xml.toXMLString());
+
+        return true;
     }
 }

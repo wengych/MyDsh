@@ -8,7 +8,6 @@
 
     import flash.display.DisplayObjectContainer;
     import flash.events.Event;
-    import flash.events.FocusEvent;
 
     import mx.collections.ArrayCollection;
     import mx.controls.Alert;
@@ -311,6 +310,9 @@
                 {
                     child_ctrl = new YsMaps.ys_type_map[node_name](this);
                     child_ctrl.Init(child);
+
+                    if (child_ctrl is YsDict)
+                        dict_arr.push(child_ctrl);
                 }
             }
 
@@ -357,6 +359,7 @@
 
         private function itemEditEndHandler(e:DataGridEvent):void
         {
+            this.listItems;
             e.target.dataProvider.refresh();
         }
 

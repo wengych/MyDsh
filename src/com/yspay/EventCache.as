@@ -54,6 +54,8 @@ package com.yspay
 
             var link_key:String = GetLinkKey(link_str);
             var link_value:String = GetLinkValue(link_str);
+            
+            trace('link_key: ', link_key, ' link_value ', link_value);
 
             var dict:QueryWithIndex = info[link_key];
 
@@ -125,6 +127,8 @@ package com.yspay
             disp = _disp;
             cache_xml = new XML(xml_str);
             count = Cache(new XML(xml_str));
+            
+            trace('EventCache.count ', count);
 
             if (count == 0)
             {

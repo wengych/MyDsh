@@ -16,7 +16,9 @@ package com.yspay.event_handlers
     import mx.core.UIComponent;
     import mx.managers.CursorManager;
 
-    public function refresh_pool(ui_comp:UIComponent, source_event:Event, action_info:XML):void
+    public function refresh_pool(ui_comp:UIComponent,
+                                 source_event:Event,
+                                 action_info:XML):Boolean
     {
         var func:Function = function(event:DBTableQueryEvent):void
             {
@@ -74,5 +76,7 @@ package com.yspay.event_handlers
             info.DoQuery(info_query_dict, false, 'NAME', 'VER');
         }
         trace("refresh_pool ok!");
+
+        return true;
     }
 }

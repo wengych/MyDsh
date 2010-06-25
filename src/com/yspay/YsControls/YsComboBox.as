@@ -2,7 +2,6 @@ package com.yspay.YsControls
 {
     import com.yspay.YsData.PData;
     import com.yspay.YsData.TargetList;
-    import com.yspay.util.UtilFunc;
 
     import flash.display.DisplayObjectContainer;
     import flash.events.Event;
@@ -18,10 +17,12 @@ package com.yspay.YsControls
 
         public var _parent:DisplayObjectContainer;
         protected var data_count:String;
-        protected var combo_data:ArrayCollection = new ArrayCollection; //存放本作用域的数据
+        protected var combo_data:ArrayCollection; //存放本作用域的数据
 
         protected var column_p_data:Object = new Object;
         protected var column_dict_arr:Array = new Array;
+
+        protected var labelFields:Array;
 
         public function YsComboBox(parent:DisplayObjectContainer) //)xml:XML, key_name:String, key_index:int=0)
         {
@@ -36,26 +37,31 @@ package com.yspay.YsControls
             return rtn;
         }
 
+        protected function InitLabel(dxml:XML):void
+        {
+            labelFunction = ComboBoxShowLabel;
+            /*
+               if (dxml.display.TEXTINPUT.list.attribute('labelField').length() == 0)
+               labelFunction = ComboBoxShowLabel; //if (xml.display.TEXTINPUT.list.@labelField != null)
+               else
+             */
+            if (dxml.display.TEXTINPUT.list.attribute('labelField').length() > 0)
+            {
+                var label_str:String = dxml.display.TEXTINPUT.list.@labelField;
+                labelFields = new Array;
+                labelFields = label_str.split(',');
+            }
+        }
+
         public function Init(dxml:XML):void
         {
-            //var parent_dict:YsDict = _parent as YsDict;
-            var parent_pod:YsPod = UtilFunc.GetParentByType(_parent, YsPod) as YsPod;
+            var idx:int = 0;
+            var temp_xml:XML;
+            combo_data = new ArrayCollection;
 
-            var i:int = 0;
-            var x:XML;
-
-            if (dxml.display.TEXTINPUT.list.attribute('labelField').length() == 0)
-                labelFunction = ComboBoxShowLabel; //if (xml.display.TEXTINPUT.list.@labelField != null)
-            else
-                labelField = dxml.display.TEXTINPUT.list.@labelField;
+            InitLabel(dxml);
 
             prompt = "请选择...";
-            data = new Object;
-            data.name = dxml.services.@NAME.toString();
-            data.index = 0;
-            data.xml = dxml;
-            // data_count = "data" + data_cont.toString();
-            // P_data[data_count] = combo_data;
             if (dxml.display.TEXTINPUT.list.listarg != undefined)
                 //                            <list labelField="GENDER">
                 //                                <listarg>
@@ -67,23 +73,23 @@ package com.yspay.YsControls
                 //                                    <GENDER_ID> 1 </GENDER_ID>
                 //                                </listarg>
                 //                            </list>
-                for each (x in dxml.display.TEXTINPUT.list.*)
+                for each (temp_xml in dxml.display.TEXTINPUT.list.*)
                 {
                     combo_data.addItem(new Object);
-                    for each (var xx:XML in x.*)
+                    for each (var xx:XML in temp_xml.*)
                     {
                         combo_data[combo_data.length - 1][xx.name().toString()] = xx.text().toString();
                     }
                 }
             else if (dxml.display.TEXTINPUT.list.DICT != undefined)
             {
-                for each (x in dxml.display.TEXTINPUT.list.DICT)
+                for each (temp_xml in dxml.display.TEXTINPUT.list.DICT)
                 {
-                    var en_name:String = x.text().toString();
+                    var en_name:String = temp_xml.text().toString();
                     en_name = en_name.substr(en_name.search("://") + 3);
 
                     var from_list:TargetList = new TargetList;
-                    from_list.Init(this, x.From);
+                    from_list.Init(this, temp_xml.From);
 
                     column_p_data[en_name] = new Array;
 
@@ -98,16 +104,15 @@ package com.yspay.YsControls
 
                     var D_data:PData = column_p_data[en_name][0];
 
-                    //combo_data.addItem(new Object); //选中项目？
                     column_dict_arr.push(en_name);
 
-                    for (i = 0; i < D_data.data[en_name].length; ++i)
+                    for (idx = 0; idx < D_data.data[en_name].length; ++idx)
                     {
-                        if (combo_data.length <= i)
+                        if (combo_data.length <= idx)
                         {
                             combo_data.addItem(new Object);
                         }
-                        combo_data[i][en_name] = D_data.data[en_name][i];
+                        combo_data[idx][en_name] = D_data.data[en_name][idx];
                     }
                 }
             }
@@ -116,31 +121,29 @@ package com.yspay.YsControls
 
         private function ComboBoxShowLabel(item:Object):String
         {
-            var sortarr:Array = new Array;
-            var len:int;
-
-            if (item == null)
-                return '';
-
-            var returnvalue:String = new String;
-            if (item.hasOwnProperty("mx_internal_uid"))
-                item.setPropertyIsEnumerable('mx_internal_uid', false);
-
-            for (var o:Object in item)
-                sortarr.push(o.toString());
-            sortarr = sortarr.sort();
-            for (; ; )
+            var rtn:String = '';
+            var label_arr:Array;
+            var field_name:String;
+            if (labelFields == null)
             {
-                len = sortarr.length;
-                if (len == 0)
-                    break;
-                o = sortarr.pop();
-                if (item[o] == null)
-                    continue;
-                returnvalue += item[o].toString() + ' - ';
+                label_arr = new Array;
+                for (field_name in item)
+                    if (field_name != 'mx_internal_uid')
+                        label_arr.push(field_name);
+            }
+            else
+                label_arr = labelFields;
+
+            for each (field_name in label_arr)
+            {
+                if (item.hasOwnProperty(field_name))
+                {
+                    rtn += item[field_name].toString() + ' ';
+                }
             }
 
-            return (returnvalue.substring(0, returnvalue.length - 3));
+            // 返回时删除字符串末尾的空格
+            return (rtn.substring(0, rtn.length - 1));
         }
 
         override protected function collectionChangeHandler(event:Event):void
@@ -281,23 +284,11 @@ package com.yspay.YsControls
                     return;
                 }
             }
-            //prompt = "请选择...";
-            //selectedIndex = -1;
             arr_col.filterFunction = filter_func;
             arr_col.refresh();
-            /*
-               if (arr_col.length == 0) //未找到符合条件记录
-               {
-               arr_col.filterFunction = null;
-               arr_col.refresh();
-               open();
-               return;
-               }
-             */
             dropdown.selectedIndex = -1;
             dropdown.verticalScrollPosition = 0;
-            open();
-
+            //open();
         }
 
         private function filterFunction(item:Object,

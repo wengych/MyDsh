@@ -45,16 +45,19 @@ package com.yspay.YsControls
                 'default_line': {'default': false}
             };
 
+        public static var event_attrs:Object =
+            {
+                'interruptable': {'default': false}
+            };
+
         // DataGrid中的dict所支持的属性列表
         public static var dict_dg_attrs:Object =
             {
                 'editable': {}
-
             };
 
         public static var button_attrs:Object =
             {
-                '': ''
             };
 
         // Windows支持的属性列表
