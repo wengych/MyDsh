@@ -25,14 +25,13 @@ package com.yspay.YsControls
         private var _pool:Pool;
         private var func_helper:FunctionDelegate = new FunctionDelegate;
         private var dts_event_listener:Function;
-
         public var _parent:DisplayObjectContainer;
 
         public function YsTitleWindow(parent:DisplayObjectContainer)
         {
             super();
             _parent = parent;
-            this.percentHeight = 100;
+            //  this.percentHeight = 100;
             this.percentWidth = 100;
             this.showCloseButton = true;
             //this.setStyle("horizontalAlign", "center");

@@ -15,6 +15,7 @@
   <modules/>
   <buildCSSFiles>
     <buildCSSFileEntry destPath="bin-debug" sourcePath="src/assets/styles.css"/>
+    <buildCSSFileEntry destPath="bin-debug" sourcePath="src/assets/styles_1024_768.css"/>
     <buildCSSFileEntry destPath="bin-debug" sourcePath="src/assets/styles1.css"/>
     <buildCSSFileEntry destPath="bin-debug" sourcePath="src/assets/styles_1280_1024.css"/>
     <buildCSSFileEntry destPath="bin-debug" sourcePath="src/assets/styles_1440_900.css"/>
