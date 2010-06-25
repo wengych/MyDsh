@@ -2,16 +2,15 @@ Application
 {
    background-gradient-colors:	#ffffff, #ffffff;
    color: 						#000000;
-   padding-left:                35px;
-   padding-right:               28px;
-   padding-bottom:              -7px;
-   padding-top :                26px;                            
-   background-image: 			Embed(source="/assets/application_background.png",
-								scaleGridTop="0", scaleGridBottom="791", scaleGridLeft="350", scaleGridRight="690");
+   padding-left:                5px;
+   padding-right:               5px;
+   padding-bottom:              3px;
+   padding-top :                5px;                            
 }
 Button {
  
 }
+
 Label {
    fontWeight: bold;
 }
@@ -20,14 +19,32 @@ DataGrid {
    fontSize: 12;
 }
 HBox {
-borderStyle: bold;
+   borderStyle: bold;
    fontSize: 12;
 }
+VBox{
+   borderStyle: bold;
+   fontSize: 12;
+   verticalGap: 1;
+}
 TitleWindow {
-   headerHeight: 10;
-  fontSize: 12;
-verticalGap: 1;
+   headerHeight: 0;
+   fontSize: 12;
+   verticalGap: 1;
+   borderStyle: solid;
+   borderColor: #666666;
+   borderThickness: 2;
  
+}
+YSDict{
+    borderStyle: none;
+}
+YSVBox{
+   fontSize: 12;
+   borderStyle: solid;
+}
+YsXmlEvent{
+fontWeight: normal;
 }
 .maximizeRestoreButton
 {
@@ -106,7 +123,7 @@ Pod
 
 .podTitle
 {
-	font-size: 11px;
+	font-size: 12px;
 	font-family: Arial;
 	font-weight: bold;
 }

@@ -77,8 +77,6 @@ package com.yspay.YsControls
         public function YsDict(parent:DisplayObjectContainer)
         {
             _parent = parent;
-
-            this.setStyle("borderStyle", "none");
             dict_object = {
                     'text': '',
                     'data': new AdvanceArray,

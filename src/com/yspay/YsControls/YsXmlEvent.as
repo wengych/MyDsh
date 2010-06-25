@@ -40,7 +40,6 @@ package com.yspay.YsControls
             }
             _xml = xml;
 
-            this.setStyle('fontWeight', 'normal');
             this.label = _xml.@LABEL;
             var child_name:String;
             for each (var child:XML in _xml.elements())

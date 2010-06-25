@@ -22,9 +22,7 @@ package com.yspay.YsControls
         {
             super();
             ti = new TextInput;
-            ti.setStyle("themeColor", 0);
             btn = new Button;
-            btn.setStyle("themeColor", 0);
             isEdit = false;
             btn.doubleClickEnabled = true
             btn.addEventListener(MouseEvent.DOUBLE_CLICK, doubleClickHandler);
