@@ -7,7 +7,6 @@ package com.yspay.YsControls
     import flash.net.FileFilter;
     import flash.net.FileReference;
     import flash.utils.ByteArray;
-
     import mx.collections.ArrayCollection;
     import mx.controls.Button;
     import mx.controls.TextInput;
@@ -18,21 +17,6 @@ package com.yspay.YsControls
 
     public class MultipleTextInput extends TextInput
     {
-        public var _parent:YsDict;
-        private var _backList:MyList;
-        private var _btn:Button;
-        private var _showList:Boolean;
-        private var _index:int = 0;
-        [Bindable]
-        private var _listDp:ArrayCollection = new ArrayCollection;
-        private var _append:Boolean = false;
-        private var _listEditable:Boolean = false;
-        private var _deleteable:Boolean = false;
-        private var _fileable:Boolean = false;
-        //file相关
-        private var _showBrowse:Boolean;
-        private var fr:FileReference;
-        private var fileType:FileFilter;
 
         public function MultipleTextInput(parent:YsDict)
         {
@@ -44,64 +28,94 @@ package com.yspay.YsControls
             this.fileable = false;
             this.listEditable = true;
 
-            _btn = new Button;
-            _btn.setStyle("fontSize", 12);
-            _btn.label = '...';
-            _btn.visible = false;
-            _btn.height = _btn.width = 0;
+            /*_btn = new Button;
+               _btn.setStyle("fontSize", 12);
+               _btn.label = '...';
+               _btn.visible = false;
+               _btn.height = _btn.width = 0;
+             _btn.addEventListener(MouseEvent.CLICK, btnClickHandler);*/
             _showList = false;
             _backList = new MyList;
             _backList.setStyle('fontSize', 12);
             _backList.dataProvider = _listDp;
             addEventListener(Event.CHANGE, changeHandler);
             addEventListener(KeyboardEvent.KEY_DOWN, keydownHandler);
-            _btn.addEventListener(MouseEvent.CLICK, btnClickHandler);
             _listDp.addEventListener(CollectionEvent.COLLECTION_CHANGE, ListChange);
 
             _parent = parent;
         }
 
-        protected override function createChildren():void
-        {
-            super.createChildren();
-            addChild(_btn);
-        }
-
-        protected override function commitProperties():void
-        {
-            super.commitProperties();
-            if (_fileable)
-            {
-                _btn.label = "浏览";
-                fr = new FileReference();
-                fileType = new FileFilter("Text Files (*.txt)", "*.txt;");
-                //增加当打开浏览文件后，用户选择好文件后的Listener
-                fr.addEventListener(Event.SELECT, selectHandler);
-                //增加一个文件加载load完成后的listener	
-                fr.addEventListener(Event.COMPLETE, onLoadComplete);
-            }
-            invalidateDisplayList();
-        }
-
-        protected override function measure():void
-        {
-            super.measure();
-            measuredWidth = measuredWidth + _btn.measuredWidth + 10;
-        }
-
-        protected override function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
-        {
-            super.updateDisplayList(unscaledWidth - 10 - _btn.measuredWidth, unscaledHeight);
-            _btn.move(unscaledWidth - 5 - _btn.measuredWidth, 0);
-            _btn.setActualSize(_btn.measuredWidth, unscaledHeight);
-        }
-
+        public var _parent:YsDict;
+        private var _append:Boolean = false;
+        private var _backList:MyList;
+        private var _btn:Button;
+        private var _deleteable:Boolean = false;
+        private var _fileable:Boolean = false;
+        private var _index:int = 0;
+        [Bindable]
+        private var _listDp:ArrayCollection = new ArrayCollection;
+        private var _listEditable:Boolean = false;
         //file相关
-        private function selectHandler(event:Event):void
+        private var _showBrowse:Boolean;
+        private var _showList:Boolean;
+        private var fileType:FileFilter;
+        private var fr:FileReference;
+
+        public function SetText(txt:String):void
         {
-            _showBrowse = false;
-            //加载用户选中文件
-            fr.load();
+            this.text = txt;
+
+            if (_listDp.length == 0)
+                _listDp.addItem('');
+            _listDp[0] = txt;
+        }
+
+        public function get append():Boolean
+        {
+            return _append;
+        }
+
+        public function set append(value:Boolean):void
+        {
+            _append = value;
+            invalidateProperties();
+        }
+
+        public function get deleteable():Boolean
+        {
+            return _deleteable;
+        }
+
+        public function set deleteable(value:Boolean):void
+        {
+            _deleteable = value;
+            invalidateProperties();
+        }
+
+        public function get fileable():Boolean
+        {
+            return _fileable;
+        }
+
+        public function set fileable(value:Boolean):void
+        {
+            _fileable = value;
+        }
+
+        public function get listDp():ArrayCollection
+        {
+            return _listDp;
+        }
+
+        public function get listEditable():Boolean
+        {
+            return _listEditable;
+        }
+
+        public function set listEditable(value:Boolean):void
+        {
+            _listEditable = value;
+            invalidateProperties();
         }
 
         protected function ListChange(event:CollectionEvent):void
@@ -118,36 +132,80 @@ package com.yspay.YsControls
                     event.target[event.location];
         }
 
-        private function onLoadComplete(e:Event):void
+        override protected function commitProperties():void
         {
-            cursorManager.setBusyCursor();
-            var ba:ByteArray = new ByteArray;
-            ba.writeBytes(fr.data);
-            ba.position = 0;
-            var str:String = transEncodingText(ba);
-            var arr:Array = str.split("\n");
-            for (var i:int = 0; i < arr.length; i++)
+            super.commitProperties();
+            if (_fileable)
             {
-                arr[i] = StringUtil.trim(arr[i]);
+                _btn.label = "浏览";
+                fr = new FileReference();
+                fileType = new FileFilter("Text Files (*.txt)", "*.txt;");
+                //增加当打开浏览文件后，用户选择好文件后的Listener
+                fr.addEventListener(Event.SELECT, selectHandler);
+                //增加一个文件加载load完成后的listener	
+                fr.addEventListener(Event.COMPLETE, onLoadComplete);
             }
+            invalidateDisplayList();
+        }
 
-            for (var idx:int = 0; idx < arr.length; ++idx)
+        override protected function createChildren():void
+        {
+            super.createChildren();
+            if (this.fileable == true)
             {
-                if (_listDp.length <= idx)
-                {
-                    _listDp.addItem('');
-                    _listDp[idx] = arr[idx];
-                }
-                else
-                    _listDp[idx] = arr[idx];
+                _btn = new Button;
+                _btn.setStyle("fontSize", 12);
+                _btn.label = '...';
+                _btn.visible = false;
+                _btn.height = _btn.width = 0;
+                _btn.addEventListener(MouseEvent.CLICK, btnClickHandler);
+                addChild(_btn);
             }
+        }
 
-            while (_listDp.length > arr.length)
-                _listDp.removeItemAt(arr.length);
+        override protected function measure():void
+        {
+            super.measure();
+            if (_btn != null)
+                measuredWidth = measuredWidth + _btn.measuredWidth + 10;
+        }
 
-            if (!_showList)
-                popUpList();
-            cursorManager.removeBusyCursor();
+        override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
+        {
+            if (_btn != null)
+            {
+                super.updateDisplayList(unscaledWidth - 10 - _btn.measuredWidth,
+                                        unscaledHeight);
+                _btn.move(unscaledWidth - 5 - _btn.measuredWidth, 0);
+                _btn.setActualSize(_btn.measuredWidth, unscaledHeight);
+            }
+        }
+
+        //点击按钮弹出list或browse
+        private function btnClickHandler(event:MouseEvent):void
+        {
+            if (_fileable)
+            {
+                //打开浏览文件的dialog
+                fr.browse(new Array(fileType));
+                _showBrowse = true;
+            }
+            else
+            {
+                if (!_showList)
+                    popUpList();
+            }
+        }
+
+        //同步
+        private function changeHandler(event:Event):void
+        {
+            if (_listDp.length == 0)
+                _listDp.addItem('');
+            _listDp[0] = text;
+
+            _parent.dict.source = this;
+            _parent.dict.text = text;
         }
 
         //hand events
@@ -159,6 +217,14 @@ package com.yspay.YsControls
                 if (!_showList)
                     popUpList();
             }
+        }
+
+        //使null行可以被编辑
+        private function listClickHandler(event:Event):void
+        {
+            if (_backList.selectedItem == "" && _listEditable)
+                _backList.editedItemPosition = {columnIndex: 0,
+                        rowIndex: _backList.selectedIndex};
         }
 
         //list监听键盘事件
@@ -237,66 +303,50 @@ package com.yspay.YsControls
             }
         }
 
-        public function SetText(txt:String):void
+        private function onLoadComplete(e:Event):void
         {
-            this.text = txt;
-
-            if (_listDp.length == 0)
-                _listDp.addItem('');
-            _listDp[0] = txt;
-        }
-
-        //同步
-        private function changeHandler(event:Event):void
-        {
-            if (_listDp.length == 0)
-                _listDp.addItem('');
-            _listDp[0] = text;
-
-            _parent.dict.source = this;
-            _parent.dict.text = text;
-        }
-
-        //点击按钮弹出list或browse
-        private function btnClickHandler(event:MouseEvent):void
-        {
-            if (_fileable)
+            cursorManager.setBusyCursor();
+            var ba:ByteArray = new ByteArray;
+            ba.writeBytes(fr.data);
+            ba.position = 0;
+            var str:String = transEncodingText(ba);
+            var arr:Array = str.split("\n");
+            for (var i:int = 0; i < arr.length; i++)
             {
-                //打开浏览文件的dialog
-                fr.browse(new Array(fileType));
-                _showBrowse = true;
+                arr[i] = StringUtil.trim(arr[i]);
+            }
+
+            for (var idx:int = 0; idx < arr.length; ++idx)
+            {
+                if (_listDp.length <= idx)
+                {
+                    _listDp.addItem('');
+                    _listDp[idx] = arr[idx];
+                }
+                else
+                    _listDp[idx] = arr[idx];
+            }
+
+            while (_listDp.length > arr.length)
+                _listDp.removeItemAt(arr.length);
+
+            if (!_showList)
+                popUpList();
+            cursorManager.removeBusyCursor();
+        }
+
+        //util
+        private function parentIsThis(o:DisplayObject, p:DisplayObject):Boolean
+        {
+            if (o.parent != null)
+            {
+                if (o.parent == p)
+                    return true;
+                else
+                    return parentIsThis(o.parent, p);
             }
             else
-            {
-                if (!_showList)
-                    popUpList();
-            }
-        }
-
-        //点击舞台任意地方list收回
-        private function stageMouseDownHandler(event:MouseEvent):void
-        {
-            if (!parentIsThis(event.target as DisplayObject, this) &&
-                !parentIsThis(event.target as DisplayObject, _backList) && _showList)
-            {
-                _showList = false;
-                removePopList();
-                if (_backList.itemEditorInstance != null && _backList.editedItemPosition != null)
-                {
-                    _listDp[_backList.editedItemPosition.rowIndex] = (_backList.itemEditorInstance as TextInput).text;
-                }
-                text = _listDp[0];
-                setFocus();
-                setSelection(text.length, text.length);
-            }
-        }
-
-        //使null行可以被编辑
-        private function listClickHandler(event:Event):void
-        {
-            if (_backList.selectedItem == "" && _listEditable)
-                _backList.editedItemPosition = {columnIndex: 0,
-                        rowIndex: _backList.selectedIndex};
+                return false;
         }
 
         private function popUpList():void
@@ -325,21 +375,35 @@ package com.yspay.YsControls
             _showList = false;
             stage.removeEventListener(MouseEvent.MOUSE_DOWN, stageMouseDownHandler);
             _backList.dataProvider = null;
-            _btn.setFocus();
+
+            if (_btn != null)
+                _btn.setFocus();
         }
 
-        //util
-        private function parentIsThis(o:DisplayObject, p:DisplayObject):Boolean
+        //file相关
+        private function selectHandler(event:Event):void
         {
-            if (o.parent != null)
+            _showBrowse = false;
+            //加载用户选中文件
+            fr.load();
+        }
+
+        //点击舞台任意地方list收回
+        private function stageMouseDownHandler(event:MouseEvent):void
+        {
+            if (!parentIsThis(event.target as DisplayObject, this) &&
+                !parentIsThis(event.target as DisplayObject, _backList) && _showList)
             {
-                if (o.parent == p)
-                    return true;
-                else
-                    return parentIsThis(o.parent, p);
+                _showList = false;
+                removePopList();
+                if (_backList.itemEditorInstance != null && _backList.editedItemPosition != null)
+                {
+                    _listDp[_backList.editedItemPosition.rowIndex] = (_backList.itemEditorInstance as TextInput).text;
+                }
+                text = _listDp[0];
+                setFocus();
+                setSelection(text.length, text.length);
             }
-            else
-                return false;
         }
 
         // 读取不同 编码的文档   
@@ -362,54 +426,6 @@ package com.yspay.YsControls
             }
             // 默认采用gbk编码 
             return bytes.readMultiByte(bytes.length, "gb2312");
-        }
-
-        public function set append(value:Boolean):void
-        {
-            _append = value;
-            invalidateProperties();
-        }
-
-        public function get append():Boolean
-        {
-            return _append;
-        }
-
-        public function set listEditable(value:Boolean):void
-        {
-            _listEditable = value;
-            invalidateProperties();
-        }
-
-        public function get listEditable():Boolean
-        {
-            return _listEditable;
-        }
-
-        public function set deleteable(value:Boolean):void
-        {
-            _deleteable = value;
-            invalidateProperties();
-        }
-
-        public function get deleteable():Boolean
-        {
-            return _deleteable;
-        }
-
-        public function set fileable(value:Boolean):void
-        {
-            _fileable = value;
-        }
-
-        public function get fileable():Boolean
-        {
-            return _fileable;
-        }
-
-        public function get listDp():ArrayCollection
-        {
-            return _listDp;
         }
     }
 }
