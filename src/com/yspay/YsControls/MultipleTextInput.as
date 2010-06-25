@@ -47,6 +47,8 @@ package com.yspay.YsControls
             _btn = new Button;
             _btn.setStyle("fontSize", 12);
             _btn.label = '...';
+            _btn.visible = false;
+            _btn.height = _btn.width = 0;
             _showList = false;
             _backList = new MyList;
             _backList.dataProvider = _listDp;
