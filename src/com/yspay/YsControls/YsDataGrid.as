@@ -5,10 +5,10 @@
     import com.yspay.util.AdvanceArray;
     import com.yspay.util.UtilFunc;
     import com.yspay.util.YsClassFactory;
-
+    
     import flash.display.DisplayObjectContainer;
     import flash.events.Event;
-
+    
     import mx.collections.ArrayCollection;
     import mx.controls.Alert;
     import mx.controls.DataGrid;
@@ -366,12 +366,12 @@
             var item:Object = event.items[0];
             // for each (var item:Object in event.items)
             {
-                for (var item_key:String in item)
+            	for each (var dgc:DataGridColumn in columns)
+                // for (var item_key:String in item)
                 {
-                    if (item_key == 'mx_internal_udi')
-                        continue;
-                    if (item[item_key] == null)
-                        continue;
+                	var item_key:String = dgc.dataField;
+                	if (item_key == null)
+                		continue;
 
                     for each (var to_data:PData in toDataObject[item_key].GetAllTarget())
                     {
