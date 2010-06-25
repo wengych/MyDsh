@@ -6,11 +6,12 @@
                 minHeight="600"
                 width="100%"
                 height="100%"
+                verticalGap="1"
                 backgroundSize="100%"
                 backgroundColor="#ffffff"
                 xmlns:flexlib="http://code.google.com/p/flexlib/"
                 initialize="loadStyles()">
-    <!-- <mx:Style source="/assets/styles.css"/>-->
+    <mx:Style source="/assets/styles_1024_768.css"/>
     <mx:Script>
         <![CDATA[
             import mx.events.PropertyChangeEvent;
@@ -66,26 +67,26 @@
 
             private function loadStyles():void
             {
-                var styleURL:String = "assets/styles_1024_768.swf";
-                var arr:Array = UtilFunc.getRatio();
-                if (arr[0] == 1280 && arr[1] == 1024)
-                {
-                    styleURL = "assets/styles_1280_1024.swf";
-                }
-                else if (arr[0] == 1024 && arr[1] == 768)
-                {
-                    styleURL = "assets/styles_1024_768.swf";
-                }
-                else if (arr[0] == 1440 && arr[1] == 900)
-                {
-                    styleURL = "assets/styles_1440_900.swf";
-                }
-                else if (arr[0] == 1600 && arr[1] == 1200)
-                {
-                    styleURL = "assets/styles_1600_1200.swf";
-                }
-                if (styleURL != null)
-                    StyleManager.loadStyleDeclarations(styleURL);
+//                var styleURL:String = "assets/styles_1024_768.swf";
+//                var arr:Array = UtilFunc.getRatio();
+//                if (arr[0] == 1280 && arr[1] == 1024)
+//                {
+//                    styleURL = "assets/styles_1280_1024.swf";
+//                }
+//                else if (arr[0] == 1024 && arr[1] == 768)
+//                {
+//                    styleURL = "assets/styles_1024_768.swf";
+//                }
+//                else if (arr[0] == 1440 && arr[1] == 900)
+//                {
+//                    styleURL = "assets/styles_1440_900.swf";
+//                }
+//                else if (arr[0] == 1600 && arr[1] == 1200)
+//                {
+//                    styleURL = "assets/styles_1600_1200.swf";
+//                }
+//                if (styleURL != null)
+//                    StyleManager.loadStyleDeclarations(styleURL);
 
             }
 
@@ -305,7 +306,8 @@
                                barColor="red"
                                horizontalAlign="left"
                                fontFamily="Arial"
-                               fontSize="14">
+                               fontSize="14"
+                               paddingBottom="1">
                     <mx:Label text="服务返回码"/>
                     <mx:Label color="blue"
                               id="SCALL_RTN"

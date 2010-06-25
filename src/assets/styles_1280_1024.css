@@ -4,9 +4,10 @@ Application
    color: 						#000000;
    padding-left:                5px;
    padding-right:               5px;
-   padding-bottom:              0px;
+   padding-bottom:              0px;/**/
    padding-top :                5px;                            
 }
+
 Button {
  
 }
