@@ -55,6 +55,10 @@
             private var podLayoutManagers:Array = new Array();
             public var _pool:Pool = new Pool;
             public var M_data:MData = new MData; //xingj
+
+            protected var info_init_arr:Array = ['DICT', 'WINDOWS', 'BUTTON', 'SERVICES',
+                                                 'TRAN', 'ACTION', 'HBOX', 'EVENT',
+                                                 'DATAGRID'];
             //public var monsterDebugger:MonsterDebugger = new MonsterDebugger(this);
 
             protected var pod_xml:XML = new XML('<?xml version="1.0" encoding="utf-8"?> \
@@ -154,32 +158,37 @@
                           dts_insert_name, dts_insert_arg,
                           ip, port);
                 var info:DBTable = _pool.info as DBTable;
-                var arr:Array = ['DICT', 'WINDOWS', 'BUTTON', 'SERVICES', 'TRAN',
-                                 'ACTION', 'HBOX', 'EVENT', 'DATAGRID'];
+
                 this.addEventListener(info.select_event_name, InfoQueryComplete);
                 CursorManager.setBusyCursor();
 
-                var ver_sel_item:Object = versionChoose.selectedItem;
-
-                for each (var str:String in arr)
-                {
-                    var info_query:String = str;
-                    var info_query_cond:String = "type='" + str + "' and appname='MapServer'";
-                    if (ver_sel_item.hasOwnProperty('isused'))
-                        info_query_cond += " and ISUSED='" + ver_sel_item.isused + "'";
-                    info.AddQuery(info_query, QueryWithIndex, info_query_cond, this);
-                    info.DoQuery(info_query, false, 'NAME', 'VER');
-                    M_data.POOL.INFO[str] = new ArrayCollection;
-                }
+                InitInfoItem();
                 _pool.Add('MAIN_BUS', UserBus);
+            }
 
+            protected function InitInfoItem():void
+            {
+                var info:DBTable = _pool.info as DBTable;
+                var ver_sel_item:Object = versionChoose.selectedItem;
+                if (info_init_arr.length == 0)
+                {
+                    CursorManager.removeBusyCursor();
+                    return;
+                }
+
+                var info_query:String = info_init_arr.pop();
+                var info_query_cond:String = "type='" + info_query + "' and appname='MapServer'";
+                if (ver_sel_item.hasOwnProperty('isused'))
+                    info_query_cond += " and ISUSED='" + ver_sel_item.isused + "'";
+                info.AddQuery(info_query, QueryWithIndex, info_query_cond, this);
+                info.DoQuery(info_query, false, 'NAME', 'VER');
+                M_data.POOL.INFO[info_query] = new ArrayCollection;
             }
 
             //event.query_name "dict window tran event hbox ........"
             //M_data.POOL.INFO.DICT is ArrayCollection 里面存储每个dict
             private function InfoQueryComplete(event:DBTableQueryEvent):void
             {
-                CursorManager.removeBusyCursor();
                 trace('main0.mxml', event.query_name);
                 if (M_data.POOL.INFO[event.query_name] != null)
                     M_data.POOL.INFO[event.query_name].removeAll();
@@ -205,7 +214,8 @@
                     M_data.POOL.INFO[event.query_name].addItem(o);
 
                 }
-                //xingj ..
+
+                InitInfoItem();
             }
 
             private function onFaultHttpService(e:FaultEvent):void
