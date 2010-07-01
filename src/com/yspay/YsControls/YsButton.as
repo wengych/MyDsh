@@ -83,13 +83,12 @@ package com.yspay.YsControls
             for each (var child:XML in _xml.elements())
             {
                 child_name = child.name().toString().toLowerCase();
-                // 查表未发现匹配类�
+                // 查表未发现匹配类型
                 if (!YsMaps.ys_type_map.hasOwnProperty(child_name))
                     continue;
                 var child_ctrl:YsControl = new YsMaps.ys_type_map[child_name](this);
                 child_ctrl.Init(child);
             }
-
 
             if (!this.hasEventListener(MouseEvent.CLICK))
             {
@@ -102,7 +101,6 @@ package com.yspay.YsControls
             //var obj:Object = event.info_object;
             var type:String = event.xml.name().toString();
             var name:String = event.xml.text().toString();
-
 
             // map中未查到对应类型
             if (!YsMaps.ys_type_map.hasOwnProperty(type))
