@@ -54,14 +54,12 @@ package com.yspay.event_handlers
                     continue;
                 }
 
-                if (from_name == 'datagrid')
+                // 数据源为datagrid时,取datagrid中当前选中行的数据
+                var dg:YsDataGrid = UtilFunc.YsGetParentByType(ui_comp,
+                                                               YsDataGrid) as YsDataGrid;
+
+                if (dg != null)
                 {
-                    var dg:YsDataGrid = UtilFunc.YsGetParentByType(this._parent,
-                                                                   YsDataGrid) as YsDataGrid;
-
-                    if (null == dg)
-                        continue;
-
                     var dg_idx:int = dg.selectedIndex;
 
                     if (!to_data.data.hasOwnProperty(to_dict))
@@ -69,6 +67,7 @@ package com.yspay.event_handlers
                         to_data.data[to_dict] = new AdvanceArray;
                         to_data.data[to_dict].AddEmptyItems(1);
                     }
+                    to_data.data[to_dict].RemoveItems(1);
                     to_data.data[to_dict][0] = from_data.data[from_dict][dg_idx];
 
                     continue;

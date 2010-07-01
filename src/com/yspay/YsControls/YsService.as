@@ -48,13 +48,11 @@ package com.yspay.YsControls
 
                 // 处理datagrid时,判断当前service的父事件或按钮是否为datagrid中的按钮或事件
                 // 若为datagrid中的事件或按钮,则只取当前选中行的数据
-                if (from_name == 'datagrid')
-                {
-                    var dg:YsDataGrid = UtilFunc.YsGetParentByType(this._parent,
-                                                                   YsDataGrid) as YsDataGrid;
+                var dg:YsDataGrid = UtilFunc.YsGetParentByType(this._parent,
+                                                               YsDataGrid) as YsDataGrid;
 
-                    if (null == dg)
-                        continue;
+                if (dg != null)
+                {
 
                     var dg_idx:int = dg.selectedIndex;
                     if (from_item.data.hasOwnProperty(key))
