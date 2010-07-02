@@ -1,12 +1,15 @@
 package com.yspay.YsControls
 {
-    import com.yspay.pool.Pool;
     import com.yspay.YsData.PData;
+    import com.yspay.pool.Pool;
+    import com.yspay.util.UtilFunc;
 
     import flash.display.DisplayObjectContainer;
 
     import mx.containers.VBox;
+    import mx.controls.DataGrid;
     import mx.core.Application;
+    import mx.events.FlexEvent;
 
     public class YsVBox extends VBox implements YsControl
     {
@@ -20,6 +23,13 @@ package com.yspay.YsControls
             super();
             _pool = Application.application._pool;
             _parent = parent;
+        }
+
+        protected override function measure():void
+        {
+            if (UtilFunc.HasChildByType(this, DataGrid))
+                this.percentHeight = 100;
+            super.measure();
         }
 
         public function Init(xml:XML):void
