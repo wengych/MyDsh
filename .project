@@ -3,6 +3,7 @@
 	<name>MyDsh</name>
 	<comment></comment>
 	<projects>
+		<project>YsComFlex</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
