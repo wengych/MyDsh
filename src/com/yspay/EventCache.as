@@ -2,8 +2,10 @@ package com.yspay
 {
     import com.yspay.events.EventCacheComplete;
     import com.yspay.pool.*;
+
     import flash.events.EventDispatcher;
     import flash.events.IEventDispatcher;
+
     import mx.controls.Alert;
 
     public class EventCache extends EventDispatcher
@@ -92,9 +94,15 @@ package com.yspay
                 return rtn;
             }
 
-            if (xml.text().length() > 0 &&
-                IsLink(xml.text()[0].toString()))
-                rtn += QueryLink(xml.text()[0].toString());
+            if (xml.text().length() > 0)
+            {
+                var xml_str:String = xml.text().toString();
+                if (!IsLink(xml_str))
+                {
+                    rtn += QueryLink(xml_str);
+                    cache_obj[xml_str] = false;
+                }
+            }
 
             for each (var xml_child:XML in xml.elements())
             {
@@ -109,13 +117,15 @@ package com.yspay
                     continue;
                 }
 
-
-                rtn += QueryLink(xml_child.toString());
+                var child_str:String = xml_child.toString();
+                rtn += QueryLink(child_str);
+                cache_obj[child_str] = false;
             }
 
             return rtn;
         }
 
+        protected var cache_obj:Object;
         protected var count:int;
         protected var disp:EventDispatcher;
         protected var cache_xml:XML;
