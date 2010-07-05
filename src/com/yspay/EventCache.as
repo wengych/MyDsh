@@ -16,6 +16,8 @@ package com.yspay
         {
             super(target);
             _pool = pool;
+            cache_obj = new Object;
+            dts_key_table = new Object;
 
             var dts:DBTable = _pool.dts as DBTable;
             this.addEventListener(dts.select_event_name, QueryCallBack);
@@ -63,6 +65,7 @@ package com.yspay
             if (query_obj != null)
             {
                 var dts_no:String = query_obj.Get().DTS;
+                dts_key_table[dts_no] = link_str;
 
                 //var dts_no:String = info[link_key][link_value].Get().DTS;
 
@@ -97,7 +100,8 @@ package com.yspay
             if (xml.text().length() > 0)
             {
                 var xml_str:String = xml.text().toString();
-                if (!IsLink(xml_str))
+                if (!cache_obj.hasOwnProperty(xml_str) &&
+                    IsLink(xml_str))
                 {
                     rtn += QueryLink(xml_str);
                     cache_obj[xml_str] = false;
@@ -112,7 +116,8 @@ package com.yspay
                     continue;
                 }
 
-                if (!IsLink(xml_child))
+                if (!IsLink(xml_child) ||
+                    cache_obj.hasOwnProperty(xml_child))
                 {
                     continue;
                 }
@@ -125,10 +130,29 @@ package com.yspay
             return rtn;
         }
 
+        protected var dts_key_table:Object;
         protected var cache_obj:Object;
         protected var count:int;
         protected var disp:EventDispatcher;
         protected var cache_xml:XML;
+
+        protected function CacheComplete():Boolean
+        {
+            // return true if all key in cache_obj is true;
+            // return false otherwise
+            var rtn:Boolean = true;
+            for (var key:String in cache_obj)
+            {
+                if (cache_obj[key] == false)
+                {
+                    rtn = false;
+                    trace('EventCache: ' + key + ' is false.');
+                    break;
+                }
+            }
+
+            return rtn;
+        }
 
         public function DoCache(xml_str:String, _disp:EventDispatcher):void
         {
@@ -138,7 +162,8 @@ package com.yspay
 
             trace('EventCache.count ', count);
 
-            if (count == 0)
+            // if (count == 0)
+            if (CacheComplete())
             {
                 var e:EventCacheComplete = new EventCacheComplete;
                 e.cache_xml = cache_xml;
@@ -163,7 +188,12 @@ package com.yspay
 
             --count;
 
-            if (count == 0)
+            var link_str:String = dts_key_table[event.query_name];
+            trace('EventCache: ' + link_str + ' query complete');
+            cache_obj[link_str] = true;
+
+            // if (count == 0)
+            if (CacheComplete())
             {
                 var e:EventCacheComplete = new EventCacheComplete;
                 e.cache_xml = cache_xml;
