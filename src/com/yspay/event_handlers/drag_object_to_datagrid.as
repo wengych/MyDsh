@@ -2,11 +2,11 @@
 package com.yspay.event_handlers
 {
     import com.yspay.YsControls.*;
-    import com.yspay.YsData.PData;
 
     import flash.events.Event;
 
     import mx.controls.Alert;
+    import mx.controls.dataGridClasses.DataGridColumn;
     import mx.core.UIComponent;
     import mx.events.DragEvent;
 
@@ -68,6 +68,13 @@ package com.yspay.event_handlers
             for each (key in drag_column_arr)
             {
                 new_item[key] = drag_item[key];
+            }
+
+            for each (var col:DataGridColumn in data_grid.columns)
+            {
+                if (col.dataField != null &&
+                    new_item[col.dataField] == undefined)
+                    new_item[col.dataField] = '';
             }
 
             for each (var item:Object in data_grid.dataProvider)
