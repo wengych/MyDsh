@@ -214,6 +214,7 @@
 
             // 清空DataGridColumns
             columns = []; //.splice(0, columns.length);
+            this.sortableColumns = false;
 
             if (xml.POOL != undefined)
             {
@@ -347,7 +348,7 @@
         protected function CheckEmptyObject(obj:Object):Boolean
         {
             var rtn:Boolean = true;
-            for each (var obj_property:*in obj)
+            for each (var obj_property:* in obj)
             {
                 rtn = false;
                 break;

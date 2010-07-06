@@ -3,12 +3,11 @@ package com.yspay
 
     import com.esria.samples.dashboard.managers.PodLayoutManager;
     import com.esria.samples.dashboard.view.*;
+    import com.yspay.YsControls.YsPod;
     import com.yspay.events.EventCacheComplete;
     import com.yspay.events.EventNewPod;
-    import com.yspay.events.EventPodShowXml;
     import com.yspay.pool.Pool;
     import com.yspay.util.UtilFunc;
-    import com.yspay.YsControls.YsPod;
 
     import flash.display.DisplayObject;
     import flash.events.MouseEvent;
@@ -54,7 +53,7 @@ package com.yspay
         {
             super();
             _pool = pool;
-            _cache = new EventCache(_pool);
+            _cache = new EventCache(this);
             this.addEventListener(EventNewPod.EVENT_NAME, OnNewPod);
             this.addEventListener(EventCacheComplete.EVENT_NAME, OnEventCacheComplete);
         }
@@ -93,7 +92,7 @@ package com.yspay
 //                      </windows>
 //                </pod>
                 //DoNewYsPod(podxml);
-                _cache.DoCache(pod_xml, this);
+                _cache.DoCache(pod_xml);
             }
             else
             {
@@ -110,12 +109,13 @@ package com.yspay
                 // <pod>
                 //      tran://12
                 //</pod>
-                _cache.DoCache(pod_xml.toXMLString(), this);
+                _cache.DoCache(pod_xml.toXMLString());
             }
         }
 
         private function OnEventCacheComplete(event:EventCacheComplete):void
         {
+            _cache = new EventCache(this);
             DoNewYsPod(event.cache_xml);
         }
 

@@ -56,6 +56,7 @@
             private var podLayoutManagers:Array = new Array();
             public var _pool:Pool = new Pool;
             public var M_data:MData = new MData; //xingj
+            public var enable_cache:Boolean = true;
 
             protected var info_init_arr:Array = ['DICT', 'WINDOWS', 'BUTTON', 'SERVICES',
                                                  'TRAN', 'ACTION', 'HBOX', 'EVENT',
@@ -140,6 +141,7 @@
                 var info_select_name:String = 'YSDBSTB_DTSINFOSelect';
                 var info_select_arg:String = 'YSDICT_DB_TB_DTSINFO';
                 var dts_table_name:String = 'dts';
+                var dts_cache_table_name:String = 'dts_cache';
                 var dts_select_name:String = 'YSDBSDTSObjectSelect';
                 var dts_select_arg:String = '__DICT_XML';
                 var dts_insert_name:String = 'YSDBSDTSObjectConfigInsert';
@@ -158,6 +160,7 @@
                           dts_select_name, dts_select_arg,
                           dts_insert_name, dts_insert_arg,
                           ip, port);
+                _pool['dts_cache'] = new Object;
                 var info:DBTable = _pool.info as DBTable;
 
                 this.addEventListener(info.select_event_name, InfoQueryComplete);
@@ -601,12 +604,12 @@
                    id="btnReset"
                    click="resetHandle()"/>
         <!-- "校验码"标签 -->
-        <mx:Button x="95.5"
+        <mx:Button x="45"
                    y="122"
                    label="交换User?"
                    id="lblCheckCode"
                    click="changeUser()"/>
-        <mx:Button x="179.5"
+        <mx:Button x="155.5"
                    y="123"
                    label="交换IP?"
                    id="linkbtnReGenerate"
@@ -661,5 +664,9 @@
                      dataProvider="{ver_prvd}"
                      labelField="text">
         </mx:ComboBox>
+        <mx:CheckBox x="232.5"
+                     y="122"
+                     label="启用缓存"
+                     enabled="true"/>
     </mx:Panel>
 </mx:Application>
