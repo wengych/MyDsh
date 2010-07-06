@@ -1,12 +1,13 @@
 package com.yspay.util
 {
-    import com.yspay.YsControls.YsControl;
     import com.yspay.pool.DBTable;
     import com.yspay.pool.Pool;
 
+    import flash.display.DisplayObject;
     import flash.display.DisplayObjectContainer;
-    import flash.utils.getDefinitionByName;
+    import flash.net.SharedObject;
     import flash.system.Capabilities;
+    import flash.utils.getDefinitionByName;
 
     import mx.collections.ArrayCollection;
     import mx.controls.Alert;
@@ -15,6 +16,9 @@ package com.yspay.util
 
     public class UtilFunc
     {
+
+        private static const LOGIN_SHAREDOBJECT:String = "yspay_login_info";
+
         public function UtilFunc()
         {
         }
@@ -77,6 +81,37 @@ package com.yspay.util
             }
 
             return parent;
+        }
+
+        //lzy   判断 container及子显示列表中是否含有child_type类型对象
+        public static function HasChildByType(container:Container, child_type:Class):Boolean
+        {
+
+            if (container is child_type)
+            {
+                return true;
+            }
+            for each (var o:DisplayObject in container.getChildren())
+            {
+                if (o is child_type)
+                    return true;
+                else
+                {
+                    if (o is Container)
+                    {
+                        if (UtilFunc.HasChildByType(o as Container, child_type))
+                            return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        //lzy
+        public static function getSharedObjectInstance(name:String):SharedObject
+        {
+            return SharedObject.getLocal(name);
+
         }
 
         public static function ArrayColAddEmptyItems(arr:ArrayCollection, count:int):void

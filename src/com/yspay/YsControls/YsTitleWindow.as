@@ -4,8 +4,11 @@ package com.yspay.YsControls
     import com.yspay.events.EventWindowShowXml;
     import com.yspay.pool.*;
     import com.yspay.util.FunctionDelegate;
+    import com.yspay.util.UtilFunc;
 
+    import flash.display.DisplayObject;
     import flash.display.DisplayObjectContainer;
+    import flash.utils.describeType;
 
     import mx.collections.ArrayCollection;
     import mx.containers.TitleWindow;
@@ -32,26 +35,18 @@ package com.yspay.YsControls
         {
             super();
             _parent = parent;
-            //  this.percentHeight = 100;
             this.percentWidth = 100;
-            this.showCloseButton = true;
+            // this.showCloseButton = true;
             //this.setStyle("horizontalAlign", "center");
-            this.addEventListener(CloseEvent.CLOSE, closeHandler);
+            //this.addEventListener(CloseEvent.CLOSE, closeHandler);
             _pool = Application.application._pool;
-
             this.addEventListener(EventWindowShowXml.EVENT_NAME, OnShow);
         }
 
         protected override function measure():void
         {
-            for each (var o:Object in getChildren())
-            {
-                if (o is DataGrid)
-                {
-                    this.percentHeight = 100;
-                    break;
-                }
-            }
+            if (UtilFunc.HasChildByType(this, DataGrid))
+                this.percentHeight = 100;
             super.measure();
         }
 
@@ -164,10 +159,10 @@ package com.yspay.YsControls
             }
         }
 
-        private function closeHandler(e:CloseEvent):void
-        {
-            this.parent.removeChild(this);
-        }
+//        private function closeHandler(e:CloseEvent):void
+//        {
+//            this.parent.removeChild(this);
+//        }
 
         protected function OnShow(event:EventWindowShowXml):void
         {
