@@ -56,7 +56,6 @@
             private var podLayoutManagers:Array = new Array();
             public var _pool:Pool = new Pool;
             public var M_data:MData = new MData; //xingj
-            public var enable_cache:Boolean = true;
 
             protected var info_init_arr:Array = ['DICT', 'WINDOWS', 'BUTTON', 'SERVICES',
                                                  'TRAN', 'ACTION', 'HBOX', 'EVENT',
@@ -667,6 +666,7 @@
         <mx:CheckBox x="232.5"
                      y="122"
                      label="启用缓存"
-                     enabled="true"/>
+                     enabled="true"
+                     id="enable_cache"/>
     </mx:Panel>
 </mx:Application>
