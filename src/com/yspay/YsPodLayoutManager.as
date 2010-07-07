@@ -1,14 +1,14 @@
 package com.yspay
 {
 
+    import com.esria.samples.dashboard.events.PodStateChangeEvent;
     import com.esria.samples.dashboard.managers.PodLayoutManager;
     import com.esria.samples.dashboard.view.*;
+    import com.yspay.YsControls.YsPod;
     import com.yspay.events.EventCacheComplete;
     import com.yspay.events.EventNewPod;
-    import com.yspay.events.EventPodShowXml;
     import com.yspay.pool.Pool;
     import com.yspay.util.UtilFunc;
-    import com.yspay.YsControls.YsPod;
 
     import flash.display.DisplayObject;
     import flash.events.MouseEvent;
@@ -123,8 +123,13 @@ package com.yspay
         {
             pod_xml = UtilFunc.FullXml(pod_xml);
             var pod:YsPod = new YsPod(container);
+            if (this.container.getChildren().length == 0)
+            {
+                this.addItemAt(pod, this.items.length + 1, true);
+                pod.dispatchEvent(new PodStateChangeEvent(PodStateChangeEvent.MAXIMIZE));
 
-            if (this.maximizedPod == null)
+            }
+            else if (this.maximizedPod == null)
                 this.addItemAt(pod, this.items.length + 1, false);
             else
             {
@@ -143,7 +148,13 @@ package com.yspay
                 var pod:Pod = new Pod;
                 pod.title = title;
                 pod.addChild(setupContent);
-                if (this.maximizedPod == null)
+                if (this.container.getChildren().length == 0)
+                {
+                    this.addItemAt(pod, this.items.length + 1, true);
+                    pod.dispatchEvent(new PodStateChangeEvent(PodStateChangeEvent.MAXIMIZE));
+
+                }
+                else if (this.maximizedPod == null)
                     this.addItemAt(pod, this.items.length + 1, false);
                 else
                 {
