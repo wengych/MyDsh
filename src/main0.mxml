@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Application xmlns:mx="http://www.adobe.com/2006/mxml"
+                xmlns:ys="com.yspay"
                 verticalAlign="middle"
                 horizontalAlign="center"
                 minWidth="600"
@@ -9,8 +10,7 @@
                 verticalGap="1"
                 backgroundSize="100%"
                 backgroundColor="#ffffff"
-                xmlns:flexlib="http://code.google.com/p/flexlib/"
-                initialize="loadStyles()">
+                xmlns:flexlib="http://code.google.com/p/flexlib/">
     <mx:Style source="/assets/styles_1024_768.css"/>
     <mx:Script>
         <![CDATA[
@@ -69,31 +69,6 @@
     <view id="view1">\
     </view>\
 </views>');
-
-            private function loadStyles():void
-            {
-//                var styleURL:String = "assets/styles_1024_768.swf";
-//                var arr:Array = UtilFunc.getRatio();
-//                if (arr[0] == 1280 && arr[1] == 1024)
-//                {
-//                    styleURL = "assets/styles_1280_1024.swf";
-//                }
-//                else if (arr[0] == 1024 && arr[1] == 768)
-//                {
-//                    styleURL = "assets/styles_1024_768.swf";
-//                }
-//                else if (arr[0] == 1440 && arr[1] == 900)
-//                {
-//                    styleURL = "assets/styles_1440_900.swf";
-//                }
-//                else if (arr[0] == 1600 && arr[1] == 1200)
-//                {
-//                    styleURL = "assets/styles_1600_1200.swf";
-//                }
-//                if (styleURL != null)
-//                    StyleManager.loadStyleDeclarations(styleURL);
-
-            }
 
             private function onEnterState():void
             {

@@ -414,14 +414,18 @@ package com.yspay.YsControls
 
         protected function DictFunctionCalled(event:FunctionCallEvent):void
         {
+            trace('Dict::FunctionCalled: ', event.args);
             if (event.function_name == 'Insert')
             {
-                if (dict.data.length > _text.listDp)
-                    _text.listDp.addItemAt(event.args[0], event.args[1]);
+                if (dict.data.length == _text.listDp.length)
+                    return;
+                _text.listDp.addItemAt(event.args[0], event.args[1]);
             }
             else if (event.function_name == 'RemoveItems')
             {
-                if (dict.data.length < _text.listDp)
+                if (dict.data.length == _text.listDp.length)
+                    return;
+                else
                 {
                     var cnt:int = event.args[1];
                     while (cnt-- > 0)
@@ -444,7 +448,7 @@ package com.yspay.YsControls
 
         protected function DictChange(event:PropertyChangeEvent):void
         {
-            trace("DictChange", event.property)
+            trace("DictChange: ", dict.name, ' ', event.property)
             if (event.property == 'text')
             {
                 trace('\tdict.text = ', event.newValue);

@@ -169,11 +169,14 @@ package com.yspay
                 Alert.show(event.error_event.toString());
                 return;
             }
+            var dts:DBTable = _pool.dts as DBTable;
             var dts_no:String = event.query_name;
 
             var link_str:String = dts_key_table[dts_no];
-            trace('EventCache: ' + link_str + ' query complete');
+            trace('EventCache: ' + link_str + ' query complete. dts no is ' + dts_no);
             cache_obj[link_str] = true;
+            trace('EventCache::dts: ', dts_no);
+            trace('EventCache::dts: ', dts[dts_no].__DICT_XML);
 
             var link_key:String = GetLinkKey(link_str);
             if (cache_type_map[link_key] != undefined &&
@@ -185,9 +188,11 @@ package com.yspay
                     _pool.dts_cache[dts_no] = _pool.dts[dts_no];
             }
 
-            var dts:DBTable = _pool.dts as DBTable;
             var xml_str:String = dts[dts_no].__DICT_XML;
             DoCacheFunc(new XML(xml_str));
+
+            trace('EventCache::dts: ', dts_no);
+            trace('EventCache::dts: ', dts[dts_no].__DICT_XML);
         }
 
         public function IsLink(link_str:String):Boolean

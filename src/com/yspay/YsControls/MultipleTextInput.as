@@ -120,10 +120,19 @@ package com.yspay.YsControls
 
         protected function ListChange(event:CollectionEvent):void
         {
+            trace('MultipleTextInput::ListChange: ', event.kind, event.location);
             if (event.kind == CollectionEventKind.ADD)
+            {
+                if (_parent.dict.data.length == _listDp.length)
+                    return;
                 _parent.dict.data.Insert(event.location, '');
+            }
             else if (event.kind == CollectionEventKind.REMOVE)
+            {
+                if (_parent.dict.data.length == _listDp.length)
+                    return;
                 _parent.dict.data.RemoveItems(event.location, 1);
+            }
             else if (event.kind == CollectionEventKind.UPDATE)
                 _parent.dict.data[event.location] =
                     event.target[event.location];
