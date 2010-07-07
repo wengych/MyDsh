@@ -667,6 +667,7 @@
                      y="122"
                      label="启用缓存"
                      enabled="true"
+                     selected="true"
                      id="enable_cache"/>
     </mx:Panel>
 </mx:Application>

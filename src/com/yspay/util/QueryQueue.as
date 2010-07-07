@@ -1,9 +1,9 @@
 package com.yspay.util
 {
     import com.yspay.pool.DBTable;
-    import com.yspay.pool.Query;
 
     import flash.events.EventDispatcher;
+    import flash.external.ExternalInterface;
 
 
     public class QueryQueue
@@ -24,18 +24,18 @@ package com.yspay.util
             queue.push(key_name);
         }
 
-        public function Do(query_type:Class, query_cond:*=null, count:int=5):int
+        public function Do(query_type:Class, count:int=5):int
         {
             var rtn:int = 0;
+            var query_cond_is_query_key:Boolean = true;
+
             while (--count >= 0)
             {
                 if (queue.length == 0)
                     break;
 
                 var query_key:String = queue.pop();
-                if (query_cond == null)
-                    query_cond = query_key;
-                table.AddQuery(query_key, query_type, query_cond, disp);
+                table.AddQuery(query_key, query_type, query_key, disp);
                 table.DoQuery(query_key);
 
                 ++rtn;

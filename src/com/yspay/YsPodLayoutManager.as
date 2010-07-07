@@ -8,10 +8,10 @@ package com.yspay
     import com.yspay.events.EventNewPod;
     import com.yspay.pool.Pool;
     import com.yspay.util.UtilFunc;
-
+    
     import flash.display.DisplayObject;
     import flash.events.MouseEvent;
-
+    
     import mx.controls.Alert;
     import mx.events.FlexEvent;
 
@@ -92,6 +92,7 @@ package com.yspay
 //                      </windows>
 //                </pod>
                 //DoNewYsPod(podxml);
+                _cache = new EventCache(this);
                 _cache.DoCache(pod_xml);
             }
             else
@@ -109,6 +110,7 @@ package com.yspay
                 // <pod>
                 //      tran://12
                 //</pod>
+                _cache = new EventCache(this);
                 _cache.DoCache(pod_xml.toXMLString());
             }
         }
