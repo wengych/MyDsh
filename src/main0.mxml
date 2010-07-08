@@ -267,6 +267,8 @@
                                   width="300"
                                   enter="podLayoutManagers[0].dispatchEvent(new EventNewPod(action.text))"
                                   toolTip="点击Enter发送"/>
+                    <mx:Button label="发送"
+                               click="podLayoutManagers[0].dispatchEvent(new EventNewPod(action.text))"/>
                     <mx:ComboBox dataProvider="{comboboxDP}"
                                  labelField="name"
                                  close="comboboxClickHandler(event)"/>
