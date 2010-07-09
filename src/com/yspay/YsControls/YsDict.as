@@ -102,8 +102,6 @@ package com.yspay.YsControls
         {
             if (_xml.@save == 'false')
                 return null;
-            // TODO: 实现生成保存格式的xml的方�
-
             return null;
         }
 

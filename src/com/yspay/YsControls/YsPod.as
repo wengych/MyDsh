@@ -234,7 +234,6 @@ package com.yspay.YsControls
 
         public function set ename(str:String):void
         {
-            // _xml.appendChild(str);
             _xml.text()[0] = str;
         }
 

@@ -22,7 +22,6 @@ package com.yspay.YsControls
         public function YsDgListItem(parent:DisplayObjectContainer)
         {
             trace('YsDgListItem');
-            //trace((dict as YsDict).dict.text);
             super(parent);
         }
 

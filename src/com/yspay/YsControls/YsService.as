@@ -16,8 +16,6 @@ package com.yspay.YsControls
     public class YsService extends YsAction
     {
         protected var _pool:Pool;
-        //protected var _to:TargetList = new TargetList;
-        //protected var _from:TargetList = new TargetList;
         public var main_bus:UserBus;
 
         public function YsService(parent:DisplayObjectContainer)
@@ -40,7 +38,7 @@ package com.yspay.YsControls
         {
             var from_targets:Array = _from.GetAllTarget();
             var from_target_names:Array = _from.GetAllTargetName();
-            // for each (var from_item:PData in _from.GetAllTarget())
+
             for (var idx:int = 0; idx < from_targets.length; ++idx)
             {
                 var from_item:PData = from_targets[idx];
@@ -48,8 +46,9 @@ package com.yspay.YsControls
 
                 // 处理datagrid时,判断当前service的父事件或按钮是否为datagrid中的按钮或事件
                 // 若为datagrid中的事件或按钮,则只取当前选中行的数据
-                var dg:YsDataGrid = UtilFunc.YsGetParentByType(this._parent,
-                                                               YsDataGrid) as YsDataGrid;
+                var dg:YsDataGrid =
+                    UtilFunc.YsGetParentByType(this._parent,
+                                               YsDataGrid) as YsDataGrid;
 
                 if (dg != null)
                 {
@@ -63,7 +62,6 @@ package com.yspay.YsControls
                         else if (type == 'INT')
                             bus.Add(key, int(from_item.data[key][dg_idx]));
 
-                        // 
                         continue;
                     }
                 }
@@ -129,16 +127,6 @@ package com.yspay.YsControls
             var scall_name:String = _xml.SendPKG[0].HEAD[0].@active;
             var dict_list:XMLList = _xml.SendPKG.BODY.DICT;
 
-            /*
-               for each (var dict_xml:XML in dict_list)
-               {
-               dict_str = dict_xml.toString();
-
-               if (dict_str.substr(0, dict_search.length).toLowerCase() == dict_search)
-               {
-               bus_in_name_args.push(dict_str.substr(dict_search.length));
-               }
-             }*/
             SetBusInArgs(dict_list, bus_in_name_args, bus_in_type_args);
 
             var scall:ServiceCall = new ServiceCall;
@@ -159,7 +147,6 @@ package com.yspay.YsControls
             //var_name=dict名字
             // 向bus中添加所有输入项
             for (var idx:int = 0; idx < bus_in_name_args.length; ++idx)
-                //for each (var var_name:String in bus_in_name_args) //从本地P_data中取得所需数据
             {
                 var var_name:String = bus_in_name_args[idx];
                 var var_type:String = bus_in_type_args[idx];
@@ -184,7 +171,6 @@ package com.yspay.YsControls
                 {
                     ServiceCallBack(new_bus, stack_event, error_event);
                 }
-            //Alert.show(bus.toString());
             trace(bus.toString());
             scall.Send(bus, ip, port, func);
         }
@@ -261,7 +247,6 @@ package com.yspay.YsControls
                 pod.enabled = true;
                 return;
             }
-
 
             // action_info
             //        <To>pod</To>

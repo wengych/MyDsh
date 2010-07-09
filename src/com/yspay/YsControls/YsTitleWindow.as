@@ -36,9 +36,6 @@ package com.yspay.YsControls
             super();
             _parent = parent;
             this.percentWidth = 100;
-            // this.showCloseButton = true;
-            //this.setStyle("horizontalAlign", "center");
-            //this.addEventListener(CloseEvent.CLOSE, closeHandler);
             _pool = Application.application._pool;
             this.addEventListener(EventWindowShowXml.EVENT_NAME, OnShow);
         }
@@ -52,7 +49,6 @@ package com.yspay.YsControls
 
         public function set ename(str:String):void
         {
-            //_xml.appendChild(str);
             _xml.text()[0] = str;
         }
 
@@ -159,11 +155,6 @@ package com.yspay.YsControls
             }
         }
 
-//        private function closeHandler(e:CloseEvent):void
-//        {
-//            this.parent.removeChild(this);
-//        }
-
         protected function OnShow(event:EventWindowShowXml):void
         {
             var xml:XML = event.xml;
@@ -175,7 +166,6 @@ package com.yspay.YsControls
 
             var child_ctrl:YsControl = new YsMaps.ys_type_map[node_name](this);
             child_ctrl.Init(xml);
-
         }
     }
 }

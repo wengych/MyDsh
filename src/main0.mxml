@@ -60,7 +60,6 @@
             protected var info_init_arr:Array = ['DICT', 'WINDOWS', 'BUTTON', 'SERVICES',
                                                  'TRAN', 'ACTION', 'HBOX', 'EVENT',
                                                  'DATAGRID'];
-            //public var monsterDebugger:MonsterDebugger = new MonsterDebugger(this);
 
             protected var pod_xml:XML = new XML('<?xml version="1.0" encoding="utf-8"?> \
 <views>\
@@ -72,13 +71,6 @@
 
             private function onEnterState():void
             {
-                // Load pods.xml, which contains the pod layout.
-                /*var httpService:HTTPService = new HTTPService();
-                   httpService.url = "data/pods.xml";
-                   httpService.resultFormat = "e4x";
-                   httpService.addEventListener(FaultEvent.FAULT, onFaultHttpService);
-                   httpService.addEventListener(ResultEvent.RESULT, onResultHttpService);
-                 httpService.send();*/
                 initPoolAndM_data();
                 onResultHttpService();
             }
@@ -235,7 +227,6 @@
                     this.podManager = manager;
                     break;
                 }
-                //               tabBar.selectedIndex = 0;
             }
         ]]>
     </mx:Script>
@@ -381,7 +372,6 @@
                     return;
                 }
                 action.text = (event.currentTarget as ComboBox).selectedItem.name;
-                // addPod(podLayoutManagers[tabBar.selectedIndex], new Pod);
                 podManager.dispatchEvent(new EventNewPod(action.text));
             }
 
@@ -580,12 +570,12 @@
         <!-- "校验码"标签 -->
         <mx:Button x="45"
                    y="122"
-                   label="交换User?"
+                   label="交换User"
                    id="lblCheckCode"
                    click="changeUser()"/>
         <mx:Button x="155.5"
                    y="123"
-                   label="交换IP?"
+                   label="交换IP"
                    id="linkbtnReGenerate"
                    click="changeIP();"
                    fontFamily="Georgia"
@@ -610,7 +600,7 @@
                      id="ipChoose"
                      dataProvider="{ipDP}"
                      labelFunction="SetIpChooseLabel"
-                     selectedIndex="4">
+                     selectedIndex="5">
         </mx:ComboBox>
         <mx:Label x="39.5"
                   y="157"
@@ -622,7 +612,7 @@
                      id="s_ipChoose"
                      dataProvider="{ipDP}"
                      labelFunction="SetIpChooseLabel"
-                     selectedIndex="4">
+                     selectedIndex="5">
         </mx:ComboBox>
         <mx:Label x="37"
                   y="189"
