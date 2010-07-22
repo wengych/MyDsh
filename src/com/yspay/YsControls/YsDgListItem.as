@@ -154,7 +154,6 @@ package com.yspay.YsControls
                 return;
             ys_dict.dict.source = this;
 
-            //ys_dict.dict.data[dg_idx] = sel_item[ys_dict.dict.name];
             ys_dict.dict.text = sel_item[ys_dict.dict.name];
         }
 

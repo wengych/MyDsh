@@ -2,6 +2,7 @@
 {
     import com.yspay.YsData.MData;
     import com.yspay.YsData.PData;
+    import com.yspay.YsData.TargetList;
     import com.yspay.util.AdvanceArray;
     import com.yspay.util.UtilFunc;
     import com.yspay.util.YsClassFactory;
@@ -13,7 +14,6 @@
     import mx.controls.Alert;
     import mx.controls.DataGrid;
     import mx.controls.dataGridClasses.DataGridColumn;
-    import mx.controls.listClasses.IListItemRenderer;
     import mx.core.Application;
     import mx.events.CollectionEvent;
     import mx.events.CollectionEventKind;
@@ -27,6 +27,7 @@
         public var del:Boolean;
         public var add:Boolean;
         public var ins:Boolean;
+        public var DragOut:Boolean;
         public var default_line:Boolean;
 
         public var _parent:DisplayObjectContainer;
@@ -404,6 +405,18 @@
             }
         }
 
+        protected function OnCollectionRemove(event:CollectionEvent):void
+        {
+            for (var key:String in toDataObject)
+            {
+                var target_list:TargetList = toDataObject[key];
+                for each (var to_data:PData in target_list.GetAllTarget())
+                {
+                    to_data.data[key].RemoveItems(event.location, 1);
+                }
+            }
+        }
+
         protected override function collectionChangeHandler(event:Event):void
         {
             super.collectionChangeHandler(event);
@@ -418,6 +431,10 @@
                 else if (ceEvent.kind == CollectionEventKind.UPDATE)
                 {
                     OnCollectionUpdate(ceEvent);
+                }
+                else if (ceEvent.kind == CollectionEventKind.REMOVE)
+                {
+                    OnCollectionRemove(ceEvent);
                 }
             }
         }

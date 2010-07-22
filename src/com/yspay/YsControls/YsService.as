@@ -17,6 +17,7 @@ package com.yspay.YsControls
     {
         protected var _pool:Pool;
         public var main_bus:UserBus;
+        protected var scall:ServiceCall;
 
         public function YsService(parent:DisplayObjectContainer)
         {
@@ -50,7 +51,7 @@ package com.yspay.YsControls
                     UtilFunc.YsGetParentByType(this._parent,
                                                YsDataGrid) as YsDataGrid;
 
-                if (dg != null)
+                if (dg != null && from_name == 'datagrid')
                 {
 
                     var dg_idx:int = dg.selectedIndex;
@@ -112,6 +113,7 @@ package com.yspay.YsControls
         // 调用ServiceCall
         public override function Do(stack_event:StackEvent, source_event:Event):void
         {
+            scall = new ServiceCall;
             var pod:YsPod = UtilFunc.GetParentByType(this._parent, YsPod) as YsPod;
             if (pod != null)
                 pod.enabled = false;
@@ -129,7 +131,7 @@ package com.yspay.YsControls
 
             SetBusInArgs(dict_list, bus_in_name_args, bus_in_type_args);
 
-            var scall:ServiceCall = new ServiceCall;
+
             var bus:UserBus = new UserBus;
             bus.Add(ServiceCall.SCALL_NAME, scall_name);
 

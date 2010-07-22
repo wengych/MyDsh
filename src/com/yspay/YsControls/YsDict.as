@@ -33,6 +33,7 @@ package com.yspay.YsControls
         protected var dict_object:Object;
 
         public var editable:Boolean;
+
         public var LABEL:String = '';
         public var openfile:Boolean;
 

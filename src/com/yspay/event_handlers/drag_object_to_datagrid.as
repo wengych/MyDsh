@@ -5,6 +5,7 @@ package com.yspay.event_handlers
 
     import flash.events.Event;
 
+    import mx.collections.ArrayCollection;
     import mx.controls.Alert;
     import mx.controls.dataGridClasses.DataGridColumn;
     import mx.core.UIComponent;
@@ -97,6 +98,16 @@ package com.yspay.event_handlers
             }
 
             data_grid.dataProvider.addItem(new_item);
+        }
+
+        if (drag_source_grid.DragOut == true)
+        {
+            for each (var src_item:Object in drag_items)
+            {
+                var src_arr:ArrayCollection = drag_source_grid.dataProvider as ArrayCollection;
+                var idx:int = src_arr.getItemIndex(src_item);
+                drag_source_grid.dataProvider.removeItemAt(idx);
+            }
         }
 
         return true;

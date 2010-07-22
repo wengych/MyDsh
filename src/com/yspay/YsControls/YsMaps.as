@@ -42,6 +42,7 @@ package com.yspay.YsControls
                 'add': {'default': false},
                 'ins': {'default': false},
                 'del': {'default': false},
+                'DragOut': {'default': false},
                 'default_line': {'default': false}
             };
 

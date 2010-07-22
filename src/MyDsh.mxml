@@ -57,6 +57,11 @@
             public var _pool:Pool = new Pool;
             public var M_data:MData = new MData; //xingj
 
+            protected var map_server_ip:String;
+            protected var map_server_port:String;
+            protected var service_server_ip:String;
+            protected var service_server_port:String;
+
             protected var info_init_arr:Array = ['DICT', 'WINDOWS', 'BUTTON', 'SERVICES',
                                                  'TRAN', 'ACTION', 'HBOX', 'EVENT',
                                                  'DATAGRID'];
@@ -73,6 +78,14 @@
             {
                 initPoolAndM_data();
                 onResultHttpService();
+            }
+
+            protected function UserInfoChange(event:PropertyChangeEvent):void
+            {
+                if (event.property == 'DEPTNAME')
+                    this.DEPTNAME.text = event.source.DEPTNAME;
+                else if (event.property == 'USERID')
+                    this.USERID.text = event.source.USERID;
             }
 
             protected function ServiceRtnChange(event:PropertyChangeEvent):void
@@ -101,8 +114,12 @@
 
             public function initPoolAndM_data():void
             {
-                var ip:String = ipChoose.selectedItem.ip;
-                var port:String = ipChoose.selectedItem.port;
+                map_server_ip = ipChoose.selectedItem.ip;
+                map_server_port = ipChoose.selectedItem.port;
+
+                service_server_ip = s_ipChoose.selectedItem.ip;
+                service_server_port = s_ipChoose.selectedItem.port;
+
                 var info_table_name:String = 'info';
                 var info_select_name:String = 'YSDBSTB_DTSINFOSelect';
                 var info_select_arg:String = 'YSDICT_DB_TB_DTSINFO';
@@ -118,14 +135,22 @@
                 _pool.SERVICE_RTN.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE,
                                                    ServiceRtnChange);
 
+                // 用户信息
+                _pool.USER_INFO = new ObjectProxy;
+                _pool.USER_INFO.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE,
+                                                 UserInfoChange);
+
+                _pool.USER_INFO.DEPTNAME = _pool.D_data.data.DEPTNAME[0];
+                _pool.USER_INFO.USERID = _pool.D_data.data.USERID[0];
+
                 _pool.Add(info_table_name, DBTable,
                           info_select_name, info_select_arg,
                           '', '',
-                          ip, port);
+                          map_server_ip, map_server_port);
                 _pool.Add(dts_table_name, DBTable,
                           dts_select_name, dts_select_arg,
                           dts_insert_name, dts_insert_arg,
-                          ip, port);
+                          map_server_ip, map_server_port);
                 _pool['dts_cache'] = new Object;
                 var info:DBTable = _pool.info as DBTable;
 
@@ -265,6 +290,14 @@
                                fontFamily="Arial"
                                fontSize="14"
                                paddingBottom="1">
+                    <mx:Label text="机构"/>
+                    <mx:Label id="DEPTNAME"
+                              color="blue"
+                              width="200"/>
+                    <mx:Label text="用户名"/>
+                    <mx:Label id="USERID"
+                              color="blue"
+                              width="200"/>
                     <mx:Label text="服务返回码"/>
                     <mx:Label color="blue"
                               id="SCALL_RTN"
@@ -280,9 +313,58 @@
                 </mx:ControlBar>
             </mx:AddChild>
         </mx:State>
+        <mx:State name="select_dept">
+            <mx:AddChild relativeTo="{panel1}"
+                         position="lastChild">
+                <mx:ComboBox x="96.5"
+                             y="88"
+                             width="182"
+                             id="deptSel"
+                             selectedIndex="5">
+                </mx:ComboBox>
+            </mx:AddChild>
+            <mx:RemoveChild target="{btnLogin}"/>
+            <mx:RemoveChild target="{versionChoose}"/>
+            <mx:RemoveChild target="{rember}"/>
+            <mx:RemoveChild target="{btnReset}"/>
+            <mx:RemoveChild target="{s_ipChoose}"/>
+            <mx:RemoveChild target="{label1}"/>
+            <mx:RemoveChild target="{label2}"/>
+            <mx:RemoveChild target="{ipChoose}"/>
+            <mx:RemoveChild target="{label3}"/>
+            <mx:AddChild relativeTo="{panel1}"
+                         position="lastChild">
+                <mx:Button x="211"
+                           y="137"
+                           label="确定"
+                           id="btnSelDept"
+                           click="OnSelectDept()"/>
+            </mx:AddChild>
+            <mx:AddChild relativeTo="{panel1}"
+                         position="lastChild">
+                <mx:Label x="28.5"
+                          y="91"
+                          text="选择部门"/>
+            </mx:AddChild>
+            <mx:RemoveChild target="{txtPassword}"/>
+            <mx:RemoveChild target="{label4}"/>
+            <mx:RemoveChild target="{lblCheckCode}"/>
+            <mx:RemoveChild target="{linkbtnReGenerate}"/>
+            <mx:RemoveChild target="{enable_cache}"/>
+            <mx:SetProperty target="{txtUsername}"
+                            name="enabled"
+                            value="true"/>
+            <mx:SetProperty target="{txtUsername}"
+                            name="editable"
+                            value="false"/>
+            <mx:SetProperty target="{panel1}"
+                            name="height"
+                            value="223"/>
+        </mx:State>
     </mx:states>
     <mx:Script>
         <![CDATA[
+            import com.yspay.util.AdvanceArray;
             //longin handler 
             [Bindable]
             private var comboboxDP:ArrayCollection =
@@ -375,6 +457,24 @@
                 podManager.dispatchEvent(new EventNewPod(action.text));
             }
 
+            protected function OnSelectDept():void
+            {
+                var p_data:PData = _pool.D_data;
+                var idx:int = deptSel.selectedIndex;
+                var dept_name:String = p_data.data.DEPTNAME[idx];
+                var dept_dts:String = p_data.data.DEPT_DTS[idx];
+
+                p_data.data.DEPTNAME.RemoveItems(0);
+                p_data.data.DEPTNAME.AddEmptyItems(1);
+                p_data.data.DEPT_DTS.RemoveItems(0);
+                p_data.data.DEPT_DTS.AddEmptyItems(1);
+
+                p_data.data.DEPTNAME[0] = dept_name;
+                p_data.data.DEPT_DTS[0] = dept_dts;
+
+                this.currentState = 'index';
+            }
+
             protected function OnLoginCallBack(bus:UserBus, error_event:ErrorEvent=null):void
             {
                 if (error_event != null)
@@ -411,7 +511,13 @@
                     _pool.Add('D_data', PData);
                     var p_data:PData = _pool.D_data as PData;
                     p_data.Update(bus);
-                    currentState = "index";
+
+                    currentState = "select_dept";
+                    var dept_arr_col:ArrayCollection = new ArrayCollection;
+                    for each (var item:Object in p_data.data.DEPTNAME)
+                        dept_arr_col.addItem(item);
+
+                    this.deptSel.dataProvider = dept_arr_col;
                 }
             }
 
@@ -423,15 +529,18 @@
                     return;
                 }
 
-                var ip:String = ipChoose.selectedItem.ip;
-                var port:String = ipChoose.selectedItem.port;
+                var ip:String = s_ipChoose.selectedItem.ip;
+                var port:String = s_ipChoose.selectedItem.port;
 
                 var service_call:ServiceCall = new ServiceCall;
                 var send_bus:UserBus = new UserBus;
                 send_bus.Add('USERID', txtUsername.text);
-                // send_bus.Add('PASSWORD_EN', EncryptUtil.encryptHandler(txtPassword.text));
+                // var encrypt_passwd:String = EncryptUtil.encryptHandler(txtPassword.text);
+                // send_bus.Add('PASSWORD_EN', encrypt_passwd);
+                // trace(encrypt_passwd);
                 send_bus.Add('PASSWORD_EN', txtPassword.text);
                 send_bus.Add(ServiceCall.SCALL_NAME, 'YSUserLogin');
+                trace(send_bus.toString());
 
                 service_call.Send(send_bus, ip, port, OnLoginCallBack);
             }
@@ -470,7 +579,7 @@
 
                 if (!ip_table.hasOwnProperty(service_name))
                 {
-                    return this.s_ipChoose.selectedItem.ip;
+                    return service_server_ip;
                 }
                 else
                 {
@@ -484,7 +593,7 @@
 
                 if (!port_table.hasOwnProperty(service_name))
                 {
-                    return this.s_ipChoose.selectedItem.port;
+                    return service_server_port;
                 }
                 else
                 {
@@ -540,7 +649,8 @@
         <!-- "密码"标签 -->
         <mx:Label x="42.5"
                   y="81"
-                  text="密码"/>
+                  text="密码"
+                  id="label4"/>
         <!-- "用户名"输入框 -->
         <mx:TextInput x="94.5"
                       y="33"
@@ -605,7 +715,8 @@
         <mx:Label x="39.5"
                   y="157"
                   text="IP地址"
-                  width="43.5"/>
+                  width="43.5"
+                  id="label3"/>
         <mx:ComboBox x="96.5"
                      y="186"
                      width="182"
@@ -617,10 +728,12 @@
         <mx:Label x="37"
                   y="189"
                   text="scall_ip"
-                  width="43.5"/>
+                  width="43.5"
+                  id="label2"/>
         <mx:Label x="45"
                   y="218"
-                  text="版本"/>
+                  text="版本"
+                  id="label1"/>
         <mx:ComboBox x="96"
                      y="218"
                      width="182.5"
@@ -636,3 +749,4 @@
                      id="enable_cache"/>
     </mx:Panel>
 </mx:Application>
+

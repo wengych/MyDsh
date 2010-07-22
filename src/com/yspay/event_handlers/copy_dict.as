@@ -58,7 +58,7 @@ package com.yspay.event_handlers
                 var dg:YsDataGrid = UtilFunc.YsGetParentByType(ui_comp,
                                                                YsDataGrid) as YsDataGrid;
 
-                if (dg != null)
+                if (dg != null && from_name == 'datagrid')
                 {
                     var dg_idx:int = dg.selectedIndex;
 
