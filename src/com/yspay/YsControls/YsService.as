@@ -39,38 +39,32 @@ package com.yspay.YsControls
         {
             var from_targets:Array = _from.GetAllTarget();
             var from_target_names:Array = _from.GetAllTargetName();
+            var data_item:Object;
 
             for (var idx:int = 0; idx < from_targets.length; ++idx)
             {
                 var from_item:PData = from_targets[idx];
                 var from_name:String = from_target_names[idx];
+                if (from_item.data[key] == undefined)
+                    continue;
 
-                // 处理datagrid时,判断当前service的父事件或按钮是否为datagrid中的按钮或事件
-                // 若为datagrid中的事件或按钮,则只取当前选中行的数据
-                var dg:YsDataGrid =
-                    UtilFunc.YsGetParentByType(this._parent,
-                                               YsDataGrid) as YsDataGrid;
-
-                if (dg != null && from_name == 'datagrid')
-                {
-
-                    var dg_idx:int = dg.selectedIndex;
-                    if (from_item.data.hasOwnProperty(key))
-                    {
-                        trace('YsService.AddBusDataFromPData:: ', key);
-                        if (type == 'STRING')
-                            bus.Add(key, from_item.data[key][dg_idx]);
-                        else if (type == 'INT')
-                            bus.Add(key, int(from_item.data[key][dg_idx]));
-
-                        continue;
-                    }
-                }
-
-                if (from_item.data.hasOwnProperty(key))
+                var dict_idx:int = GetDataIndex(from_item, key);
+                if (dict_idx >= 0)
                 {
                     trace('YsService.AddBusDataFromPData:: ', key);
-                    for each (var data_item:* in from_item.data[key])
+                    data_item = from_item.data[key];
+                    if (data_item.length < dict_idx)
+                        continue;
+                    if (type == 'STRING')
+                        bus.Add(key, from_item.data[key][dict_idx]);
+                    else if (type == 'INT')
+                        bus.Add(key, int(from_item.data[key][dict_idx]));
+
+                }
+                else
+                {
+                    trace('YsService.AddBusDataFromPData:: ', key);
+                    for each (data_item in from_item.data[key])
                     {
                         if (type == 'STRING')
                             bus.Add(key, data_item.toString());
@@ -82,6 +76,34 @@ package com.yspay.YsControls
             }
 
             return false;
+        }
+
+        /**
+         *
+         * @return 返回数据下标，返回-1表示取全部
+         */
+        protected function GetDataIndex(from_pdata:PData, dict_name:String):int
+        {
+            // 处理datagrid时,判断当前service的父事件或按钮是否为datagrid中的按钮或事件
+            // 若为datagrid中的事件或按钮,则只取当前选中行的数据
+            var dg:YsDataGrid =
+                UtilFunc.YsGetParentByType(this._parent,
+                                           YsDataGrid) as YsDataGrid;
+            // 非DataGrid子项,取全部
+            if (dg == null)
+                return -1;
+
+            // DataGrid的ToData中无此字典项,取全部
+            if (dg.toDataObject[dict_name] == undefined)
+                return -1;
+
+            var arr:Array = dg.toDataObject[dict_name].GetAllTarget();
+            if (arr.indexOf(from_pdata) < 0)
+                return -1;
+
+            return dg.selectedIndex;
+
+            return -1;
         }
 
         protected function SetBusInArgs(dict_list:XMLList, names:Array, types:Array):void
@@ -109,6 +131,7 @@ package com.yspay.YsControls
                 types.push(dict_type);
             }
         }
+
 
         // 调用ServiceCall
         public override function Do(stack_event:StackEvent, source_event:Event):void

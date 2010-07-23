@@ -47,7 +47,7 @@ package com.yspay.YsControls
 
             InitLabel(dxml);
 
-            prompt = "请选择...";
+            // prompt = "请选择...";
             if (dxml.display.TEXTINPUT.list.listarg != undefined)
                 //                            <list labelField="GENDER">
                 //                                <listarg>
@@ -127,6 +127,24 @@ package com.yspay.YsControls
                 if (_xml.services.attribute('DEFAULT').length > 0)
                     default_value = _xml.services.@DEFAULT.text().toString();
                 from_data.AddToNotifiers(this, dict_name);
+            }
+        }
+
+        public override function set data(value:Object):void
+        {
+            var ys_dict:YsDict = _parent as YsDict;
+            var key:String = ys_dict.dict.name;
+            if (value == null ||
+                value[key] == undefined)
+                return;
+
+            for (var idx:int = 0; idx < dataProvider.length; ++idx)
+            {
+                if (dataProvider[idx][key] == value[key])
+                {
+                    this.selectedIndex = idx;
+                    break;
+                }
             }
         }
 
