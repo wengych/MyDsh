@@ -155,7 +155,13 @@
                 var info:DBTable = _pool.info as DBTable;
 
                 this.addEventListener(info.select_event_name, InfoQueryComplete);
+
                 this.enabled = false;
+                this.action.editable = false;
+                // this.action.enabled = false;
+                this.action.setStyle('color', 'red');
+                this.action.text = "加载中";
+
                 CursorManager.setBusyCursor();
 
                 InitInfoItem();
@@ -169,6 +175,10 @@
                 if (info_init_arr.length == 0)
                 {
                     this.enabled = true;
+                    this.action.editable = true;
+                    this.action.setStyle('color', 'black');
+                    this.action.text = "";
+
                     CursorManager.removeBusyCursor();
                     return;
                 }
