@@ -27,8 +27,8 @@ package com.yspay.event_handlers
 
                 // addFormItem(arg);
                 ui_comp.addEventListener(EventCacheComplete.EVENT_NAME, cache_xml_func);
-                var event_cache:EventCache = new EventCache(Application.application._pool);
-                event_cache.DoCache(dts_xml, ui_comp);
+                var event_cache:EventCache = new EventCache(ui_comp);
+                event_cache.DoCache(dts_xml);
             };
 
         var cache_xml_func:Function = function(event:EventCacheComplete):void

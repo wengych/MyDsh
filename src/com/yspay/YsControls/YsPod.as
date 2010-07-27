@@ -181,6 +181,7 @@ package com.yspay.YsControls
         public function Init(xml:XML):void
         {
             _xml = xml;
+            trace(_xml);
             title = _xml.@title.toString();
 
             for each (var child:XML in _xml.elements())
@@ -233,7 +234,6 @@ package com.yspay.YsControls
 
         public function set ename(str:String):void
         {
-            // _xml.appendChild(str);
             _xml.text()[0] = str;
         }
 

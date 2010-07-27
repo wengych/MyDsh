@@ -34,26 +34,32 @@ package com.yspay.YsControls
         private var fr:FileReference;
         private var fileType:FileFilter;
 
-        public function MultipleTextInput(parent:YsDict)
+        public function MultipleTextInput(parent:YsDict, openfile:String)
         {
             super();
             this.toolTip = "Ctrl+Home 打开\nCtrl+Insert 增加行\nCtrl+Delete 删除行";
 
             this.append = true;
             this.deleteable = true;
-            this.fileable = false;
             this.listEditable = true;
 
-            _btn = new Button;
-            _btn.setStyle("fontSize", 12);
-            _btn.label = '...';
+            if (openfile == "true")
+            {
+                this.fileable = true;
+                _btn = new Button;
+                _btn.setStyle("fontSize", 12);
+                _btn.label = '浏览';
+                _btn.visible = true;
+                // _btn.height = _btn.width = 0;
+                _btn.addEventListener(MouseEvent.CLICK, btnClickHandler);
+            }
+
             _showList = false;
             _backList = new MyList;
             _backList.setStyle('fontSize', 12);
             _backList.dataProvider = _listDp;
             addEventListener(Event.CHANGE, changeHandler);
             addEventListener(KeyboardEvent.KEY_DOWN, keydownHandler);
-            _btn.addEventListener(MouseEvent.CLICK, btnClickHandler);
             _listDp.addEventListener(CollectionEvent.COLLECTION_CHANGE, ListChange);
 
             _parent = parent;
@@ -62,7 +68,8 @@ package com.yspay.YsControls
         protected override function createChildren():void
         {
             super.createChildren();
-            addChild(_btn);
+            if (_btn != null)
+                addChild(_btn);
         }
 
         protected override function commitProperties():void
@@ -84,14 +91,23 @@ package com.yspay.YsControls
         protected override function measure():void
         {
             super.measure();
-            measuredWidth = measuredWidth + _btn.measuredWidth + 10;
+            if (_btn != null)
+                measuredWidth = measuredWidth + _btn.measuredWidth + 10;
         }
 
         protected override function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
         {
-            super.updateDisplayList(unscaledWidth - 10 - _btn.measuredWidth, unscaledHeight);
-            _btn.move(unscaledWidth - 5 - _btn.measuredWidth, 0);
-            _btn.setActualSize(_btn.measuredWidth, unscaledHeight);
+            if (_btn != null)
+            {
+                super.updateDisplayList(unscaledWidth - 10 - _btn.measuredWidth,
+                                        unscaledHeight);
+                _btn.move(unscaledWidth - 5 - _btn.measuredWidth, 0);
+                _btn.setActualSize(_btn.measuredWidth, unscaledHeight);
+            }
+            else
+            {
+                super.updateDisplayList(unscaledWidth, unscaledHeight);
+            }
         }
 
         //file相关
@@ -104,10 +120,19 @@ package com.yspay.YsControls
 
         protected function ListChange(event:CollectionEvent):void
         {
+            trace('MultipleTextInput::ListChange: ', event.kind, event.location);
             if (event.kind == CollectionEventKind.ADD)
+            {
+                if (_parent.dict.data.length == _listDp.length)
+                    return;
                 _parent.dict.data.Insert(event.location, '');
+            }
             else if (event.kind == CollectionEventKind.REMOVE)
+            {
+                if (_parent.dict.data.length == _listDp.length)
+                    return;
                 _parent.dict.data.RemoveItems(event.location, 1);
+            }
             else if (event.kind == CollectionEventKind.UPDATE)
                 _parent.dict.data[event.location] =
                     event.target[event.location];
@@ -170,6 +195,9 @@ package com.yspay.YsControls
                     _listDp[_backList.editedItemPosition.rowIndex] = (_backList.itemEditorInstance as TextInput).text;
                 }
                 removePopList();
+
+                if (_listDp.length == 0)
+                    _listDp.addItem('');
                 text = _listDp[0];
                 return;
             }
@@ -283,7 +311,10 @@ package com.yspay.YsControls
                 {
                     _listDp[_backList.editedItemPosition.rowIndex] = (_backList.itemEditorInstance as TextInput).text;
                 }
-                text = _listDp[0];
+
+                if (_listDp.length > 0)
+                    text = _listDp[0];
+
                 setFocus();
                 setSelection(text.length, text.length);
             }
@@ -323,7 +354,9 @@ package com.yspay.YsControls
             _showList = false;
             stage.removeEventListener(MouseEvent.MOUSE_DOWN, stageMouseDownHandler);
             _backList.dataProvider = null;
-            _btn.setFocus();
+
+            if (_btn != null)
+                _btn.setFocus();
         }
 
         //util

@@ -32,7 +32,7 @@ package com.yspay.YsData
 
         protected function FunctionCalled(event:FunctionCallEvent):void
         {
-            trace(event.type + ' ' + event.function_name + ' ' + event.args);
+            trace('PData::FunctionCalled:: ' + event.type + ' ' + event.function_name + ' ' + event.args);
 
             var dict_proxy_item:Object;
             var source_obj:Object = event.source.object;
@@ -42,6 +42,9 @@ package com.yspay.YsData
                 var dict_key:String = GetKeyByObject(source_obj);
                 if (dict_key == '')
                     return;
+
+                trace('PData::FunctionCalled::dict_key: ' + dict_key);
+                trace('PData::FunctionCalled:: source_obj', source_obj);
                 for each (dict_proxy_item in dict_proxy[dict_key])
                 {
                     dict_proxy_item.NotifyFunctionCall(this,
@@ -54,7 +57,7 @@ package com.yspay.YsData
 
         protected function UpdateChange(event:PropertyChangeEvent):void
         {
-            trace(event.type + ' ' + event.property + ' ' + event.newValue);
+            trace('PData::UpdateChange:: ' + event.type + ' ' + event.property + ' ' + event.newValue);
 
             var dict_proxy_item:Object;
             var source_obj:Object = event.source.object;
@@ -65,6 +68,8 @@ package com.yspay.YsData
                 var dict_key:String = GetKeyByObject(source_obj)
                 if (dict_key == '')
                     return;
+
+                trace('PData::UpdateChange:: source_obj', source_obj);
                 for each (dict_proxy_item in dict_proxy[dict_key])
                 {
                     dict_proxy_item.Notify(this, dict_key, event.property);

@@ -8,11 +8,11 @@ package com.yspay.YsControls
     import com.yspay.util.UtilFunc;
     import com.yspay.util.YsClassFactory;
     import com.yspay.util.YsObjectProxy;
-    
+
     import flash.display.DisplayObjectContainer;
     import flash.events.Event;
     import flash.utils.flash_proxy;
-    
+
     import mx.collections.ArrayCollection;
     import mx.containers.HBox;
     import mx.controls.Alert;
@@ -33,6 +33,7 @@ package com.yspay.YsControls
         protected var dict_object:Object;
 
         public var editable:Boolean;
+
         public var LABEL:String = '';
         public var openfile:Boolean;
 
@@ -102,8 +103,6 @@ package com.yspay.YsControls
         {
             if (_xml.@save == 'false')
                 return null;
-            // TODO: 实现生成保存格式的xml的方�
-
             return null;
         }
 
@@ -184,7 +183,7 @@ package com.yspay.YsControls
             label_arr = dict_object.labelFields;
 
             var list_key:String = dict.name + '_list_data';
-			var label_key:String = dict.name + '_list_label';
+            var label_key:String = dict.name + '_list_label';
             var list_datas:ArrayCollection = item[list_key];
             if (list_datas == null)
                 return item[label_key];
@@ -202,8 +201,8 @@ package com.yspay.YsControls
                 }
             }
 
-			rtn = rtn.substring(0, rtn.length - 1);
-			item[label_key] = rtn;
+            rtn = rtn.substring(0, rtn.length - 1);
+            item[label_key] = rtn;
             // 返回时删除字符串末尾的空格
             return rtn;
         }
@@ -414,14 +413,18 @@ package com.yspay.YsControls
 
         protected function DictFunctionCalled(event:FunctionCallEvent):void
         {
+            trace('Dict::FunctionCalled: ', event.args);
             if (event.function_name == 'Insert')
             {
-                if (dict.data.length > _text.listDp)
-                    _text.listDp.addItemAt(event.args[0], event.args[1]);
+                if (dict.data.length == _text.listDp.length)
+                    return;
+                _text.listDp.addItemAt(event.args[0], event.args[1]);
             }
             else if (event.function_name == 'RemoveItems')
             {
-                if (dict.data.length < _text.listDp)
+                if (dict.data.length == _text.listDp.length)
+                    return;
+                else
                 {
                     var cnt:int = event.args[1];
                     while (cnt-- > 0)
@@ -444,7 +447,7 @@ package com.yspay.YsControls
 
         protected function DictChange(event:PropertyChangeEvent):void
         {
-            trace("DictChange", event.property)
+            trace("DictChange: ", dict.name, ' ', event.property)
             if (event.property == 'text')
             {
                 trace('\tdict.text = ', event.newValue);
@@ -520,7 +523,7 @@ package com.yspay.YsControls
 
         private function CreateTextInput(dxml:XML):MultipleTextInput
         {
-            var ti:MultipleTextInput = new MultipleTextInput(this);
+            var ti:MultipleTextInput = new MultipleTextInput(this, dxml.@openfile);
             ti.text = '';
             ti.maxChars = int(dxml.services.@LEN);
             var mask:String = '';

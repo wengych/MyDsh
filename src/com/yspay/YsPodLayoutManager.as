@@ -11,9 +11,11 @@ package com.yspay
     import com.yspay.util.UtilFunc;
 
     import flash.display.DisplayObject;
+    import flash.events.ErrorEvent;
     import flash.events.MouseEvent;
 
     import mx.controls.Alert;
+    import mx.core.Application;
     import mx.events.FlexEvent;
 
     public class YsPodLayoutManager extends PodLayoutManager
@@ -54,7 +56,7 @@ package com.yspay
         {
             super();
             _pool = pool;
-            _cache = new EventCache(_pool);
+            _cache = new EventCache(this);
             this.addEventListener(EventNewPod.EVENT_NAME, OnNewPod);
             this.addEventListener(EventCacheComplete.EVENT_NAME, OnEventCacheComplete);
         }
@@ -93,29 +95,65 @@ package com.yspay
 //                      </windows>
 //                </pod>
                 //DoNewYsPod(podxml);
-                _cache.DoCache(pod_xml, this);
+                _cache = new EventCache(this);
+                _cache.DoCache(pod_xml);
             }
             else
             {
                 var tran_name:String = event.windows_type;
-                pod_xml = new XML('<pod></pod>');
-                if (_pool.info.TRAN[tran_name] == null)
-                {
-                    Alert.show("无此交易!!");
-                    return;
-                }
-                pod_xml.appendChild("tran://" + tran_name);
-
-                //pod_xml:
-                // <pod>
-                //      tran://12
-                //</pod>
-                _cache.DoCache(pod_xml.toXMLString(), this);
+                CheckPurview(tran_name);
             }
+        }
+
+        protected function CheckPurview(tran_name:String):void
+        {
+            var call_back:Function = function(new_bus:UserBus, error_event:ErrorEvent=null):void
+                {
+                    /*
+                       if (new_bus == null ||
+                       error_event != null)
+                       {
+                       Alert.show('权限检查失败');
+                       return;
+                       }
+
+                       var user_rtn:int = new_bus.__DICT_USER_RTN.first;
+                       if (user_rtn != 0)
+                       {
+                       Alert.show('权限检查失败');
+                       return;
+                       }
+                     */
+                    _cache = new EventCache(pod_mng);
+                    _cache.DoCache(pod_xml.toXMLString());
+                };
+
+            var pool:Pool = Application.application._pool;
+            var pod_xml:XML = new XML('<pod></pod>');
+            var pod_mng:YsPodLayoutManager = this;
+            if (_pool.info.TRAN[tran_name] == null)
+            {
+                Alert.show("无此交易!!");
+                return;
+            }
+            pod_xml.appendChild("tran://" + tran_name);
+
+            var service_call:ServiceCall = new ServiceCall;
+            var user_bus:UserBus = new UserBus;
+            var scall_name:String = 'YSUserPurViewCheck';
+
+            user_bus.Add(ServiceCall.SCALL_NAME, scall_name);
+            user_bus.Add('USERID', pool.D_data.data.USERID[0]);
+            user_bus.Add('SERVICE', tran_name);
+
+            var ip:String = Application.application.GetServiceIp(scall_name);
+            var port:String = Application.application.GetServicePort(scall_name);
+            service_call.Send(user_bus, ip, port, call_back);
         }
 
         private function OnEventCacheComplete(event:EventCacheComplete):void
         {
+            _cache = new EventCache(this);
             DoNewYsPod(event.cache_xml);
         }
 

@@ -16,9 +16,8 @@ package com.yspay.YsControls
     public class YsService extends YsAction
     {
         protected var _pool:Pool;
-        //protected var _to:TargetList = new TargetList;
-        //protected var _from:TargetList = new TargetList;
         public var main_bus:UserBus;
+        protected var scall:ServiceCall;
 
         public function YsService(parent:DisplayObjectContainer)
         {
@@ -38,13 +37,34 @@ package com.yspay.YsControls
         // 未找到对应key则返回false
         public function AddBusDataFromPData(bus:UserBus, key:String, type:String):Boolean
         {
+            var from_targets:Array = _from.GetAllTarget();
+            var from_target_names:Array = _from.GetAllTargetName();
+            var data_item:Object;
 
-            for each (var from_item:PData in _from.GetAllTarget())
+            for (var idx:int = 0; idx < from_targets.length; ++idx)
             {
-                if (from_item.data.hasOwnProperty(key))
+                var from_item:PData = from_targets[idx];
+                var from_name:String = from_target_names[idx];
+                if (from_item.data[key] == undefined)
+                    continue;
+
+                var dict_idx:int = GetDataIndex(from_item, key);
+                if (dict_idx >= 0)
                 {
-                	trace('YsService.AddBusDataFromPData:: ', key);
-                    for each (var data_item:* in from_item.data[key])
+                    trace('YsService.AddBusDataFromPData:: ', key);
+                    data_item = from_item.data[key];
+                    if (data_item.length < dict_idx)
+                        continue;
+                    if (type == 'STRING')
+                        bus.Add(key, from_item.data[key][dict_idx]);
+                    else if (type == 'INT')
+                        bus.Add(key, int(from_item.data[key][dict_idx]));
+
+                }
+                else
+                {
+                    trace('YsService.AddBusDataFromPData:: ', key);
+                    for each (data_item in from_item.data[key])
                     {
                         if (type == 'STRING')
                             bus.Add(key, data_item.toString());
@@ -58,9 +78,35 @@ package com.yspay.YsControls
             return false;
         }
 
-        protected function SetBusInArgs(dict_list:XMLList,
-                                        names:Array,
-                                        types:Array):void
+        /**
+         *
+         * @return 返回数据下标，返回-1表示取全部
+         */
+        protected function GetDataIndex(from_pdata:PData, dict_name:String):int
+        {
+            // 处理datagrid时,判断当前service的父事件或按钮是否为datagrid中的按钮或事件
+            // 若为datagrid中的事件或按钮,则只取当前选中行的数据
+            var dg:YsDataGrid =
+                UtilFunc.YsGetParentByType(this._parent,
+                                           YsDataGrid) as YsDataGrid;
+            // 非DataGrid子项,取全部
+            if (dg == null)
+                return -1;
+
+            // DataGrid的ToData中无此字典项,取全部
+            if (dg.toDataObject[dict_name] == undefined)
+                return -1;
+
+            var arr:Array = dg.toDataObject[dict_name].GetAllTarget();
+            if (arr.indexOf(from_pdata) < 0)
+                return -1;
+
+            return dg.selectedIndex;
+
+            return -1;
+        }
+
+        protected function SetBusInArgs(dict_list:XMLList, names:Array, types:Array):void
         {
             var dict_str:String;
             var dict_name:String;
@@ -86,9 +132,11 @@ package com.yspay.YsControls
             }
         }
 
+
         // 调用ServiceCall
         public override function Do(stack_event:StackEvent, source_event:Event):void
         {
+            scall = new ServiceCall;
             var pod:YsPod = UtilFunc.GetParentByType(this._parent, YsPod) as YsPod;
             if (pod != null)
                 pod.enabled = false;
@@ -104,21 +152,9 @@ package com.yspay.YsControls
             var scall_name:String = _xml.SendPKG[0].HEAD[0].@active;
             var dict_list:XMLList = _xml.SendPKG.BODY.DICT;
 
-            /*
-               for each (var dict_xml:XML in dict_list)
-               {
-               dict_str = dict_xml.toString();
+            SetBusInArgs(dict_list, bus_in_name_args, bus_in_type_args);
 
-               if (dict_str.substr(0, dict_search.length).toLowerCase() == dict_search)
-               {
-               bus_in_name_args.push(dict_str.substr(dict_search.length));
-               }
-             }*/
-            SetBusInArgs(dict_list,
-                         bus_in_name_args,
-                         bus_in_type_args);
 
-            var scall:ServiceCall = new ServiceCall;
             var bus:UserBus = new UserBus;
             bus.Add(ServiceCall.SCALL_NAME, scall_name);
 
@@ -136,7 +172,6 @@ package com.yspay.YsControls
             //var_name=dict名字
             // 向bus中添加所有输入项
             for (var idx:int = 0; idx < bus_in_name_args.length; ++idx)
-                //for each (var var_name:String in bus_in_name_args) //从本地P_data中取得所需数据
             {
                 var var_name:String = bus_in_name_args[idx];
                 var var_type:String = bus_in_type_args[idx];
@@ -157,20 +192,17 @@ package com.yspay.YsControls
             var ip:String = Application.application.GetServiceIp(scall_name);
             var port:String = Application.application.GetServicePort(scall_name);
 
-            var func:Function =
-                function(new_bus:UserBus,
-                         error_event:ErrorEvent=null):void
+            var func:Function = function(new_bus:UserBus, error_event:ErrorEvent=null):void
                 {
                     ServiceCallBack(new_bus, stack_event, error_event);
                 }
-            //Alert.show(bus.toString());
             trace(bus.toString());
             scall.Send(bus, ip, port, func);
         }
 
-        protected var To_Map:Object = {'pod': YsPod, 'windows': YsTitleWindow,
-                'dict': YsDict, 'event': YsXmlEvent, 'hbox': YsHBox, 'vbox': YsVBox,
-                'dg_list': YsDgListItem};
+        protected var To_Map:Object = {'pod': YsPod, 'windows': YsTitleWindow, 'dict': YsDict,
+                'event': YsXmlEvent, 'hbox': YsHBox, 'vbox': YsVBox, 'dg_list': YsDgListItem,
+                'datagrid': YsDataGrid};
 
         protected function GetDData(obj:Object):Object
         {
@@ -205,15 +237,12 @@ package com.yspay.YsControls
             }
         }
 
-        protected function ServiceCallBack(bus:UserBus,
-                                           event:StackEvent,
-                                           error_event:ErrorEvent):void
+        protected function ServiceCallBack(bus:UserBus, event:StackEvent, error_event:ErrorEvent):void
         {
             var pod:YsPod = UtilFunc.YsGetParentByType(this._parent, YsPod) as YsPod;
             if (bus == null)
             {
-                Alert.show('服务调用出错,bus为空' + '\n' +
-                           '            服务名:' + action_name);
+                Alert.show('服务调用出错,bus为空' + '\n' + '            服务名:' + action_name);
                 this._parent.dispatchEvent(event);
                 pod.enabled = true;
                 return;
@@ -243,7 +272,6 @@ package com.yspay.YsControls
                 pod.enabled = true;
                 return;
             }
-
 
             // action_info
             //        <To>pod</To>

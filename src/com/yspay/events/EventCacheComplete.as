@@ -10,7 +10,8 @@ package com.yspay.events
         public var cache_xml:XML;
         public var cache_obj:EventCache;
 
-        public function EventCacheComplete(type:String='Event_CacheComplete', bubbles:Boolean=false, cancelable:Boolean=false)
+        public function EventCacheComplete(type:String='Event_CacheComplete', bubbles:Boolean=false,
+                                           cancelable:Boolean=false)
         {
             super(type, bubbles, cancelable);
             TraceEventName(EVENT_NAME);

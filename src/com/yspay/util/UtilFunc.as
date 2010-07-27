@@ -55,7 +55,10 @@ package com.yspay.util
                     break;
                 }
 
-                ys_obj = ys_obj._parent;
+                if (ys_obj.hasOwnProperty('_parent'))
+                    ys_obj = ys_obj._parent;
+                else
+                    ys_obj = parent = null;
             }
 
             return parent;

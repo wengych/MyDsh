@@ -22,7 +22,6 @@ package com.yspay.YsControls
         public function YsDgListItem(parent:DisplayObjectContainer)
         {
             trace('YsDgListItem');
-            //trace((dict as YsDict).dict.text);
             super(parent);
         }
 
@@ -48,7 +47,7 @@ package com.yspay.YsControls
 
             InitLabel(dxml);
 
-            prompt = "请选择...";
+            // prompt = "请选择...";
             if (dxml.display.TEXTINPUT.list.listarg != undefined)
                 //                            <list labelField="GENDER">
                 //                                <listarg>
@@ -131,6 +130,24 @@ package com.yspay.YsControls
             }
         }
 
+        public override function set data(value:Object):void
+        {
+            var ys_dict:YsDict = _parent as YsDict;
+            var key:String = ys_dict.dict.name;
+            if (value == null ||
+                value[key] == undefined)
+                return;
+
+            for (var idx:int = 0; idx < dataProvider.length; ++idx)
+            {
+                if (dataProvider[idx][key] == value[key])
+                {
+                    this.selectedIndex = idx;
+                    break;
+                }
+            }
+        }
+
         public override function get text():String
         {
             var sel_item:Object = this.selectedItem;
@@ -155,7 +172,6 @@ package com.yspay.YsControls
                 return;
             ys_dict.dict.source = this;
 
-            //ys_dict.dict.data[dg_idx] = sel_item[ys_dict.dict.name];
             ys_dict.dict.text = sel_item[ys_dict.dict.name];
         }
 

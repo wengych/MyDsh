@@ -1,3 +1,6 @@
 bin-debug/*
 src/generated/*
 out/*
+.project
+.flexProperties
+.actionScriptProperties

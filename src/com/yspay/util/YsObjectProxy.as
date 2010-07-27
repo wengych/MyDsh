@@ -22,7 +22,6 @@ package com.yspay.util
     use namespace object_proxy;
 
     [Bindable("propertyChange")]
-    [RemoteClass(alias="flex.messaging.io.ObjectProxy")]
 
     /**
      *  This class provides the ability to track changes to an item

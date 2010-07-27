@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Application xmlns:mx="http://www.adobe.com/2006/mxml"
+                xmlns:ys="com.yspay"
                 verticalAlign="middle"
                 horizontalAlign="center"
                 minWidth="600"
@@ -9,8 +10,7 @@
                 verticalGap="1"
                 backgroundSize="100%"
                 backgroundColor="#ffffff"
-                xmlns:flexlib="http://code.google.com/p/flexlib/"
-                initialize="loadStyles()">
+                xmlns:flexlib="http://code.google.com/p/flexlib/">
     <mx:Style source="/assets/styles_1024_768.css"/>
     <mx:Script>
         <![CDATA[
@@ -52,10 +52,19 @@
             import nl.demonsters.debugger.MonsterDebugger;
 
             // Array of PodLayoutManagers
+            protected var podManager:YsPodLayoutManager;
             private var podLayoutManagers:Array = new Array();
             public var _pool:Pool = new Pool;
             public var M_data:MData = new MData; //xingj
-            //public var monsterDebugger:MonsterDebugger = new MonsterDebugger(this);
+
+            protected var map_server_ip:String;
+            protected var map_server_port:String;
+            protected var service_server_ip:String;
+            protected var service_server_port:String;
+
+            protected var info_init_arr:Array = ['DICT', 'WINDOWS', 'BUTTON', 'SERVICES',
+                                                 'TRAN', 'ACTION', 'HBOX', 'EVENT',
+                                                 'DATAGRID'];
 
             protected var pod_xml:XML = new XML('<?xml version="1.0" encoding="utf-8"?> \
 <views>\
@@ -65,42 +74,18 @@
     </view>\
 </views>');
 
-            private function loadStyles():void
-            {
-//                var styleURL:String = "assets/styles_1024_768.swf";
-//                var arr:Array = UtilFunc.getRatio();
-//                if (arr[0] == 1280 && arr[1] == 1024)
-//                {
-//                    styleURL = "assets/styles_1280_1024.swf";
-//                }
-//                else if (arr[0] == 1024 && arr[1] == 768)
-//                {
-//                    styleURL = "assets/styles_1024_768.swf";
-//                }
-//                else if (arr[0] == 1440 && arr[1] == 900)
-//                {
-//                    styleURL = "assets/styles_1440_900.swf";
-//                }
-//                else if (arr[0] == 1600 && arr[1] == 1200)
-//                {
-//                    styleURL = "assets/styles_1600_1200.swf";
-//                }
-//                if (styleURL != null)
-//                    StyleManager.loadStyleDeclarations(styleURL);
-
-            }
-
             private function onEnterState():void
             {
-                // Load pods.xml, which contains the pod layout.
-                /*var httpService:HTTPService = new HTTPService();
-                   httpService.url = "data/pods.xml";
-                   httpService.resultFormat = "e4x";
-                   httpService.addEventListener(FaultEvent.FAULT, onFaultHttpService);
-                   httpService.addEventListener(ResultEvent.RESULT, onResultHttpService);
-                 httpService.send();*/
                 initPoolAndM_data();
                 onResultHttpService();
+            }
+
+            protected function UserInfoChange(event:PropertyChangeEvent):void
+            {
+                if (event.property == 'DEPTNAME')
+                    this.DEPTNAME.text = event.source.DEPTNAME;
+                else if (event.property == 'USERID')
+                    this.USERID.text = event.source.USERID;
             }
 
             protected function ServiceRtnChange(event:PropertyChangeEvent):void
@@ -129,12 +114,17 @@
 
             public function initPoolAndM_data():void
             {
-                var ip:String = ipChoose.selectedItem.ip;
-                var port:String = ipChoose.selectedItem.port;
+                map_server_ip = ipChoose.selectedItem.ip;
+                map_server_port = ipChoose.selectedItem.port;
+
+                service_server_ip = s_ipChoose.selectedItem.ip;
+                service_server_port = s_ipChoose.selectedItem.port;
+
                 var info_table_name:String = 'info';
                 var info_select_name:String = 'YSDBSTB_DTSINFOSelect';
                 var info_select_arg:String = 'YSDICT_DB_TB_DTSINFO';
                 var dts_table_name:String = 'dts';
+                var dts_cache_table_name:String = 'dts_cache';
                 var dts_select_name:String = 'YSDBSDTSObjectSelect';
                 var dts_select_arg:String = '__DICT_XML';
                 var dts_insert_name:String = 'YSDBSDTSObjectConfigInsert';
@@ -145,41 +135,67 @@
                 _pool.SERVICE_RTN.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE,
                                                    ServiceRtnChange);
 
+                // 用户信息
+                _pool.USER_INFO = new ObjectProxy;
+                _pool.USER_INFO.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE,
+                                                 UserInfoChange);
+
+                _pool.USER_INFO.DEPTNAME = _pool.D_data.data.DEPTNAME[0];
+                _pool.USER_INFO.USERID = _pool.D_data.data.USERID[0];
+
                 _pool.Add(info_table_name, DBTable,
                           info_select_name, info_select_arg,
                           '', '',
-                          ip, port);
+                          map_server_ip, map_server_port);
                 _pool.Add(dts_table_name, DBTable,
                           dts_select_name, dts_select_arg,
                           dts_insert_name, dts_insert_arg,
-                          ip, port);
+                          map_server_ip, map_server_port);
+                _pool['dts_cache'] = new Object;
                 var info:DBTable = _pool.info as DBTable;
-                var arr:Array = ['DICT', 'WINDOWS', 'BUTTON', 'SERVICES', 'TRAN',
-                                 'ACTION', 'HBOX', 'EVENT', 'DATAGRID'];
+
                 this.addEventListener(info.select_event_name, InfoQueryComplete);
+
+                this.enabled = false;
+                this.action.editable = false;
+                // this.action.enabled = false;
+                this.action.setStyle('color', 'red');
+                this.action.text = "加载中";
+
                 CursorManager.setBusyCursor();
 
-                var ver_sel_item:Object = versionChoose.selectedItem;
-
-                for each (var str:String in arr)
-                {
-                    var info_query:String = str;
-                    var info_query_cond:String = "type='" + str + "' and appname='MapServer'";
-                    if (ver_sel_item.hasOwnProperty('isused'))
-                        info_query_cond += " and ISUSED='" + ver_sel_item.isused + "'";
-                    info.AddQuery(info_query, QueryWithIndex, info_query_cond, this);
-                    info.DoQuery(info_query, false, 'NAME', 'VER');
-                    M_data.POOL.INFO[str] = new ArrayCollection;
-                }
+                InitInfoItem();
                 _pool.Add('MAIN_BUS', UserBus);
+            }
 
+            protected function InitInfoItem():void
+            {
+                var info:DBTable = _pool.info as DBTable;
+                var ver_sel_item:Object = versionChoose.selectedItem;
+                if (info_init_arr.length == 0)
+                {
+                    this.enabled = true;
+                    this.action.editable = true;
+                    this.action.setStyle('color', 'black');
+                    this.action.text = "";
+
+                    CursorManager.removeBusyCursor();
+                    return;
+                }
+
+                var info_query:String = info_init_arr.pop();
+                var info_query_cond:String = "type='" + info_query + "' and appname='MapServer'";
+                if (ver_sel_item.hasOwnProperty('isused'))
+                    info_query_cond += " and ISUSED='" + ver_sel_item.isused + "'";
+                info.AddQuery(info_query, QueryWithIndex, info_query_cond, this);
+                info.DoQuery(info_query, false, 'NAME', 'VER');
+                M_data.POOL.INFO[info_query] = new ArrayCollection;
             }
 
             //event.query_name "dict window tran event hbox ........"
             //M_data.POOL.INFO.DICT is ArrayCollection 里面存储每个dict
             private function InfoQueryComplete(event:DBTableQueryEvent):void
             {
-                CursorManager.removeBusyCursor();
                 trace('main0.mxml', event.query_name);
                 if (M_data.POOL.INFO[event.query_name] != null)
                     M_data.POOL.INFO[event.query_name].removeAll();
@@ -205,7 +221,8 @@
                     M_data.POOL.INFO[event.query_name].addItem(o);
 
                 }
-                //xingj ..
+
+                InitInfoItem();
             }
 
             private function onFaultHttpService(e:FaultEvent):void
@@ -241,15 +258,10 @@
                     var manager:YsPodLayoutManager = new YsPodLayoutManager(this._pool);
                     manager.container = mainCanvas;
                     manager.id = viewXMLList[i].@id;
-                    podLayoutManagers.push(manager);
+                    // podLayoutManagers.push(manager);
+                    this.podManager = manager;
                     break;
                 }
-                //               tabBar.selectedIndex = 0;
-            }
-
-            private function tabCloseHandler(event:SuperTabEvent):void
-            {
-                podLayoutManagers.splice(event.tabIndex, 1);
             }
         ]]>
     </mx:Script>
@@ -265,7 +277,7 @@
                     <mx:Label text="交易码"/>
                     <mx:TextInput id="action"
                                   width="300"
-                                  enter="podLayoutManagers[0].dispatchEvent(new EventNewPod(action.text))"
+                                  enter="podManager.dispatchEvent(new EventNewPod(action.text))"
                                   toolTip="点击Enter发送"/>
                     <mx:Button label="发送"
                                click="podLayoutManagers[0].dispatchEvent(new EventNewPod(action.text))"/>
@@ -274,26 +286,6 @@
                                  close="comboboxClickHandler(event)"/>
                 </mx:ApplicationControlBar>
             </mx:AddChild>
-            <!--添加新的组件-->
-            <!--
-                 <mx:AddChild position="lastChild">
-                 <flexlib:SuperTabBar id="tabBar"
-                 dragEnabled="false"
-                 tabHeight="32"
-                 dataProvider="viewStack"
-                 tabClose="tabCloseHandler(event)">
-                 </flexlib:SuperTabBar>
-                 </mx:AddChild>
-
-                 <mx:AddChild>
-                 <mx:ViewStack id="viewStack"
-                 paddingTop="3"
-                 width="100%"
-                 paddingLeft="0"
-                 paddingRight="0"
-                 height="100%"/>
-                 </mx:AddChild>
-            -->
             <mx:AddChild>
                 <mx:Canvas width="100%"
                            height="100%"
@@ -310,6 +302,14 @@
                                fontFamily="Arial"
                                fontSize="14"
                                paddingBottom="1">
+                    <mx:Label text="机构"/>
+                    <mx:Label id="DEPTNAME"
+                              color="blue"
+                              width="200"/>
+                    <mx:Label text="用户名"/>
+                    <mx:Label id="USERID"
+                              color="blue"
+                              width="200"/>
                     <mx:Label text="服务返回码"/>
                     <mx:Label color="blue"
                               id="SCALL_RTN"
@@ -325,9 +325,58 @@
                 </mx:ControlBar>
             </mx:AddChild>
         </mx:State>
+        <mx:State name="select_dept">
+            <mx:AddChild relativeTo="{panel1}"
+                         position="lastChild">
+                <mx:ComboBox x="96.5"
+                             y="88"
+                             width="182"
+                             id="deptSel"
+                             selectedIndex="5">
+                </mx:ComboBox>
+            </mx:AddChild>
+            <mx:RemoveChild target="{btnLogin}"/>
+            <mx:RemoveChild target="{versionChoose}"/>
+            <mx:RemoveChild target="{rember}"/>
+            <mx:RemoveChild target="{btnReset}"/>
+            <mx:RemoveChild target="{s_ipChoose}"/>
+            <mx:RemoveChild target="{label1}"/>
+            <mx:RemoveChild target="{label2}"/>
+            <mx:RemoveChild target="{ipChoose}"/>
+            <mx:RemoveChild target="{label3}"/>
+            <mx:AddChild relativeTo="{panel1}"
+                         position="lastChild">
+                <mx:Button x="211"
+                           y="137"
+                           label="确定"
+                           id="btnSelDept"
+                           click="OnSelectDept()"/>
+            </mx:AddChild>
+            <mx:AddChild relativeTo="{panel1}"
+                         position="lastChild">
+                <mx:Label x="28.5"
+                          y="91"
+                          text="选择部门"/>
+            </mx:AddChild>
+            <mx:RemoveChild target="{txtPassword}"/>
+            <mx:RemoveChild target="{label4}"/>
+            <mx:RemoveChild target="{lblCheckCode}"/>
+            <mx:RemoveChild target="{linkbtnReGenerate}"/>
+            <mx:RemoveChild target="{enable_cache}"/>
+            <mx:SetProperty target="{txtUsername}"
+                            name="enabled"
+                            value="true"/>
+            <mx:SetProperty target="{txtUsername}"
+                            name="editable"
+                            value="false"/>
+            <mx:SetProperty target="{panel1}"
+                            name="height"
+                            value="223"/>
+        </mx:State>
     </mx:states>
     <mx:Script>
         <![CDATA[
+            import com.yspay.util.AdvanceArray;
             //longin handler 
             [Bindable]
             private var comboboxDP:ArrayCollection =
@@ -417,9 +466,25 @@
                     return;
                 }
                 action.text = (event.currentTarget as ComboBox).selectedItem.name;
-                // addPod(podLayoutManagers[tabBar.selectedIndex], new Pod);
-                var podMgn:YsPodLayoutManager = podLayoutManagers[0] as YsPodLayoutManager;
-                podMgn.dispatchEvent(new EventNewPod(action.text));
+                podManager.dispatchEvent(new EventNewPod(action.text));
+            }
+
+            protected function OnSelectDept():void
+            {
+                var p_data:PData = _pool.D_data;
+                var idx:int = deptSel.selectedIndex;
+                var dept_name:String = p_data.data.DEPTNAME[idx];
+                var dept_dts:String = p_data.data.DEPT_DTS[idx];
+
+                p_data.data.DEPTNAME.RemoveItems(0);
+                p_data.data.DEPTNAME.AddEmptyItems(1);
+                p_data.data.DEPT_DTS.RemoveItems(0);
+                p_data.data.DEPT_DTS.AddEmptyItems(1);
+
+                p_data.data.DEPTNAME[0] = dept_name;
+                p_data.data.DEPT_DTS[0] = dept_dts;
+
+                this.currentState = 'index';
             }
 
             protected function OnLoginCallBack(bus:UserBus, error_event:ErrorEvent=null):void
@@ -458,7 +523,13 @@
                     _pool.Add('D_data', PData);
                     var p_data:PData = _pool.D_data as PData;
                     p_data.Update(bus);
-                    currentState = "index";
+
+                    currentState = "select_dept";
+                    var dept_arr_col:ArrayCollection = new ArrayCollection;
+                    for each (var item:Object in p_data.data.DEPTNAME)
+                        dept_arr_col.addItem(item);
+
+                    this.deptSel.dataProvider = dept_arr_col;
                 }
             }
 
@@ -470,15 +541,18 @@
                     return;
                 }
 
-                var ip:String = ipChoose.selectedItem.ip;
-                var port:String = ipChoose.selectedItem.port;
+                var ip:String = s_ipChoose.selectedItem.ip;
+                var port:String = s_ipChoose.selectedItem.port;
 
                 var service_call:ServiceCall = new ServiceCall;
                 var send_bus:UserBus = new UserBus;
                 send_bus.Add('USERID', txtUsername.text);
-                // send_bus.Add('PASSWORD_EN', EncryptUtil.encryptHandler(txtPassword.text));
+                // var encrypt_passwd:String = EncryptUtil.encryptHandler(txtPassword.text);
+                // send_bus.Add('PASSWORD_EN', encrypt_passwd);
+                // trace(encrypt_passwd);
                 send_bus.Add('PASSWORD_EN', txtPassword.text);
                 send_bus.Add(ServiceCall.SCALL_NAME, 'YSUserLogin');
+                trace(send_bus.toString());
 
                 service_call.Send(send_bus, ip, port, OnLoginCallBack);
             }
@@ -517,7 +591,7 @@
 
                 if (!ip_table.hasOwnProperty(service_name))
                 {
-                    return this.s_ipChoose.selectedItem.ip;
+                    return service_server_ip;
                 }
                 else
                 {
@@ -531,7 +605,7 @@
 
                 if (!port_table.hasOwnProperty(service_name))
                 {
-                    return this.s_ipChoose.selectedItem.port;
+                    return service_server_port;
                 }
                 else
                 {
@@ -587,7 +661,8 @@
         <!-- "密码"标签 -->
         <mx:Label x="42.5"
                   y="81"
-                  text="密码"/>
+                  text="密码"
+                  id="label4"/>
         <!-- "用户名"输入框 -->
         <mx:TextInput x="94.5"
                       y="33"
@@ -615,14 +690,14 @@
                    id="btnReset"
                    click="resetHandle()"/>
         <!-- "校验码"标签 -->
-        <mx:Button x="95.5"
+        <mx:Button x="45"
                    y="122"
-                   label="交换User?"
+                   label="交换User"
                    id="lblCheckCode"
                    click="changeUser()"/>
-        <mx:Button x="179.5"
+        <mx:Button x="155.5"
                    y="123"
-                   label="交换IP?"
+                   label="交换IP"
                    id="linkbtnReGenerate"
                    click="changeIP();"
                    fontFamily="Georgia"
@@ -647,27 +722,30 @@
                      id="ipChoose"
                      dataProvider="{ipDP}"
                      labelFunction="SetIpChooseLabel"
-                     selectedIndex="4">
+                     selectedIndex="5">
         </mx:ComboBox>
         <mx:Label x="39.5"
                   y="157"
                   text="IP地址"
-                  width="43.5"/>
+                  width="43.5"
+                  id="label3"/>
         <mx:ComboBox x="96.5"
                      y="186"
                      width="182"
                      id="s_ipChoose"
                      dataProvider="{ipDP}"
                      labelFunction="SetIpChooseLabel"
-                     selectedIndex="4">
+                     selectedIndex="5">
         </mx:ComboBox>
         <mx:Label x="37"
                   y="189"
                   text="scall_ip"
-                  width="43.5"/>
+                  width="43.5"
+                  id="label2"/>
         <mx:Label x="45"
                   y="218"
-                  text="版本"/>
+                  text="版本"
+                  id="label1"/>
         <mx:ComboBox x="96"
                      y="218"
                      width="182.5"
@@ -675,5 +753,12 @@
                      dataProvider="{ver_prvd}"
                      labelField="text">
         </mx:ComboBox>
+        <mx:CheckBox x="232.5"
+                     y="122"
+                     label="启用缓存"
+                     enabled="true"
+                     selected="true"
+                     id="enable_cache"/>
     </mx:Panel>
 </mx:Application>
+
