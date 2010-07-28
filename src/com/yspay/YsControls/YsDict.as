@@ -374,6 +374,10 @@ package com.yspay.YsControls
                         ys_btn.Init(btn_xml);
                     }
                 }
+                
+                if (_xml.attribute('default').length() > 0)
+                	this.text = _xml.attribute('default').toString();
+                trace(this.text);
             }
         }
 
