@@ -34,7 +34,7 @@
 
     <target name="compile" depends="init">
         <!-- Compile main0.mxml as a SWF -->
-        <mxmlc file="${src.loc}/main0.mxml"
+        <mxmlc file="${src.loc}/MyDsh.mxml"
             output="${output.loc}/MyDsh.swf"
             keep-generated-actionscript="true"
             actionscript-file-encoding="utf-8"
