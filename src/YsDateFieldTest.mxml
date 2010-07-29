@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml"
+                layout="absolute"
+                creationComplete="init()">
+    <mx:Script>
+        <![CDATA[
+            import com.yspay.YsControls.YsDateField;
+            import mx.managers.PopUpManager;
+
+            private function init():void
+            {
+
+                var a:YsDateField = new YsDateField;
+                this.addChild(a);
+                a.Init(new XML);
+            }
+        ]]>
+    </mx:Script>
+</mx:Application>
