@@ -6,10 +6,10 @@
     import com.yspay.util.AdvanceArray;
     import com.yspay.util.UtilFunc;
     import com.yspay.util.YsClassFactory;
-    
+
     import flash.display.DisplayObjectContainer;
     import flash.events.Event;
-    
+
     import mx.collections.ArrayCollection;
     import mx.controls.Alert;
     import mx.controls.DataGrid;
@@ -126,17 +126,17 @@
             if (arr.length <= index)
                 return;
             arr[index][dict_name] = p_data.data[dict_name][index];
-            
+
             if (toDataObject[dict_name] != undefined)
             {
-            	for each (var to_data:PData in toDataObject[dict_name].GetAllTarget())
-            	{
-            		if (to_data == p_data)
-            			continue;
-            		to_data.data[dict_name][index] = p_data.data[dict_name][index];
-            	}
+                for each (var to_data:PData in toDataObject[dict_name].GetAllTarget())
+                {
+                    if (to_data == p_data)
+                        continue;
+                    to_data.data[dict_name][index] = p_data.data[dict_name][index];
+                }
             }
-            
+
             arr.refresh();
         }
 
@@ -393,6 +393,8 @@
                             to_data.data[item_key] = new AdvanceArray;
                         to_data.data[item_key].Insert(event.location, item[item_key]);
                     }
+
+                    trace('OnCollectionAdd  ', item[item_key]);
                 }
             }
         }
@@ -415,10 +417,10 @@
                 }
             }
         }
-        
+
         protected function OnCollectionRefresh(event:CollectionEvent):void
         {
-        	trace('YsDataGrid::OnCollectionRefresh');
+            trace('YsDataGrid::OnCollectionRefresh');
         }
 
         protected function OnCollectionRemove(event:CollectionEvent):void
@@ -454,7 +456,7 @@
                 }
                 else if (ceEvent.kind == CollectionEventKind.REFRESH)
                 {
-                	OnCollectionRefresh(ceEvent);
+                    OnCollectionRefresh(ceEvent);
                 }
             }
         }
