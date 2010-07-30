@@ -35,15 +35,14 @@ package com.yspay.YsControls
         // DataGrid支持的属性列表
         public static var datagrid_attrs:Object =
             {
-                'editable': {'default': false},
-                'dragEnabled': {'default': false},
-                'allowMultipleSelection': {'default': true},
-                //'itemEditEnd': {'default': false},
-                'add': {'default': false},
-                'ins': {'default': false},
-                'del': {'default': false},
-                'DragOut': {'default': false},
-                'default_line': {'default': false}
+                'editable': {'default': false}
+                , 'dragEnabled': {'default': false}
+                , 'allowMultipleSelection': {'default': true}
+                , 'add': {'default': false}
+                , 'ins': {'default': false}
+                , 'del': {'default': false}
+                , 'DragOut': {'default': false}
+                , 'default_line': {'default': false}
             };
 
         public static var event_attrs:Object =
@@ -57,6 +56,13 @@ package com.yspay.YsControls
                 'editable': {}
             };
 
+		/*
+        public static var dict_attrs:Object =
+            {
+                'date': {'default': false}
+            };
+        */
+
         public static var button_attrs:Object =
             {
             };
@@ -64,8 +70,8 @@ package com.yspay.YsControls
         // Windows支持的属性列表
         public static var windows_attrs:Object =
             {
-                'title': {},
-                'showCloseButton': {'default': false}
+                'title': {}
+                , 'showCloseButton': {'default': false}
             };
     }
 }

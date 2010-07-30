@@ -30,7 +30,8 @@ package com.yspay.event_handlers
                                    , check_not_init
                                    , message_box
                                    , close_pod
-                                   , get_current_datetime];
+                                   , get_current_datetime
+                                   , show_date_chooser];
 
         /*
            clean_text(null, null);

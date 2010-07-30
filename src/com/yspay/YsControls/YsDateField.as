@@ -14,8 +14,9 @@ package com.yspay.YsControls
         public function Init(xml:XML):void
         {
             // parse xml to get format
-            var format:String = "YYYY/MM/DD";
-            var showFormatHandler:Function = function(date:Date):String{
+            var format:String = "YYYYMMDD";
+            var showFormatHandler:Function = function(date:Date):String
+                {
                     var df:DateFormatter = new DateFormatter;
                     df.formatString = format;
                     return df.format(date);
