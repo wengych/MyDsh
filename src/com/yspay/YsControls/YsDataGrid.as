@@ -27,7 +27,7 @@
         public var del:Boolean;
         public var add:Boolean;
         public var ins:Boolean;
-        public var DragOut:Boolean;
+        public var dragOut:Boolean;
         public var default_line:Boolean;
 
         public var _parent:DisplayObjectContainer;
@@ -110,6 +110,7 @@
 
         public function Notify(p_data:PData, dict_name:String, index:int):void
         {
+            trace('YsDataGrid.trace');
             var has_key:Boolean = false;
             for each (var col:DataGridColumn in columns)
             {

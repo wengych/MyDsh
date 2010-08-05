@@ -245,6 +245,8 @@ package com.yspay.YsControls
             dropdown.validateNow();
             dropdown.selectedIndex = -1;
             dropdown.validateNow();
+
+            trace('YsComboBox.Notify');
         }
 
         public function GetXml():XML

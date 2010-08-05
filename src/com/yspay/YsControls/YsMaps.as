@@ -31,7 +31,7 @@ package com.yspay.YsControls
                 'button': YsButton,
                 'event': YsXmlEvent
             };
-
+            
         // DataGrid支持的属性列表
         public static var datagrid_attrs:Object =
             {
@@ -41,7 +41,7 @@ package com.yspay.YsControls
                 , 'add': {'default': false}
                 , 'ins': {'default': false}
                 , 'del': {'default': false}
-                , 'DragOut': {'default': false}
+                , 'dragOut': {'default': false}
                 , 'default_line': {'default': false}
             };
 
@@ -56,12 +56,12 @@ package com.yspay.YsControls
                 'editable': {}
             };
 
-		/*
-        public static var dict_attrs:Object =
-            {
-                'date': {'default': false}
-            };
-        */
+        /*
+           public static var dict_attrs:Object =
+           {
+           'date': {'default': false}
+           };
+         */
 
         public static var button_attrs:Object =
             {
