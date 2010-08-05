@@ -100,7 +100,7 @@ package com.yspay.event_handlers
             data_grid.dataProvider.addItem(new_item);
         }
 
-        if (drag_source_grid.DragOut == true)
+        if (drag_source_grid.dragOut == true)
         {
             for each (var src_item:Object in drag_items)
             {
