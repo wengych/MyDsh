@@ -24,6 +24,16 @@ package com.yspay.YsControls
             trace('YsDgListItem');
             super(parent);
         }
+        
+        override public function toString():String
+        {
+            var sel_item:Object = this.selectedItem;
+            if (sel_item == null)
+                return '';
+
+            return sel_item[this.dict_name];
+            
+        }
 
         override public function Init(dxml:XML):void
         {
@@ -150,11 +160,7 @@ package com.yspay.YsControls
 
         public override function get text():String
         {
-            var sel_item:Object = this.selectedItem;
-            if (sel_item == null)
-                return '';
-
-            return sel_item[this.dict_name];
+            return this.toString();
         }
 
         protected function ComboChange(evt:Event):void

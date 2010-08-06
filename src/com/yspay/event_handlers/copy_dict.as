@@ -36,6 +36,8 @@ package com.yspay.event_handlers
         var from_target_dict:Array = from_targets.GetTargetDictArr();
         var to_target_dict:Array = to_targets.GetTargetDictArr();
 
+        var dict_idx:int = 0;
+
         for (var idx:int = 0; idx < to_target_list.length; ++idx)
         {
             var from_data:PData = from_target_list[idx];
@@ -58,29 +60,35 @@ package com.yspay.event_handlers
                 var dg:YsDataGrid = UtilFunc.YsGetParentByType(ui_comp,
                                                                YsDataGrid) as YsDataGrid;
 
-                if (dg != null && from_name == 'datagrid')
+                dict_idx = UtilFunc.GetDataIndex(from_data, from_dict, ui_comp);
+                if (dict_idx >= 0)
                 {
-                    var dg_idx:int = dg.selectedIndex;
+                    trace('YsService.AddBusDataFromPData:: ', from_dict);
+                    var data_item:Object = from_data.data[from_dict];
+                    if (data_item.length < dict_idx)
+                        continue;
 
-                    if (!to_data.data.hasOwnProperty(to_dict))
+                    // for (dict_idx = 0; dict_idx < from_data.data[from_dict].length; ++dict_idx)
                     {
-                        to_data.data[to_dict] = new AdvanceArray;
-                        to_data.data[to_dict].AddEmptyItems(1);
+                        if (to_data.data[to_dict] == undefined)
+                            to_data.data[to_dict] = new AdvanceArray;
+
+                        if (to_data.data[to_dict].length <= dict_idx)
+                            to_data.data[to_dict].Insert(dict_idx, '');
+                        to_data.data[to_dict][dict_idx] = from_data.data[from_dict][dict_idx];
                     }
-                    to_data.data[to_dict].RemoveItems(1);
-                    to_data.data[to_dict][0] = from_data.data[from_dict][dg_idx];
-
-                    continue;
                 }
-
-                for (var dict_idx:int = 0; dict_idx < from_data.data[from_dict].length; ++dict_idx)
+                else
                 {
-                    if (!to_data.data.hasOwnProperty(to_dict))
-                        to_data.data[to_dict] = new AdvanceArray;
+                    for (dict_idx = 0; dict_idx < from_data.data[from_dict].length; ++dict_idx)
+                    {
+                        if (!to_data.data.hasOwnProperty(to_dict))
+                            to_data.data[to_dict] = new AdvanceArray;
 
-                    if (to_data.data[to_dict].length <= dict_idx)
-                        to_data.data[to_dict].Insert(dict_idx, '');
-                    to_data.data[to_dict][dict_idx] = from_data.data[from_dict][dict_idx];
+                        if (to_data.data[to_dict].length <= dict_idx)
+                            to_data.data[to_dict].Insert(dict_idx, '');
+                        to_data.data[to_dict][dict_idx] = from_data.data[from_dict][dict_idx];
+                    }
                 }
             }
         }

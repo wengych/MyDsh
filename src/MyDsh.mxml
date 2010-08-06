@@ -305,7 +305,7 @@
                     <mx:Label text="机构"/>
                     <mx:Label id="DEPTNAME"
                               color="blue"
-                              width="200"/>
+                              width="300"/>
                     <mx:Label text="用户名"/>
                     <mx:Label id="USERID"
                               color="blue"
@@ -321,7 +321,7 @@
                     <mx:Label text="用户返回信息"/>
                     <mx:Label color="blue"
                               id="USER_RTN_MSG"
-                              width="500"/>
+                              width="400"/>
                 </mx:ControlBar>
             </mx:AddChild>
         </mx:State>

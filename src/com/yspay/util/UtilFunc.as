@@ -1,5 +1,7 @@
 package com.yspay.util
 {
+    import com.yspay.YsControls.YsDataGrid;
+    import com.yspay.YsData.PData;
     import com.yspay.pool.DBTable;
     import com.yspay.pool.Pool;
 
@@ -169,6 +171,34 @@ package com.yspay.util
                 }
             }
             return rtn;
+        }
+
+        /**
+         *
+         * @return 返回数据下标，返回-1表示取全部
+         */
+        public static function GetDataIndex(from_pdata:PData, dict_name:String, ctrl:Object):int
+        {
+            // 处理datagrid时,判断当前service的父事件或按钮是否为datagrid中的按钮或事件
+            // 若为datagrid中的事件或按钮,则只取当前选中行的数据
+            var dg:YsDataGrid =
+                UtilFunc.YsGetParentByType(ctrl._parent,
+                                           YsDataGrid) as YsDataGrid;
+            // 非DataGrid子项,取全部
+            if (dg == null)
+                return -1;
+
+            // DataGrid的ToData中无此字典项,取全部
+            if (dg.toDataObject[dict_name] == undefined)
+                return -1;
+
+            var arr:Array = dg.toDataObject[dict_name].GetAllTarget();
+            if (arr.indexOf(from_pdata) < 0)
+                return -1;
+
+            return dg.selectedIndex;
+
+            return -1;
         }
 
         public static function getRatio():Array

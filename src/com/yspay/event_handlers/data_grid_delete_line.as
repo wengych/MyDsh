@@ -25,20 +25,20 @@ package com.yspay.event_handlers
         var idx:int = data_grid.selectedIndex;
         var obj:Object = data_grid.dataProvider[idx];
         data_grid.dataProvider.removeItemAt(idx);
-
-        for (var key:String in obj)
-        {
-            if (!(data_grid.toDataObject.hasOwnProperty(key)))
-                continue;
-            for each (var to_data:PData in data_grid.toDataObject[key].GetAllTarget())
-            {
-                // var idx_in_data:int = to_data.data[key].indexOf(obj[key]);
-                // to_data.data[key].splice(idx_in_data, 1);
-                //var arr:AdvanceArray = (to_data.data[key]);
-                to_data.data[key].RemoveItems(idx, 1);
-            }
-        }
-
+        /*
+           for (var key:String in obj)
+           {
+           if (!(data_grid.toDataObject.hasOwnProperty(key)))
+           continue;
+           for each (var to_data:PData in data_grid.toDataObject[key].GetAllTarget())
+           {
+           // var idx_in_data:int = to_data.data[key].indexOf(obj[key]);
+           // to_data.data[key].splice(idx_in_data, 1);
+           //var arr:AdvanceArray = (to_data.data[key]);
+           to_data.data[key].RemoveItems(idx, 1);
+           }
+           }
+         */
         return true;
     }
 }
