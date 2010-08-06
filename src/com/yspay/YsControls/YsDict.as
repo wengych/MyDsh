@@ -374,9 +374,9 @@ package com.yspay.YsControls
                         ys_btn.Init(btn_xml);
                     }
                 }
-                
+
                 if (_xml.attribute('default').length() > 0)
-                	this.text = _xml.attribute('default').toString();
+                    this.text = _xml.attribute('default').toString();
                 trace(this.text);
             }
         }
@@ -420,15 +420,12 @@ package com.yspay.YsControls
             trace('Dict::FunctionCalled: ', event.args);
             if (event.function_name == 'Insert')
             {
-                if (dict.data.length == _text.listDp.length)
-                    return;
-                _text.listDp.addItemAt(event.args[0], event.args[1]);
+                if (dict.data.length != _text.listDp.length)
+                    _text.listDp.addItemAt(event.args[0], event.args[1]);
             }
             else if (event.function_name == 'RemoveItems')
             {
-                if (dict.data.length == _text.listDp.length)
-                    return;
-                else
+                if (dict.data.length != _text.listDp.length)
                 {
                     var cnt:int = event.args[1];
                     while (cnt-- > 0)
@@ -440,10 +437,12 @@ package com.yspay.YsControls
             {
                 if (event.function_name == 'Insert')
                 {
+                    trace('dict.Insert( ' + event.args[0] + ', ' + event.args[1]);
                     p_data.data[dict.name].Insert(event.args[0], event.args[1]);
                 }
                 else if (event.function_name == 'RemoveItems')
                 {
+                    trace('dict.RemoveItems ' + event.args[0] + ', ' + event.args[1]);
                     p_data.data[dict.name].RemoveItems(event.args[0], event.args[1]);
                 }
             }

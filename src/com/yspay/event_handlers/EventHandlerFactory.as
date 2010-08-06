@@ -17,7 +17,7 @@ package com.yspay.event_handlers
                                    , show_xml
                                    , refresh_pool
                                    , drag_enter
-                                   , test_action
+                                   , dbg_out_dict
                                    , dict_change
                                    , dict_check
                                    , mouse_over
