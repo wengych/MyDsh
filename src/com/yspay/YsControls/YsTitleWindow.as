@@ -6,11 +6,10 @@ package com.yspay.YsControls
     import com.yspay.util.FunctionDelegate;
     import com.yspay.util.UtilFunc;
 
-    import flash.display.DisplayObject;
     import flash.display.DisplayObjectContainer;
-    import flash.utils.describeType;
 
     import mx.collections.ArrayCollection;
+    import mx.containers.Box;
     import mx.containers.TitleWindow;
     import mx.controls.Alert;
     import mx.controls.DataGrid;
@@ -142,6 +141,7 @@ package com.yspay.YsControls
 
         public function Init(xml:XML):void
         {
+            xml = com.yspay.util.UtilFunc.FullXml(xml);
             _xml = xml;
             _parent.addChild(this);
             this.name = xml.text().toString();
