@@ -227,6 +227,7 @@ package com.yspay.YsControls
 
             dg.fromDataObject[dict.name] = new TargetList;
             dg.fromDataObject[dict.name].Init(_parent, _xml.From);
+            dg.fromDataObject[dict.name].Add(_xml.Bind);
             // 初始化from data
             for each (var dg_from_data:PData in dg.fromDataObject[dict.name].GetAllTarget())
             {
@@ -242,6 +243,7 @@ package com.yspay.YsControls
 
             dg.toDataObject[dict.name] = new TargetList;
             dg.toDataObject[dict.name].Init(_parent, _xml.To);
+            dg.toDataObject[dict.name].Add(_xml.Bind);
 
             dg.columns = dg.columns.concat(dgc);
             dg.dict_arr.push(this);
@@ -295,9 +297,11 @@ package com.yspay.YsControls
 
                 // if (_xml.From != undefined)
                 dict.From.Init(this, _xml.From);
+                dict.From.Add(_xml.Bind);
 
                 // if (_xml.To != undefined)
                 dict.To.Init(this, _xml.To);
+                dict.To.Add(_xml.Bind);
                 // 初始化dict_object
 
                 for each (var from_data:PData in dict.From.GetAllTarget())
@@ -418,14 +422,33 @@ package com.yspay.YsControls
         protected function DictFunctionCalled(event:FunctionCallEvent):void
         {
             trace('Dict::FunctionCalled: ', event.args);
+            var p_data:PData;
             if (event.function_name == 'Insert')
             {
-                if (dict.data.length != _text.listDp.length)
-                    _text.listDp.addItemAt(event.args[0], event.args[1]);
+                if (dict.data.length == _text.listDp.length)
+                {
+                    for each (p_data in dict.To.GetAllTarget())
+                    {
+                        trace('dict.Insert:SetValue');
+                        p_data.data[dict.name][event.args[0]] = event.args[1];
+                    }
+                    return;
+                }
+                _text.listDp.addItemAt(event.args[0], event.args[1]);
             }
             else if (event.function_name == 'RemoveItems')
             {
-                if (dict.data.length != _text.listDp.length)
+                if (dict.data.length == _text.listDp.length)
+                {
+                	for each (p_data in dict.To.GetAllTarget())
+                	{
+                		trace('dict.RemoveItems: Remove item in PData');
+                		if (p_data.data[dict.name].length > dict.data.length)
+                		  p_data.data[dict.name].RemoveItems(event.args[0], event.args[1]);
+                	}
+                	return;
+                }
+                else
                 {
                     var cnt:int = event.args[1];
                     while (cnt-- > 0)
@@ -433,7 +456,7 @@ package com.yspay.YsControls
                 }
             }
 
-            for each (var p_data:PData in dict.To.GetAllTarget())
+            for each (p_data in dict.To.GetAllTarget())
             {
                 if (event.function_name == 'Insert')
                 {
