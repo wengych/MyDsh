@@ -558,14 +558,15 @@ package com.yspay.YsControls
                 mask = mask + "*";
             }
             //ti.inputMask = mask;
+//            var maxchars:int = 40;
+            var maxshowlen:int = 200;
+            var maxcharwidth:int = 40;
             var ti_len:int = int(dxml.display.TEXTINPUT.@length);
-            if (ti.maxChars > 40)
-                ti.width = 200;
-            else if (int(dxml.display.TEXTINPUT.@length) < 10 && ti.maxChars < 10)
-                ti.width = (ti_len * 50 > 200) ? 200 : ti_len * 50;
-            else
-                ti.width = 200;
-            ti.width = ti.width + 60;
+            ti_len = (ti.maxChars > ti_len) ? ti.maxChars : ti_len;
+            ti_len = (ti_len <= 0) ? 1 : ti_len;
+            ti.width = ti_len * maxcharwidth;
+            ti.width = (ti.width > maxshowlen) ? maxshowlen : ti.width;
+
             ti.displayAsPassword = (dxml.display.TEXTINPUT.@displayAsPassword == 0 ? false : true);
             ti.text = dict.text;
             //ti.addEventListener(Event.CHANGE, TextInputChange);
