@@ -600,7 +600,7 @@ package com.yspay.YsControls
             }
             //ta.inputMask = mask;
 //            var maxchars:int = 40;
-            var maxshowlen:int = 200;
+            var maxshowlen:int = 600;
             var maxcharwidth:int = 40;
             var ta_len:int = int(dxml.display.TEXtaNPUT.@length);
             ta_len = (ta.maxChars > ta_len) ? ta.maxChars : ta_len;

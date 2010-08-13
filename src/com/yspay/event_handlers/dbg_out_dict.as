@@ -4,6 +4,7 @@ package com.yspay.event_handlers
     import com.yspay.YsControls.*;
     import com.yspay.YsData.PData;
     import com.yspay.YsData.TargetList;
+    import com.yspay.util.UtilFunc;
 
     import flash.events.Event;
     import flash.events.MouseEvent;
@@ -39,10 +40,10 @@ package com.yspay.event_handlers
         var btn:Button = new Button;
         btn.label = '关闭';
 
+        title.addChild(btn);
         title.addChild(ta);
         ta.width = title.width;
         ta.height = 500;
-        title.addChild(btn);
         btn.addEventListener(MouseEvent.CLICK, btn_Click);
 
         PopUpManager.centerPopUp(title);
@@ -75,12 +76,27 @@ package com.yspay.event_handlers
 
                 ta.text += from_data.data[from_dict].length.toString();
                 ta.text += '\n';
-                for (dict_idx = 0; dict_idx < from_data.data[from_dict].length; ++dict_idx)
+
+
+                // 数据源为datagrid时,取datagrid中当前选中行的数据
+                var dg:YsDataGrid = UtilFunc.YsGetParentByType(ui_comp,
+                                                               YsDataGrid) as YsDataGrid;
+
+                dict_idx = UtilFunc.GetDataIndex(from_data, from_dict, ui_comp);
+                if (dict_idx >= 0)
                 {
                     ta.text += from_data.data[from_dict][dict_idx];
                     ta.text += ',';
                 }
-                ta.text += '\n';
+                else
+                {
+                    for (dict_idx = 0; dict_idx < from_data.data[from_dict].length; ++dict_idx)
+                    {
+                        ta.text += from_data.data[from_dict][dict_idx];
+                        ta.text += ',';
+                    }
+                    ta.text += '\n';
+                }
             }
         }
 
