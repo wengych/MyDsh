@@ -43,7 +43,7 @@ package com.yspay.YsControls
         public var _focusManager:FocusManager = new FocusManager(this as IFocusManagerContainer);
 
         protected var _label:Label;
-        protected var _text:MultipleTextInput;
+        protected var _text:Object;
         protected var _combo:YsComboBox;
         protected var _xml:XML;
 
@@ -134,9 +134,8 @@ package com.yspay.YsControls
             return rtn;
         }
 
-        protected function InitAttrs():void
+        protected function InitAttrs(attrs:Object):void
         {
-            var attrs:Object = YsMaps.dict_dg_attrs;
             for (var attr_name:String in attrs)
             {
                 if (!(this.hasOwnProperty(attr_name)))
@@ -214,7 +213,7 @@ package com.yspay.YsControls
             var dgc:DataGridColumn =  new DataGridColumn;
             this.editable = dg.editable;
 
-            InitAttrs();
+            InitAttrs(YsMaps.dict_dg_attrs);
 
             dgc.editable = this.editable;
             dgc.headerText = this.LABEL;
@@ -243,7 +242,6 @@ package com.yspay.YsControls
 
             dg.toDataObject[dict.name] = new TargetList;
             dg.toDataObject[dict.name].Init(_parent, _xml.To);
-            // dg.toDataObject[dict.name].Add(_xml.Bind);
 
             dg.columns = dg.columns.concat(dgc);
             dg.dict_arr.push(this);
@@ -251,6 +249,96 @@ package com.yspay.YsControls
             this.height = 0;
             this.width = 0;
             dg.addChild(this);
+        }
+
+        protected function InitDict():void
+        { //<DICT LABEL="CNAME" 
+            //       LabelVisible="true" 
+            //       TextInputVisible="true" 
+            //       ComboBoxVisible="true" 
+            //       OutputOnly="true"
+            //       from="pod"
+            //       from="windows"
+            //       from="dict"
+            //       from="parent"
+            //       to="pod"
+            //       to="windows"
+            //       to="dict"
+            //       to="parent"
+            //>
+            _parent.addChild(this);
+
+            // if (_xml.From != undefined)
+            dict.From.Init(this, _xml.From);
+            dict.To.Init(this, _xml.To);
+            // 初始化数据
+            for each (var from_data:PData in dict.From.GetAllTarget())
+            {
+                var default_value:String = null;
+                if (_xml.services.attribute('DEFAULT').length > 0)
+                    default_value = _xml.services.@DEFAULT.text().toString();
+                from_data.AddToNotifiers(this, dict.name, default_value);
+            }
+            // 初始化 ToData
+            for each (var to_data:PData in dict.To.GetAllTarget())
+            {
+                to_data.data[dict.name] = new AdvanceArray;
+            }
+
+            // 设置label
+            if (_xml.@LABEL != undefined)
+                dict.label = _xml.@LABEL;
+            else if (_xml.display.LABEL != undefined)
+                dict.label = _xml.display.LABEL.@text;
+            _label = CreateLabel();
+            this.addChild(_label);
+
+            if ((_xml.@InputType != undefined && _xml.@InputType == 'TextArea') ||
+                (_xml.@InputType == undefined && _xml.display.TEXTAREA != undefined))
+            {
+                var ta:MultipleTextArea = CreateTextArea(_xml);
+
+                _text = ta;
+                this.addChild(ta);
+            }
+            if ((_xml.@InputType != undefined && _xml.@InputType == 'TextInput') ||
+                (_xml.@InputType == undefined && _xml.display.TEXTINPUT != undefined))
+            {
+                var ti:MultipleTextInput =  CreateTextInput(_xml);
+
+                _text = ti;
+                this.addChild(ti);
+            }
+            if (_xml.display.TEXTINPUT.list != undefined)
+            {
+                _combo = CreateComboBox(_xml);
+                if (_xml.@ComboBoxVisible != undefined)
+                    if (_xml.@ComboBoxVisible == "false")
+                        _combo.visible = false;
+                this.addChild(_combo);
+            }
+
+            if (_xml.event != undefined)
+            {
+                for each (var event_xml:XML in _xml.event)
+                {
+                    var ys_event:YsXmlEvent = new YsXmlEvent(this);
+                    ys_event.Init(event_xml);
+                }
+            }
+
+            if (_xml.BUTTON != undefined)
+            {
+                for each (var btn_xml:XML in _xml.BUTTON)
+                {
+                    var ys_btn:YsButton = new YsButton(this);
+                    ys_btn.Init(btn_xml);
+                }
+            }
+
+            if (_xml.attribute('default').length() > 0)
+                this.text = _xml.attribute('default').toString();
+            trace(this.text);
         }
 
         public function Init(xml:XML):void
@@ -275,114 +363,9 @@ package com.yspay.YsControls
                 this.LABEL = _xml.display.LABEL.@text;
 
             if (_parent is YsDataGrid) //DATAGRID
-            {
                 InitAsDgChild();
-            }
             else //COMBOBOX || TEXTINPUT
-            { //<DICT LABEL="CNAME" 
-                //       LabelVisible="true" 
-                //       TextInputVisible="true" 
-                //       ComboBoxVisible="true" 
-                //       OutputOnly="true"
-                //       from="pod"
-                //       from="windows"
-                //       from="dict"
-                //       from="parent"
-                //       to="pod"
-                //       to="windows"
-                //       to="dict"
-                //       to="parent"
-                //>
-                _parent.addChild(this);
-
-                // if (_xml.From != undefined)
-                dict.From.Init(this, _xml.From);
-                // dict.From.Add(_xml.Bind);
-
-                // if (_xml.To != undefined)
-                dict.To.Init(this, _xml.To);
-                // dict.To.Add(_xml.Bind);
-                // 初始化dict_object
-
-                for each (var from_data:PData in dict.From.GetAllTarget())
-                {
-                    var default_value:String = null;
-                    if (_xml.services.attribute('DEFAULT').length > 0)
-                        default_value = _xml.services.@DEFAULT.text().toString();
-                    from_data.AddToNotifiers(this, dict.name, default_value);
-                }
-
-                // 初始化 ToData
-                for each (var to_data:PData in dict.To.GetAllTarget())
-                {
-                    to_data.data[dict.name] = new AdvanceArray;
-                }
-
-                if (_xml.display.LABEL != undefined)
-                {
-                    if (_xml.@LABEL != undefined)
-                        dict.label = _xml.@LABEL;
-                    else
-                        dict.label = _xml.display.LABEL.@text;
-
-                    _label = new Label;
-                    _label.setStyle("textAlign", "right");
-                    _label.text = dict.label;
-                    _label.width = dict.delimiter;
-                    if (_xml.@LabelVisible != undefined)
-                        if (_xml.@LabelVisible == "false")
-                            _label.visible = false;
-                    this.addChild(_label);
-                }
-                if (_xml.display.TEXTINPUT != undefined)
-                {
-                    _text = CreateTextInput(_xml);
-                    if (_xml.@OutputOnly != undefined)
-                        if (_xml.@OutputOnly == "true")
-                            _text.editable = false;
-                    if (_xml.@TextInputVisible != undefined)
-                        if (_xml.@TextInputVisible == "false")
-                            _text.visible = false;
-
-                    if (_xml.@openfile != undefined &&
-                        _xml.@openfile == 'true')
-                        _text.fileable = true;
-                    else if (_xml.display.TEXTINPUT.@openfile != undefined &&
-                        _xml.display.TEXTINPUT.@openfile == 'true')
-                        _text.fileable = true;
-                    this.addChild(_text);
-                }
-                if (_xml.display.TEXTINPUT.list != undefined)
-                {
-                    _combo = CreateComboBox(_xml);
-                    if (_xml.@ComboBoxVisible != undefined)
-                        if (_xml.@ComboBoxVisible == "false")
-                            _combo.visible = false;
-                    this.addChild(_combo);
-                }
-
-                if (_xml.event != undefined)
-                {
-                    for each (var event_xml:XML in _xml.event)
-                    {
-                        var ys_event:YsXmlEvent = new YsXmlEvent(this);
-                        ys_event.Init(event_xml);
-                    }
-                }
-
-                if (_xml.BUTTON != undefined)
-                {
-                    for each (var btn_xml:XML in _xml.BUTTON)
-                    {
-                        var ys_btn:YsButton = new YsButton(this);
-                        ys_btn.Init(btn_xml);
-                    }
-                }
-
-                if (_xml.attribute('default').length() > 0)
-                    this.text = _xml.attribute('default').toString();
-                trace(this.text);
-            }
+                InitDict();
         }
 
         public function NotifyFunctionCall(p_data:PData,
@@ -547,9 +530,22 @@ package com.yspay.YsControls
                 dict_arr[curr_index]._combo.setFocus();
         }
 
+        protected function CreateLabel():Label
+        {
+            var label:Label = new Label;
+            label.setStyle("textAlign", "right");
+            label.text = dict.label;
+            label.width = dict.delimiter;
+            if (_xml.@LabelVisible != undefined)
+                if (_xml.@LabelVisible == "false")
+                    label.visible = false;
+
+            return label;
+        }
+
         private function CreateTextInput(dxml:XML):MultipleTextInput
         {
-            var ti:MultipleTextInput = new MultipleTextInput(this, dxml.@openfile);
+            var ti:MultipleTextInput = new MultipleTextInput(this);
             ti.text = '';
             ti.maxChars = int(dxml.services.@LEN);
             var mask:String = '';
@@ -567,11 +563,78 @@ package com.yspay.YsControls
             ti.width = ti_len * maxcharwidth;
             ti.width = (ti.width > maxshowlen) ? maxshowlen : ti.width;
 
-            ti.displayAsPassword = (dxml.display.TEXTINPUT.@displayAsPassword == 0 ? false : true);
+            if (dxml.display.TEXTINPUT.@displayAsPassword != undefined &&
+                dxml.display.TEXTINPUT.@displayAsPassword == 1)
+                ti.displayAsPassword = true;
+            // ti.displayAsPassword = (dxml.display.TEXTINPUT.@displayAsPassword == 0 ? false : true);
             ti.text = dict.text;
             //ti.addEventListener(Event.CHANGE, TextInputChange);
             ti.addEventListener(FlexEvent.ENTER, TiEnter);
+
+            if (_xml.@OutputOnly != undefined)
+                if (_xml.@OutputOnly == "true")
+                    ti.editable = false;
+            if (_xml.@TextInputVisible != undefined)
+                if (_xml.@TextInputVisible == "false")
+                    ti.visible = false;
+
+            if (_xml.@openfile != undefined &&
+                _xml.@openfile == 'true')
+                ti.fileable = true;
+            else if (_xml.display.TEXTINPUT.@openfile != undefined &&
+                _xml.display.TEXTINPUT.@openfile == 'true')
+                ti.fileable = true;
+
             return ti;
+        }
+
+        private function CreateTextArea(dxml:XML):MultipleTextArea
+        {
+            var ta:MultipleTextArea = new MultipleTextArea(this);
+            ta.text = '';
+            ta.maxChars = int(dxml.services.@LEN);
+            var mask:String = '';
+            for (var j:int = 0; j < ta.maxChars; j++)
+            {
+                mask = mask + "*";
+            }
+            //ta.inputMask = mask;
+//            var maxchars:int = 40;
+            var maxshowlen:int = 200;
+            var maxcharwidth:int = 40;
+            var ta_len:int = int(dxml.display.TEXtaNPUT.@length);
+            ta_len = (ta.maxChars > ta_len) ? ta.maxChars : ta_len;
+            ta_len = (ta_len <= 0) ? 1 : ta_len;
+            ta.width = ta_len * maxcharwidth;
+            ta.width = (ta.width > maxshowlen) ? maxshowlen : ta.width;
+
+            if (dxml.display.TEXTAREA.@displayAsPassword != undefined &&
+                dxml.display.TEXTAREA.@displayAsPassword == 1)
+                ta.displayAsPassword = true;
+            ta.text = dict.text;
+
+            if (_xml.@OutputOnly != undefined &&
+                _xml.@OutputOnly == 'true')
+                ta.editable = false;
+            if (_xml.@TextAreaVisible != undefined &&
+                _xml.@TextAreaVisible == 'false')
+                ta.visible = false;
+
+            if (_xml.@openfile != undefined &&
+                _xml.@openfile == 'true')
+                ta.fileable = true;
+            else if (_xml.display.TEXTAREA.@openfile != undefined &&
+                _xml.display.TEXTAREA.@openfile == 'true')
+                ta.fileable = true;
+
+            var line:int = 0;
+            if (_xml.@line != undefined)
+                line = int(_xml.@line);
+            else if (_xml.display.TEXTAREA.line != undefined)
+                line = int(_xml.display.TEXTAREA);
+            ta.height = 16 * line;
+
+            return ta;
         }
 
         protected function TiEnter(event:FlexEvent):void

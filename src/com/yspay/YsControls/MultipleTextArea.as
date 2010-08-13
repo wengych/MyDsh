@@ -10,13 +10,15 @@ package com.yspay.YsControls
 
     import mx.collections.ArrayCollection;
     import mx.controls.Button;
+    import mx.controls.TextArea;
     import mx.controls.TextInput;
+    import mx.core.ClassFactory;
     import mx.events.CollectionEvent;
     import mx.events.CollectionEventKind;
     import mx.managers.PopUpManager;
     import mx.utils.StringUtil;
 
-    public class MultipleTextInput extends TextInput
+    public class MultipleTextArea extends TextArea
     {
         public var _parent:YsDict;
         private var _backList:MyList;
@@ -34,7 +36,7 @@ package com.yspay.YsControls
         private var fr:FileReference;
         private var fileType:FileFilter;
 
-        public function MultipleTextInput(parent:YsDict)
+        public function MultipleTextArea(parent:YsDict)
         {
             super();
             this.toolTip = "Ctrl+Home 打开\nCtrl+Insert 增加行\nCtrl+Delete 删除行";
@@ -47,6 +49,8 @@ package com.yspay.YsControls
             _backList = new MyList;
             _backList.setStyle('fontSize', 12);
             _backList.dataProvider = _listDp;
+
+            _backList.itemEditor = new ClassFactory(TextArea);
             addEventListener(Event.CHANGE, changeHandler);
             addEventListener(KeyboardEvent.KEY_DOWN, keydownHandler);
             _listDp.addEventListener(CollectionEvent.COLLECTION_CHANGE, ListChange);
@@ -87,7 +91,7 @@ package com.yspay.YsControls
                 fileType = new FileFilter("Text Files (*.txt)", "*.txt;");
                 //增加当打开浏览文件后，用户选择好文件后的Listener
                 fr.addEventListener(Event.SELECT, selectHandler);
-                //增加一个文件加载load完成后的listener	
+                //增加一个文件加载load完成后的listener  
                 fr.addEventListener(Event.COMPLETE, onLoadComplete);
             }
             invalidateDisplayList();
@@ -444,4 +448,3 @@ package com.yspay.YsControls
         }
     }
 }
-
