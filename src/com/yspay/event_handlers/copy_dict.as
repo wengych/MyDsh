@@ -63,7 +63,8 @@ package com.yspay.event_handlers
                 dict_idx = UtilFunc.GetDataIndex(from_data, from_dict, ui_comp);
                 if (dict_idx >= 0)
                 {
-                    trace('YsService.AddBusDataFromPData:: ', from_dict);
+                    trace('copy_dict:: from :  ', from_dict);
+                    trace('copy_dict:: to   :  ', to_dict);
                     var data_item:Object = from_data.data[from_dict];
                     if (data_item.length < dict_idx)
                         continue;
@@ -73,9 +74,9 @@ package com.yspay.event_handlers
                         if (to_data.data[to_dict] == undefined)
                             to_data.data[to_dict] = new AdvanceArray;
 
-                        if (to_data.data[to_dict].length <= dict_idx)
+                        if (to_data.data[to_dict].length == 0)
                             to_data.data[to_dict].Insert(dict_idx, '');
-                        to_data.data[to_dict][dict_idx] = from_data.data[from_dict][dict_idx];
+                        to_data.data[to_dict][0] = from_data.data[from_dict][dict_idx];
                     }
                 }
                 else
