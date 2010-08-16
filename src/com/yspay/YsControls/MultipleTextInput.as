@@ -60,7 +60,6 @@ package com.yspay.YsControls
 
             if (_fileable == true)
             {
-                this.fileable = true;
                 _btn = new Button;
                 _btn.setStyle("fontSize", 12);
                 _btn.label = '浏览';
