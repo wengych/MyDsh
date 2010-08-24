@@ -11,6 +11,7 @@ package com.yspay.YsControls
     import mx.controls.DataGrid;
     import mx.controls.listClasses.IListItemRenderer;
     import mx.core.Application;
+    import mx.core.UIComponent;
 
     public class YsButton extends MyButton implements YsControl, IListItemRenderer
     {
@@ -179,7 +180,6 @@ package com.yspay.YsControls
             rtn.@KEYNAME = type;
             rtn.appendChild(label);
 
-
             for each (var ctrl:YsControl in action_list)
             {
                 var ctrl_xml:XML = ctrl.GetLinkXml();
@@ -193,6 +193,11 @@ package com.yspay.YsControls
         public function GetLinkXml():XML
         {
             return GetSaveXml();
+        }
+
+        public function Print(print_container:UIComponent):UIComponent
+        {
+            return null;
         }
     }
 }

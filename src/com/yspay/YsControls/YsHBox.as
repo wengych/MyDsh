@@ -9,7 +9,8 @@ package com.yspay.YsControls
     import mx.containers.HBox;
     import mx.controls.DataGrid;
     import mx.core.Application;
-    import mx.events.FlexEvent;
+    import mx.core.IUIComponent;
+    import mx.core.UIComponent;
 
 
     public class YsHBox extends HBox implements YsControl
@@ -86,6 +87,28 @@ package com.yspay.YsControls
                 var child_ctrl:YsControl = new YsMaps.ys_type_map[child_name](this);
                 child_ctrl.Init(child);
             }
+        }
+
+        public function Print(print_container:UIComponent):UIComponent
+        {
+            var print_area:UIComponent;
+            if (print_container == null)
+                print_area = UtilFunc.CreatePrintPage();
+            else
+                print_area = print_container;
+
+            var hbox:HBox = new HBox;
+            hbox.setStyle('border', 'none');
+            hbox.setStyle('borderColor', '#ffffff');
+
+            for each (var child:Object in this.getChildren())
+            {
+                if (child is YsControl)
+                    child.Print(hbox);
+            }
+
+            print_area.addChild(hbox);
+            return print_area;
         }
     }
 }

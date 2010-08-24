@@ -51,7 +51,8 @@ package com.yspay.YsControls
                 var dict_idx:int = UtilFunc.GetDataIndex(from_item, key, this);
                 if (dict_idx >= 0)
                 {
-                    trace('YsService.AddBusDataFromPData:: ', key);
+                    bus.RemoveByKey(key);
+                    trace('YsService.AddBusDataFromPData:: ', key, 'dict_idx', dict_idx);
                     data_item = from_item.data[key];
                     if (data_item.length < dict_idx)
                         continue;
@@ -59,7 +60,6 @@ package com.yspay.YsControls
                         bus.Add(key, from_item.data[key][dict_idx]);
                     else if (type == 'INT')
                         bus.Add(key, int(from_item.data[key][dict_idx]));
-
                 }
                 else
                 {
@@ -215,6 +215,7 @@ package com.yspay.YsControls
             if (bus == null)
             {
                 Alert.show('服务调用出错,bus为空' + '\n' + '            服务名:' + action_name);
+                event.result = false;
                 this._parent.dispatchEvent(event);
                 pod.enabled = true;
                 return;
@@ -231,6 +232,15 @@ package com.yspay.YsControls
             {
                 user_rtn = bus.__DICT_USER_RTN[0].value;
                 user_rtn_msg = bus.__DICT_USER_RTNMSG[0].value;
+            }
+
+            if (user_rtn != 0)
+            {
+                trace('Service: USER_RTN: ', user_rtn.toString());
+                event.result = false;
+                this._parent.dispatchEvent(event);
+                pod.enabled = true;
+                return;
             }
 
             var pool:Pool = Application.application._pool;

@@ -3,6 +3,7 @@ package com.yspay.YsControls
     import com.yspay.YsData.TargetList;
 
     import mx.controls.Label;
+    import mx.core.UIComponent;
 
     public class YsInvisible extends Label implements YsControl
     {
@@ -66,5 +67,9 @@ package com.yspay.YsControls
             return rtn;
         }
 
+        public function Print(print_container:UIComponent):UIComponent
+        {
+            return null;
+        }
     }
 }

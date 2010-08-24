@@ -16,8 +16,11 @@ package com.yspay.YsControls
     import mx.collections.ArrayCollection;
     import mx.containers.HBox;
     import mx.controls.Alert;
+    import mx.controls.DataGrid;
     import mx.controls.Label;
+    import mx.controls.Text;
     import mx.controls.dataGridClasses.DataGridColumn;
+    import mx.core.UIComponent;
     import mx.events.FlexEvent;
     import mx.events.ListEvent;
     import mx.events.PropertyChangeEvent;
@@ -244,7 +247,7 @@ package com.yspay.YsControls
             dg.toDataObject[dict.name].Init(_parent, _xml.To);
 
             dg.columns = dg.columns.concat(dgc);
-            dg.dict_arr.push(this);
+            // dg.dict_arr.push(this);
             this.visible = false;
             this.height = 0;
             this.width = 0;
@@ -394,10 +397,12 @@ package com.yspay.YsControls
 
             if (index == -1 && p_data.data[dict_name].length > dict.index)
             {
+                dict.source = p_data;
                 dict.text = p_data.data[dict_name][dict.index];
             }
             else if (index == dict.index)
             {
+                dict.source = p_data;
                 dict.text = p_data.data[dict_name][index];
             }
         }
@@ -600,7 +605,7 @@ package com.yspay.YsControls
             }
             //ta.inputMask = mask;
 //            var maxchars:int = 40;
-            var maxshowlen:int = 600;
+            var maxshowlen:int = 500;
             var maxcharwidth:int = 40;
             var ta_len:int = int(dxml.display.TEXtaNPUT.@length);
             ta_len = (ta.maxChars > ta_len) ? ta.maxChars : ta_len;
@@ -660,6 +665,68 @@ package com.yspay.YsControls
 
             dict.source = _combo;
             dict.text = sel_item[dict.name];
+        }
+
+        public function Print(print_container:UIComponent):UIComponent
+        {
+            var print_area:UIComponent;
+            if (print_container == null)
+                print_area = UtilFunc.CreatePrintPage();
+            else
+                print_area = print_container;
+
+            if (print_area is DataGrid)
+                PrintDatagrid(print_area as DataGrid);
+            else
+                PrintDict(print_area);
+            return print_area;
+        }
+
+        protected function PrintDatagrid(dg:DataGrid):void
+        {
+            var dgc:DataGridColumn =  new DataGridColumn;
+
+            dgc.headerText = this.LABEL;
+            dgc.dataField = dict.name;
+            dgc.labelFunction = DgPrintLabelFunc;
+
+            dg.columns = dg.columns.concat(dgc);
+        }
+
+        protected function DgPrintLabelFunc(item:Object, column:DataGridColumn):String
+        {
+            var label_key:String = dict.name + '_list_label';
+            if (item[label_key] != undefined)
+                return item[label_key];
+            else
+                return item[dict.name];
+        }
+
+        protected function PrintDict(print_area:UIComponent):void
+        {
+            var label_width:int = 100;
+            var text_width:int = 200;
+            var hbox:HBox = new HBox;
+            hbox.setStyle('border', 'none');
+            hbox.setStyle('borderColor', '#ffffff');
+
+            var label:Label = new Label;
+            var value:Text = new Text;
+
+
+            label.setStyle("textAlign", "right");
+            label.width = label_width;
+            label.text = _label.text;
+
+            value.setStyle('textAlign', 'justify');
+            value.setStyle('fontWeight', 'normal');
+            value.width = text_width;
+            value.text = _text.text;
+
+            hbox.addChild(label);
+            hbox.addChild(value);
+
+            print_area.addChild(hbox);
         }
     }
 }

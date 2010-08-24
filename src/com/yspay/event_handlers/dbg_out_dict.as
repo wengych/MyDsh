@@ -48,13 +48,11 @@ package com.yspay.event_handlers
 
         PopUpManager.centerPopUp(title);
 
-
         var from_targets:TargetList = new TargetList;
         from_targets.Init(ui_comp, action_info.From);
 
         var from_target_list:Array = from_targets.GetAllTarget();
         var from_name_list:Array = from_targets.GetAllTargetName();
-
 
         var from_target_dict:Array = from_targets.GetTargetDictArr();
         var dict_idx:int = 0;
@@ -74,9 +72,9 @@ package com.yspay.event_handlers
                     continue;
                 }
 
+                ta.text += from_dict + ':';
                 ta.text += from_data.data[from_dict].length.toString();
                 ta.text += '\n';
-
 
                 // 数据源为datagrid时,取datagrid中当前选中行的数据
                 var dg:YsDataGrid = UtilFunc.YsGetParentByType(ui_comp,

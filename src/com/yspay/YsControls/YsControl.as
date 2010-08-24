@@ -1,6 +1,6 @@
 package com.yspay.YsControls
 {
-    import mx.core.IUIComponent;
+    import mx.core.UIComponent;
 
     public interface YsControl
     {
@@ -9,5 +9,7 @@ package com.yspay.YsControls
         function GetSaveXml():XML;
         function GetLinkXml():XML;
         function get type():String;
+
+        function Print(print_container:UIComponent):UIComponent;
     }
 }

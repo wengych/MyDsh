@@ -9,7 +9,8 @@ package com.yspay.YsControls
     import mx.containers.VBox;
     import mx.controls.DataGrid;
     import mx.core.Application;
-    import mx.events.FlexEvent;
+    import mx.core.IUIComponent;
+    import mx.core.UIComponent;
 
     public class YsVBox extends VBox implements YsControl
     {
@@ -87,5 +88,24 @@ package com.yspay.YsControls
             return _xml.name().toString();
         }
 
+        public function Print(print_container:UIComponent):UIComponent
+        {
+            var print_area:UIComponent;
+            if (print_container == null)
+                print_area = UtilFunc.CreatePrintPage();
+
+            var vbox:VBox = new VBox;
+            vbox.setStyle('border', 'none');
+            vbox.setStyle('borderColor', '#ffffff');
+
+            for each (var child:Object in this.getChildren())
+            {
+                if (child is YsControl)
+                    child.Print(vbox);
+            }
+
+            print_area.addChild(vbox);
+            return print_area;
+        }
     }
 }

@@ -10,16 +10,17 @@ package com.yspay.YsControls
 
         public static var ys_type_map:Object =
             {
-                'hbox': YsHBox,
-                'vbox': YsVBox,
-                'windows': YsTitleWindow,
-                'datagrid': YsDataGrid,
-                'dict': YsDict,
-                'button': YsButton,
-                'pool': YsDictPool,
-                'event': YsXmlEvent,
-                'action': YsAction,
-                'services': YsService
+                'pod': YsPod
+                , 'hbox': YsHBox
+                , 'vbox': YsVBox
+                , 'windows': YsTitleWindow
+                , 'datagrid': YsDataGrid
+                , 'dict': YsDict
+                , 'button': YsButton
+                , 'pool': YsDictPool
+                , 'event': YsXmlEvent
+                , 'action': YsAction
+                , 'services': YsService
             };
 
         public static var ys_win_type_map:Object =
@@ -31,7 +32,7 @@ package com.yspay.YsControls
                 'button': YsButton,
                 'event': YsXmlEvent
             };
-            
+
         // DataGrid支持的属性列表
         public static var datagrid_attrs:Object =
             {

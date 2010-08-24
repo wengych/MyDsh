@@ -15,6 +15,7 @@
     import mx.controls.DataGrid;
     import mx.controls.dataGridClasses.DataGridColumn;
     import mx.core.Application;
+    import mx.core.UIComponent;
     import mx.events.CollectionEvent;
     import mx.events.CollectionEventKind;
     import mx.events.DataGridEvent;
@@ -460,6 +461,29 @@
                     OnCollectionRefresh(ceEvent);
                 }
             }
+        }
+
+        public function Print(print_container:UIComponent):UIComponent
+        {
+            var print_area:UIComponent;
+            if (print_container == null)
+                print_area = UtilFunc.CreatePrintPage();
+            else
+                print_area = print_container;
+
+            var dg:DataGrid = new DataGrid;
+
+            for each (var child:Object in this.dict_arr)
+            {
+                if (child is YsControl)
+                    child.Print(dg);
+            }
+
+            dg.dataProvider = this.dataProvider;
+            dg.selectable = false;
+            print_area.addChild(dg);
+            dg.height = dg.measureHeightOfItems(0, dg.dataProvider.length) + dg.headerHeight + 22;
+            return print_area;
         }
     }
 }

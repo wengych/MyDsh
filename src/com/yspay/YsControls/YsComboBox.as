@@ -8,6 +8,7 @@ package com.yspay.YsControls
 
     import mx.collections.ArrayCollection;
     import mx.controls.ComboBox;
+    import mx.core.UIComponent;
     import mx.events.CollectionEvent;
     import mx.events.CollectionEventKind;
     import mx.managers.IFocusManagerComponent;
@@ -321,6 +322,11 @@ package com.yspay.YsControls
         public function get type():String
         {
             return '';
+        }
+
+        public function Print(print_container:UIComponent):UIComponent
+        {
+            return null;
         }
     }
 }

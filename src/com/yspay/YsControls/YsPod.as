@@ -13,6 +13,7 @@ package com.yspay.YsControls
     import flash.display.DisplayObjectContainer;
 
     import mx.core.Application;
+    import mx.core.UIComponent;
     import mx.managers.CursorManager;
     import mx.utils.object_proxy;
 
@@ -250,6 +251,23 @@ package com.yspay.YsControls
         public function get cname():String
         {
             return _xml.@title.toString();
+        }
+
+        public function Print(print_container:UIComponent):UIComponent
+        {
+            var print_area:UIComponent;
+            if (print_container == null)
+                print_area = UtilFunc.CreatePrintPage(title);
+            else
+                print_area = print_container;
+
+            for each (var child:Object in this.getChildren())
+            {
+                if (child is YsControl)
+                    child.Print(print_area);
+            }
+
+            return print_area;
         }
     }
 }

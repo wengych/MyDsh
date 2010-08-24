@@ -9,11 +9,11 @@ package com.yspay.YsControls
     import flash.display.DisplayObjectContainer;
 
     import mx.collections.ArrayCollection;
-    import mx.containers.Box;
     import mx.containers.TitleWindow;
     import mx.controls.Alert;
     import mx.controls.DataGrid;
     import mx.core.Application;
+    import mx.core.UIComponent;
     import mx.events.*;
 
     public class YsTitleWindow extends TitleWindow implements YsControl
@@ -166,6 +166,23 @@ package com.yspay.YsControls
 
             var child_ctrl:YsControl = new YsMaps.ys_type_map[node_name](this);
             child_ctrl.Init(xml);
+        }
+
+        public function Print(print_container:UIComponent):UIComponent
+        {
+            var print_area:UIComponent;
+            if (print_container == null)
+                print_area = UtilFunc.CreatePrintPage();
+            else
+                print_area = print_container;
+
+            for each (var child:Object in this.getChildren())
+            {
+                if (child is YsControl)
+                    child.Print(print_area);
+            }
+
+            return print_area;
         }
     }
 }

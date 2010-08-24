@@ -7,14 +7,23 @@ package com.yspay.util
 
     import flash.display.DisplayObject;
     import flash.display.DisplayObjectContainer;
+    import flash.events.Event;
+    import flash.events.MouseEvent;
     import flash.net.SharedObject;
+    import flash.printing.PrintJob;
     import flash.system.Capabilities;
     import flash.utils.getDefinitionByName;
 
     import mx.collections.ArrayCollection;
+    import mx.containers.Panel;
+    import mx.containers.TitleWindow;
     import mx.controls.Alert;
+    import mx.controls.Button;
+    import mx.controls.Label;
     import mx.core.Application;
     import mx.core.Container;
+    import mx.core.UIComponent;
+    import mx.managers.PopUpManager;
 
     public class UtilFunc
     {
@@ -208,5 +217,56 @@ package com.yspay.util
             return [resX, resY];
         }
 
+        public static function CreatePrintPage(title:String=''):UIComponent
+        {
+            trace('创建打印窗体');
+            var pop:Panel =  PopUpManager.createPopUp(Application.application as DisplayObject,
+                                                      Panel, true) as Panel;
+
+            var print_page:TitleWindow = new TitleWindow;
+            // 210 x 297
+            print_page.width = 210 * 3 - 60;
+            print_page.height = 297 * 3 - 80;
+            pop.addChild(print_page);
+            pop.height = Application.application.height;
+            pop.width = print_page.width + 100;
+            PopUpManager.centerPopUp(pop);
+
+            var printBtn_Click:Function = function(event:Event):void
+                {
+                    var print_job:PrintJob = new PrintJob;
+
+                    if (print_job.start())
+                    {
+                        print_job.addPage(print_page);
+                        print_job.send();
+                    }
+                };
+            var closeBtn_Click:Function = function(event:Event):void
+                {
+                    PopUpManager.removePopUp(pop);
+                };
+
+
+            var closeBtn:Button = new Button;
+            closeBtn.label = '关闭';
+            closeBtn.addEventListener(MouseEvent.CLICK, closeBtn_Click);
+
+            var printBtn:Button = new Button;
+            printBtn.label = '打印';
+            printBtn.addEventListener(MouseEvent.CLICK, printBtn_Click);
+
+            pop.addChildAt(closeBtn, 0);
+            pop.addChildAt(printBtn, 0);
+
+            var print_title:Label = new Label;
+            print_title.width = print_page.width;
+            print_title.setStyle("textAlign", "center");
+            print_title.text = title;
+            print_title.setStyle('fontSize', '13');
+
+            print_page.addChild(print_title);
+            return print_page;
+        }
     }
 }
