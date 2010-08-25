@@ -8,6 +8,8 @@
                 width="100%"
                 height="100%"
                 verticalGap="1"
+                paddingBottom="10"
+                verticalScrollPolicy="off"
                 backgroundSize="100%"
                 backgroundColor="#ffffff"
                 xmlns:flexlib="http://code.google.com/p/flexlib/">
@@ -78,6 +80,27 @@
             {
                 initPoolAndM_data();
                 onResultHttpService();
+            }
+
+            protected function DoPrint():void
+            {
+                var print_job:PrintJob = new PrintJob;
+                // var print_opt:PrintJobOptions = new PrintJobOptions;
+
+                if (print_job.start())
+                {
+                    var old_width:int = mainCanvas.width;
+                    var old_height:int = mainCanvas.height;
+
+                    mainCanvas.width = print_job.pageWidth;
+                    mainCanvas.height = print_job.pageHeight;
+                    print_job.addPage(this.mainCanvas);
+
+                    print_job.send();
+
+                    mainCanvas.width = old_width;
+                    mainCanvas.height = old_height;
+                }
             }
 
             protected function UserInfoChange(event:PropertyChangeEvent):void
@@ -284,10 +307,12 @@
                     <mx:ComboBox dataProvider="{comboboxDP}"
                                  labelField="name"
                                  close="comboboxClickHandler(event)"/>
+                    <!-- mx:Button label="打印"
+                         click="DoPrint();"/ -->
                 </mx:ApplicationControlBar>
             </mx:AddChild>
             <mx:AddChild>
-                <mx:Canvas width="100%"
+                <mx:Canvas width="{cb.width}"
                            height="100%"
                            id="mainCanvas"
                            borderStyle="solid"
@@ -296,12 +321,12 @@
             </mx:AddChild>
             <mx:AddChild>
                 <mx:ControlBar width="100%"
-                               height="30"
-                               barColor="red"
+                               id="cb"
                                horizontalAlign="left"
                                fontFamily="Arial"
                                fontSize="14"
-                               paddingBottom="1">
+                               paddingTop="1"
+                               paddingBottom="0">
                     <mx:Label text="机构"/>
                     <mx:Label id="DEPTNAME"
                               color="blue"
