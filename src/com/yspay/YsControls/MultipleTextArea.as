@@ -64,7 +64,6 @@ package com.yspay.YsControls
 
             if (_fileable == true)
             {
-                this.fileable = true;
                 _btn = new Button;
                 _btn.setStyle("fontSize", 12);
                 _btn.label = '浏览';
@@ -157,7 +156,7 @@ package com.yspay.YsControls
             ba.writeBytes(fr.data);
             ba.position = 0;
             var str:String = transEncodingText(ba);
-            var arr:Array = str.split("\n");
+            var arr:Array = str.split("\\p");
             for (var i:int = 0; i < arr.length; i++)
             {
                 arr[i] = StringUtil.trim(arr[i]);
@@ -177,8 +176,9 @@ package com.yspay.YsControls
             while (_listDp.length > arr.length)
                 _listDp.removeItemAt(arr.length);
 
-            if (!_showList)
-                popUpList();
+            /*if (!_showList)
+               popUpList();
+             */
             cursorManager.removeBusyCursor();
         }
 
@@ -218,7 +218,6 @@ package com.yspay.YsControls
             {
                 if (temp > 0)
                 {
-
                     _backList.editedItemPosition = {columnIndex: 0,
                             rowIndex: temp - 1};
                 }
