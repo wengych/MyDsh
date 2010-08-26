@@ -66,6 +66,7 @@ package com.yspay.YsControls
 
         public static var button_attrs:Object =
             {
+                'interruptable': {'default': false}
             };
 
         // Windows支持的属性列表
