@@ -330,11 +330,11 @@
                     <mx:Label text="机构"/>
                     <mx:Label id="DEPTNAME"
                               color="blue"
-                              width="300"/>
+                              width="200"/>
                     <mx:Label text="用户名"/>
                     <mx:Label id="USERID"
                               color="blue"
-                              width="200"/>
+                              width="100"/>
                     <mx:Label text="服务返回码"/>
                     <mx:Label color="blue"
                               id="SCALL_RTN"
@@ -346,7 +346,7 @@
                     <mx:Label text="用户返回信息"/>
                     <mx:Label color="blue"
                               id="USER_RTN_MSG"
-                              width="400"/>
+                              width="100"/>
                 </mx:ControlBar>
             </mx:AddChild>
         </mx:State>

@@ -269,5 +269,18 @@ package com.yspay.YsControls
 
             return print_area;
         }
+
+        //重新计算pod大小时其子组建也重新计算
+        public override function invalidateSize():void
+        {
+            super.invalidateSize();
+            for each (var o:Object in this.getChildren())
+            {
+                if (o is UIComponent)
+                {
+                    (o as UIComponent).invalidateSize();
+                }
+            }
+        }
     }
 }

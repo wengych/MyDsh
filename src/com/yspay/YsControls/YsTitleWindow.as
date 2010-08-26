@@ -6,6 +6,7 @@ package com.yspay.YsControls
     import com.yspay.util.FunctionDelegate;
     import com.yspay.util.UtilFunc;
 
+    import flash.display.DisplayObject;
     import flash.display.DisplayObjectContainer;
 
     import mx.collections.ArrayCollection;
@@ -13,6 +14,7 @@ package com.yspay.YsControls
     import mx.controls.Alert;
     import mx.controls.DataGrid;
     import mx.core.Application;
+    import mx.core.Container;
     import mx.core.UIComponent;
     import mx.events.*;
 
@@ -41,9 +43,30 @@ package com.yspay.YsControls
 
         protected override function measure():void
         {
-            if (UtilFunc.HasChildByType(this, DataGrid))
-                this.percentHeight = 100;
             super.measure();
+            if (UtilFunc.HasChildByType(this, DataGrid))
+            {
+                this.percentHeight = 100;
+            }
+            callLater(reDraw);
+
+        }
+
+        //在下一次重绘界面前根据其他同级组件的宽度设置宽度
+        private function reDraw():void
+        {
+            if (parent != null && parent is Container)
+            {
+                var arr:Array = (parent as Container).getChildren();
+                for each (var o:Object in arr)
+                {
+                    if (o is DisplayObject)
+                    {
+                        if (o.width > this.width)
+                            this.width = o.width;
+                    }
+                }
+            }
         }
 
         public function set ename(str:String):void
