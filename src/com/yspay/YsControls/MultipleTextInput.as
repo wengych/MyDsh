@@ -58,7 +58,7 @@ package com.yspay.YsControls
         {
             this._fileable = new_value;
 
-            if (_fileable == true)
+            if (new_value)
             {
                 _btn = new Button;
                 _btn.setStyle("fontSize", 12);

@@ -62,7 +62,7 @@ package com.yspay.YsControls
         {
             this._fileable = new_value;
 
-            if (_fileable == true)
+            if (new_value)
             {
                 _btn = new Button;
                 _btn.setStyle("fontSize", 12);
@@ -384,6 +384,18 @@ package com.yspay.YsControls
         // 读取不同 编码的文档   
         private function transEncodingText(bytes:ByteArray):String
         {
+            var new_bytes:ByteArray;
+            var pos:int = 0;
+            for (var idx:int = 0; idx < bytes.length; ++idx)
+            {
+                if (bytes[idx] == 10 && bytes[idx + 1] == 13)
+                {
+                    new_bytes.readBytes(bytes, pos, idx - pos);
+                    idx++;
+                    pos = idx + 1;
+                }
+            }
+
             // 1. unicode 文档 开头 16进制码为 FF FE ,对应 十进制 数 为 255，254   
             if (bytes[0] == 255 && bytes[1] == 254)
             {
