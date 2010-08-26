@@ -1,6 +1,7 @@
 package com.yspay.YsControls
 {
     import com.yspay.events.StackEvent;
+    import com.yspay.util.UtilFunc;
 
     import flash.display.DisplayObjectContainer;
     import flash.events.Event;
@@ -33,24 +34,7 @@ package com.yspay.YsControls
                 _parent.addChild(this);
             _xml = xml;
 
-            var attrs:Object = YsMaps.event_attrs;
-            for (var attr_name:String in attrs)
-            {
-                if (!(this.hasOwnProperty(attr_name)))
-                {
-                    continue;
-                }
-
-                if (_xml.attribute(attr_name).length() == 0)
-                {
-                    // XML中未描述此属性，取默认值
-                    this[attr_name] = attrs[attr_name]['default'];
-                }
-                else
-                {
-                    this[attr_name] = _xml.attribute(attr_name).toString();
-                }
-            }
+            UtilFunc.InitAttrbutes(YsMaps.event_attrs, this, this._xml);
 
             this.setStyle('fontWeight', 'normal');
             this.label = _xml.@LABEL;

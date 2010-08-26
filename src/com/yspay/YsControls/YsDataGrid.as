@@ -207,24 +207,7 @@
             _parent.addChild(this);
             _xml = new XML(xml);
 
-            for (var attr_name:String in YsMaps.datagrid_attrs)
-            {
-                if (!(this.hasOwnProperty(attr_name)))
-                {
-                    Alert.show('YsDataGrid中没有 ' + attr_name + ' 属性');
-                    continue;
-                }
-
-                if (_xml.attribute(attr_name).length() == 0)
-                {
-                    // XML中未描述此属性，取默认值
-                    this[attr_name] = YsMaps.datagrid_attrs[attr_name]['default'];
-                }
-                else
-                {
-                    this[attr_name] = _xml.attribute(attr_name).toString();
-                }
-            }
+            UtilFunc.InitAttrbutes(YsMaps.datagrid_attrs, this, this._xml);
 
             // 清空DataGridColumns
             columns = []; //.splice(0, columns.length);

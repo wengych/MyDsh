@@ -66,7 +66,7 @@ package com.yspay.YsControls
 
         public static var button_attrs:Object =
             {
-                'interruptable': {'default': false}
+                'interruptable': {'default': true} // 默认为所有操作序列,一旦有一个出错,便中断当前操作序列
             };
 
         // Windows支持的属性列表

@@ -140,26 +140,7 @@ package com.yspay.YsControls
 
         protected function InitAttributes():void
         {
-            var wnd_attrs:Object = YsMaps.windows_attrs;
-            for (var attr_name:String in wnd_attrs)
-            {
-                if (!(this.hasOwnProperty(attr_name)))
-                {
-                    Alert.show('YsTitleWindow中没有 ' + attr_name + ' 属性');
-                    continue;
-                }
-
-                if (_xml.attribute(attr_name).length() == 0)
-                {
-                    // XML中未描述此属性，取默认值
-                    if (wnd_attrs[attr_name].hasOwnProperty('default'))
-                        this[attr_name] = wnd_attrs[attr_name]['default'];
-                }
-                else
-                {
-                    this[attr_name] = _xml.attribute(attr_name).toString();
-                }
-            }
+            UtilFunc.InitAttrbutes(YsMaps.windows_attrs, this, this._xml);
         }
 
         public function Init(xml:XML):void

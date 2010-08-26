@@ -24,6 +24,7 @@ package com.yspay.util
     import mx.core.Container;
     import mx.core.UIComponent;
     import mx.managers.PopUpManager;
+    import mx.utils.ObjectUtil;
 
     public class UtilFunc
     {
@@ -267,6 +268,51 @@ package com.yspay.util
 
             print_page.addChild(print_title);
             return print_page;
+        }
+
+        public static function InitAttrbutes(attr_map:Object, target:Object, xml:XML):void
+        {
+            for (var attr_name:String in attr_map)
+            {
+                if (!(target.hasOwnProperty(attr_name)))
+                {
+                    continue;
+                }
+
+                if (xml.attribute(attr_name).length() == 0)
+                {
+                    // XML中未描述此属性，取默认值
+                    target[attr_name] = attr_map[attr_name]['default'];
+                }
+                else
+                {
+                    var str_value:String  = xml.attribute(attr_name).toString();
+                    var value:Object;
+
+                    var cls_info:Object = ObjectUtil.getClassInfo(target[attr_name]);
+                    var cls_name:String = cls_info.name;
+
+                    if (cls_name == 'Boolean')
+                    {
+                        if (str_value == 'true')
+                            value = true;
+                        else if (str_value == 'false')
+                            value = false;
+                        else
+                            value = attr_map[attr_name]['default'];
+                    }
+                    else if (cls_name == 'int')
+                    {
+                        value = int(str_value);
+                    }
+                    else
+                    {
+                        value = str_value;
+                    }
+
+                    target[attr_name] = value;
+                }
+            }
         }
     }
 }
