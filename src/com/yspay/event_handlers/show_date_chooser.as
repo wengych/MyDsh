@@ -19,6 +19,7 @@ package com.yspay.event_handlers
                                       action_info:XML):Boolean
     {
         var dict:YsDict = UtilFunc.YsGetParentByType(ui_comp, YsDict) as YsDict;
+        var old_width:int = ui_comp.width;
         var date_chooser:DateChooser = new DateChooser;
 
         var df:DateFormatter = new DateFormatter;
@@ -56,14 +57,16 @@ package com.yspay.event_handlers
                 }
 
                 dict.removeChild(date_chooser);
+                ui_comp.width = old_width;
                 ui_comp.visible = true;
             };
 
         date_chooser.yearNavigationEnabled = true;
         date_chooser.addEventListener(CalendarLayoutChangeEvent.CHANGE, call_back);
+        ui_comp.visible = false;
+        ui_comp.width = 0;
         dict.addChild(date_chooser);
 
-        ui_comp.visible = false;
 
         return true;
     }
