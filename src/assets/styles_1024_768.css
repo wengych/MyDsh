@@ -162,3 +162,8 @@ DragHighlight
    cornerRadius: 10;
    dropShadowEnabled: false;
 }
+    	  ToolTip {
+      fontFamily: "Arial";
+      fontSize: 14; 
+     color: #123456; 
+				    }

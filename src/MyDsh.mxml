@@ -10,9 +10,11 @@
                 verticalGap="1"
                 paddingBottom="10"
                 verticalScrollPolicy="off"
+                horizontalScrollPolicy="off"
                 backgroundSize="100%"
                 backgroundColor="#ffffff"
-                xmlns:flexlib="http://code.google.com/p/flexlib/">
+                xmlns:flexlib="http://code.google.com/p/flexlib/"
+                xmlns:YsControls="com.yspay.YsControls.*">
     <mx:Style source="/assets/styles_1024_768.css"/>
     <mx:Script>
         <![CDATA[
@@ -49,6 +51,7 @@
             import com.yspay.event_handlers.EventHandlerFactory;
             import com.yspay.*;
             import com.yspay.YsData.MData;
+            import com.yspay.YsControls.*;
             import mx.styles.StyleManager;
             import com.yspay.YsData.PData;
             import nl.demonsters.debugger.MonsterDebugger;
@@ -312,7 +315,7 @@
                 </mx:ApplicationControlBar>
             </mx:AddChild>
             <mx:AddChild>
-                <mx:Canvas width="{cb.width}"
+                <mx:Canvas width="100%"
                            height="100%"
                            id="mainCanvas"
                            borderStyle="solid"
@@ -326,11 +329,12 @@
                                fontFamily="Arial"
                                fontSize="14"
                                paddingTop="1"
-                               paddingBottom="0">
+                               paddingBottom="0"
+                               horizontalGap="2">
                     <mx:Label text="机构"/>
-                    <mx:Label id="DEPTNAME"
-                              color="blue"
-                              width="200"/>
+                    <YsControls:RightShowLabel id="DEPTNAME"
+                                               color="blue"
+                                               width="100"/>
                     <mx:Label text="用户名"/>
                     <mx:Label id="USERID"
                               color="blue"
@@ -338,15 +342,15 @@
                     <mx:Label text="服务返回码"/>
                     <mx:Label color="blue"
                               id="SCALL_RTN"
-                              width="35"/>
+                              width="30"/>
                     <mx:Label text="用户返回码"/>
                     <mx:Label color="blue"
                               id="USER_RTN"
-                              width="35"/>
+                              width="30"/>
                     <mx:Label text="用户返回信息"/>
                     <mx:Label color="blue"
                               id="USER_RTN_MSG"
-                              width="100"/>
+                              width="350"/>
                 </mx:ControlBar>
             </mx:AddChild>
         </mx:State>
