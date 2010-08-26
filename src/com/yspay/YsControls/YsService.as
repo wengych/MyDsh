@@ -214,6 +214,7 @@ package com.yspay.YsControls
             var pod:YsPod = UtilFunc.YsGetParentByType(this._parent, YsPod) as YsPod;
             if (bus == null)
             {
+                pool.SERVICE_RTN.SCALL_RTN = '服务调用出错';
                 Alert.show('服务调用出错,bus为空' + '\n' + '            服务名:' + action_name);
                 event.result = false;
                 this._parent.dispatchEvent(event);
@@ -234,22 +235,23 @@ package com.yspay.YsControls
                 user_rtn_msg = bus.__DICT_USER_RTNMSG[0].value;
             }
 
-            if (user_rtn != 0)
+            var pool:Pool = Application.application._pool;
+            pool.SERVICE_RTN.SCALL_RTN = scall_rtn;
+            pool.SERVICE_RTN.USER_RTN = user_rtn;
+            pool.SERVICE_RTN.USER_RTN_MSG = user_rtn_msg;
+
+            if (scall_rtn != 0)
             {
-                trace('Service: USER_RTN: ', user_rtn.toString());
                 event.result = false;
                 this._parent.dispatchEvent(event);
                 pod.enabled = true;
                 return;
             }
 
-            var pool:Pool = Application.application._pool;
-            pool.SERVICE_RTN.SCALL_RTN = scall_rtn;
-            pool.SERVICE_RTN.USER_RTN = user_rtn;
-            pool.SERVICE_RTN.USER_RTN_MSG = user_rtn_msg;
-
-            if (user_rtn != 0 || scall_rtn != 0)
+            if (user_rtn != 0)
             {
+                trace('Service: USER_RTN: ', user_rtn.toString());
+                event.result = false;
                 this._parent.dispatchEvent(event);
                 pod.enabled = true;
                 return;
