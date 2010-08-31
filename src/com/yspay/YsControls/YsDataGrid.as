@@ -446,11 +446,11 @@
             }
         }
 
-        public function Print(print_container:UIComponent):UIComponent
+        public function Print(print_container:UIComponent, print_call_back:Function):UIComponent
         {
             var print_area:UIComponent;
             if (print_container == null)
-                print_area = UtilFunc.CreatePrintPage();
+                print_area = print_call_back();
             else
                 print_area = print_container;
 
@@ -459,7 +459,7 @@
             for each (var child:Object in this.dict_arr)
             {
                 if (child is YsControl)
-                    child.Print(dg);
+                    child.Print(dg, print_call_back);
             }
 
             dg.dataProvider = this.dataProvider;

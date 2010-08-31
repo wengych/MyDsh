@@ -667,11 +667,11 @@ package com.yspay.YsControls
             dict.text = sel_item[dict.name];
         }
 
-        public function Print(print_container:UIComponent):UIComponent
+        public function Print(print_container:UIComponent, print_call_back:Function):UIComponent
         {
             var print_area:UIComponent;
             if (print_container == null)
-                print_area = UtilFunc.CreatePrintPage();
+                print_area = print_call_back();
             else
                 print_area = print_container;
 
@@ -705,10 +705,10 @@ package com.yspay.YsControls
         protected function PrintDict(print_area:UIComponent):void
         {
             var label_width:int = 100;
-            var text_width:int = 200;
+            var text_width:int = 160;
             var hbox:HBox = new HBox;
-            hbox.setStyle('border', 'none');
-            hbox.setStyle('borderColor', '#ffffff');
+            //hbox.setStyle('border', 'none');
+            //hbox.setStyle('borderColor', '#ffffff');
 
             var label:Label = new Label;
             var value:Text = new Text;

@@ -253,18 +253,18 @@ package com.yspay.YsControls
             return _xml.@title.toString();
         }
 
-        public function Print(print_container:UIComponent):UIComponent
+        public function Print(print_container:UIComponent, print_call_back:Function):UIComponent
         {
             var print_area:UIComponent;
             if (print_container == null)
-                print_area = UtilFunc.CreatePrintPage(title);
+                print_area = print_call_back(title);
             else
                 print_area = print_container;
 
             for each (var child:Object in this.getChildren())
             {
                 if (child is YsControl)
-                    child.Print(print_area);
+                    child.Print(print_area, print_call_back);
             }
 
             return print_area;

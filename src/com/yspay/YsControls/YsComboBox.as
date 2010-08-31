@@ -324,7 +324,7 @@ package com.yspay.YsControls
             return '';
         }
 
-        public function Print(print_container:UIComponent):UIComponent
+        public function Print(print_container:UIComponent, print_call_back:Function):UIComponent
         {
             return null;
         }

@@ -89,22 +89,22 @@ package com.yspay.YsControls
             }
         }
 
-        public function Print(print_container:UIComponent):UIComponent
+        public function Print(print_container:UIComponent, print_call_back:Function):UIComponent
         {
             var print_area:UIComponent;
             if (print_container == null)
-                print_area = UtilFunc.CreatePrintPage();
+                print_area = print_call_back();
             else
                 print_area = print_container;
 
             var hbox:HBox = new HBox;
-            hbox.setStyle('border', 'none');
-            hbox.setStyle('borderColor', '#ffffff');
+            //hbox.setStyle('border', 'none');
+            //hbox.setStyle('borderColor', '#ffffff');
 
             for each (var child:Object in this.getChildren())
             {
                 if (child is YsControl)
-                    child.Print(hbox);
+                    child.Print(hbox, print_call_back);
             }
 
             print_area.addChild(hbox);

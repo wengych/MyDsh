@@ -212,6 +212,7 @@ package com.yspay.YsControls
         protected function ServiceCallBack(bus:UserBus, event:StackEvent, error_event:ErrorEvent):void
         {
             var pod:YsPod = UtilFunc.YsGetParentByType(this._parent, YsPod) as YsPod;
+            var pool:Pool = Application.application._pool;
             if (bus == null)
             {
                 pool.SERVICE_RTN.SCALL_RTN = '服务调用出错';
@@ -235,7 +236,6 @@ package com.yspay.YsControls
                 user_rtn_msg = bus.__DICT_USER_RTNMSG[0].value;
             }
 
-            var pool:Pool = Application.application._pool;
             pool.SERVICE_RTN.SCALL_RTN = scall_rtn;
             pool.SERVICE_RTN.USER_RTN = user_rtn;
             pool.SERVICE_RTN.USER_RTN_MSG = user_rtn_msg;

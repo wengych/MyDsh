@@ -10,6 +10,6 @@ package com.yspay.YsControls
         function GetLinkXml():XML;
         function get type():String;
 
-        function Print(print_container:UIComponent):UIComponent;
+        function Print(print_container:UIComponent, print_call_back:Function):UIComponent;
     }
 }

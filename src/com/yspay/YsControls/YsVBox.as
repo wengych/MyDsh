@@ -88,20 +88,22 @@ package com.yspay.YsControls
             return _xml.name().toString();
         }
 
-        public function Print(print_container:UIComponent):UIComponent
+        public function Print(print_container:UIComponent, print_call_back:Function):UIComponent
         {
             var print_area:UIComponent;
             if (print_container == null)
-                print_area = UtilFunc.CreatePrintPage();
+                print_area = print_call_back();
+            else
+                print_area = print_container;
 
             var vbox:VBox = new VBox;
-            vbox.setStyle('border', 'none');
-            vbox.setStyle('borderColor', '#ffffff');
+            //vbox.setStyle('border', 'none');
+            //vbox.setStyle('borderColor', '#ffffff');
 
             for each (var child:Object in this.getChildren())
             {
                 if (child is YsControl)
-                    child.Print(vbox);
+                    child.Print(vbox, print_call_back);
             }
 
             print_area.addChild(vbox);
