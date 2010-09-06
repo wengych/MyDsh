@@ -12,7 +12,7 @@ package com.yspay.event_handlers
 
     import flash.events.Event;
 
-    import mx.core.Application;
+    import mx.core.FlexGlobals;
     import mx.core.UIComponent;
 
     public function dict_change(ui_comp:UIComponent, event:Event, action_info:XML):Boolean
@@ -20,7 +20,7 @@ package com.yspay.event_handlers
 
         var get_dts_func:Function = function(event:DBTableQueryEvent):void
             {
-                var dts:DBTable = Application.application._pool.dts as DBTable;
+                var dts:DBTable = FlexGlobals.topLevelApplication._pool.dts as DBTable;
                 ui_comp.removeEventListener(dts.select_event_name, get_dts_func);
 
                 var dts_xml:String = dts[event.query_name][dts.arg_select];
@@ -51,9 +51,9 @@ package com.yspay.event_handlers
 
         var new_dict_xml:XML = new XML('<DICT>DICT://GENDERListTest</DICT>');
 
-        var info:DBTable = Application.application._pool.info;
+        var info:DBTable = FlexGlobals.topLevelApplication._pool.info;
         var dts_no:String = info.DICT['GENDERListTest'].Get().DTS;
-        var dts:DBTable = Application.application._pool.dts;
+        var dts:DBTable = FlexGlobals.topLevelApplication._pool.dts;
 
         dts.AddQuery(dts_no, Query, dts_no, ui_comp);
         ui_comp.addEventListener(dts.select_event_name, get_dts_func);

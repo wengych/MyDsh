@@ -785,5 +785,12 @@
                      selected="true"
                      id="enable_cache"/>
     </mx:Panel>
+    <!-- mx:Style>
+         @font-face {
+         src:url('assets/cour.ttf');
+         src:url('assets/simsun.ttc');
+         fontFamily: myFont;
+         }
+         </mx:Style -->
 </mx:Application>
 

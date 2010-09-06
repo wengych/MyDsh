@@ -137,29 +137,6 @@ package com.yspay.YsControls
             return rtn;
         }
 
-        protected function InitAttrs(attrs:Object):void
-        {
-            for (var attr_name:String in attrs)
-            {
-                if (!(this.hasOwnProperty(attr_name)))
-                {
-                    Alert.show('YsDict中没有 ' + attr_name + ' 属性');
-                    continue;
-                }
-
-                if (_xml.attribute(attr_name).length() == 0)
-                {
-                    // XML中未描述此属性，取默认值
-                    if (attrs[attr_name].hasOwnProperty('default'))
-                        this[attr_name] = attrs[attr_name]['default'];
-                }
-                else
-                {
-                    this[attr_name] = _xml.attribute(attr_name).toString();
-                }
-            }
-        }
-
         protected function FindInArr(arr:ArrayCollection, key:String, value:Object):int
         {
             for (var idx:int = 0; idx < arr.length; ++idx)
@@ -216,7 +193,7 @@ package com.yspay.YsControls
             var dgc:DataGridColumn =  new DataGridColumn;
             this.editable = dg.editable;
 
-            InitAttrs(YsMaps.dict_dg_attrs);
+            UtilFunc.InitAttrbutes(YsMaps.dict_dg_attrs, this, _xml);
 
             dgc.editable = this.editable;
             dgc.headerText = this.LABEL;
@@ -715,11 +692,14 @@ package com.yspay.YsControls
 
 
             label.setStyle("textAlign", "right");
+            value.setStyle('fontWeight', 'normal');
+            // label.setStyle('fontFamily', 'myFont');
             label.width = label_width;
             label.text = _label.text;
 
             value.setStyle('textAlign', 'justify');
             value.setStyle('fontWeight', 'normal');
+            // value.setStyle('fontFamily', 'myFont');
             value.width = text_width;
             value.text = _text.text;
 
@@ -727,6 +707,11 @@ package com.yspay.YsControls
             hbox.addChild(value);
 
             print_area.addChild(hbox);
+        }
+
+        public function GetId():String
+        {
+            return id;
         }
     }
 }

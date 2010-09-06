@@ -33,6 +33,36 @@ package com.yspay.YsControls
                 'event': YsXmlEvent
             };
 
+        public static var pod_attrs:Object =
+            {
+                'TITLE': {'default': 'POD'}
+                , 'id': {'default': 'YsPod'}
+            };
+
+        // Windows支持的属性列表
+        public static var windows_attrs:Object =
+            {
+                'TITLE': {'default': 'windows'}
+                , 'showCloseButton': {'default': false}
+            };
+
+        public static var vbox_attrs:Object =
+            {
+                'id': {'default': 'vbox'}
+            };
+
+        public static var hbox_attrs:Object =
+            {
+                'id': {'default': 'hbox'}
+            };
+
+        public static var button_attrs:Object =
+            {
+                'interruptable': {'default': true} // 默认为所有操作序列,一旦有一个出错,便中断当前操作序列
+                , 'LABEL': {'default': 'Button'}
+                , 'id': {'default': 'Button'}
+            };
+
         // DataGrid支持的属性列表
         public static var datagrid_attrs:Object =
             {
@@ -44,6 +74,7 @@ package com.yspay.YsControls
                 , 'del': {'default': false}
                 , 'dragOut': {'default': false}
                 , 'default_line': {'default': false}
+                , 'id': {'default': 'YsDatagrid'}
             };
 
         public static var event_attrs:Object =
@@ -57,23 +88,12 @@ package com.yspay.YsControls
                 'editable': {}
             };
 
-        /*
-           public static var dict_attrs:Object =
-           {
-           'date': {'default': false}
-           };
-         */
+       public static var dict_attrs:Object =
+       {
+		   'id': {'default': 'dict'}
+		   , 'LABEL': {}
+       	   ,'InputType': {'default': 'TextInput'}
+       };
 
-        public static var button_attrs:Object =
-            {
-                'interruptable': {'default': true} // 默认为所有操作序列,一旦有一个出错,便中断当前操作序列
-            };
-
-        // Windows支持的属性列表
-        public static var windows_attrs:Object =
-            {
-                'title': {}
-                , 'showCloseButton': {'default': false}
-            };
     }
 }

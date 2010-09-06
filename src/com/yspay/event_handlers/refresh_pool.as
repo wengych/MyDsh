@@ -11,7 +11,7 @@ package com.yspay.event_handlers
     import flash.events.EventDispatcher;
 
     import mx.collections.ArrayCollection;
-    import mx.core.Application;
+    import mx.core.FlexGlobals;
     import mx.core.Container;
     import mx.core.UIComponent;
     import mx.managers.CursorManager;
@@ -22,7 +22,7 @@ package com.yspay.event_handlers
     {
         var func:Function = function(event:DBTableQueryEvent):void
             {
-                var M_data:MData = Application.application.M_data;
+                var M_data:MData = FlexGlobals.topLevelApplication.M_data;
                 // TODO 修正刷新pool的问题
                 CursorManager.removeBusyCursor();
                 if (M_data.POOL.INFO[event.query_name] != null)
@@ -58,7 +58,7 @@ package com.yspay.event_handlers
 
         var ys_pod:YsPod = UtilFunc.GetParentByType(ui_comp.parent as Container,
                                                     YsPod) as YsPod;
-        var _pool:Pool = Application.application._pool;
+        var _pool:Pool = FlexGlobals.topLevelApplication._pool;
 
         var info:DBTable = _pool.info as DBTable;
         var arr:Array = ['DICT', 'WINDOWS', 'BUTTON', 'SERVICES', 'TRAN', 'ACTION',

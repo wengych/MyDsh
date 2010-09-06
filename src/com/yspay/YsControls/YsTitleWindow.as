@@ -13,23 +13,24 @@ package com.yspay.YsControls
     import mx.containers.TitleWindow;
     import mx.controls.Alert;
     import mx.controls.DataGrid;
-    import mx.core.Application;
+    import mx.core.FlexGlobals;
     import mx.core.Container;
     import mx.core.UIComponent;
     import mx.events.*;
 
     public class YsTitleWindow extends TitleWindow implements YsControl
     {
-        public var _M_data:Object = Application.application.M_data;
+        public var TITLE:String;
+        public var _M_data:Object = FlexGlobals.topLevelApplication.M_data;
         public var _xml:XML;
 
         public var D_data:PData = new PData;
 
         [Bindable]
-        private var arr_col:ArrayCollection;
-        private var _pool:Pool;
-        private var func_helper:FunctionDelegate = new FunctionDelegate;
-        private var dts_event_listener:Function;
+        protected var arr_col:ArrayCollection;
+        protected var _pool:Pool;
+        protected var func_helper:FunctionDelegate = new FunctionDelegate;
+        protected var dts_event_listener:Function;
         public var _parent:DisplayObjectContainer;
 
         public function YsTitleWindow(parent:DisplayObjectContainer)
@@ -37,7 +38,7 @@ package com.yspay.YsControls
             super();
             _parent = parent;
             this.percentWidth = 100;
-            _pool = Application.application._pool;
+            _pool = FlexGlobals.topLevelApplication._pool;
             this.addEventListener(EventWindowShowXml.EVENT_NAME, OnShow);
         }
 
@@ -138,11 +139,6 @@ package com.yspay.YsControls
             return rtn;
         }
 
-        protected function InitAttributes():void
-        {
-            UtilFunc.InitAttrbutes(YsMaps.windows_attrs, this, this._xml);
-        }
-
         public function Init(xml:XML):void
         {
             xml = com.yspay.util.UtilFunc.FullXml(xml);
@@ -150,7 +146,7 @@ package com.yspay.YsControls
             _parent.addChild(this);
             this.name = xml.text().toString();
 
-            InitAttributes();
+            UtilFunc.InitAttrbutes(YsMaps.windows_attrs, this, this._xml);
 
             for each (var event_xml:XML in xml.elements())
             {
@@ -187,6 +183,11 @@ package com.yspay.YsControls
             }
 
             return print_area;
+        }
+
+        public function GetId():String
+        {
+            return id;
         }
     }
 }

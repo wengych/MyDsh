@@ -5,7 +5,7 @@ package com.yspay.YsControls
     import flash.display.DisplayObjectContainer;
 
     import mx.controls.dataGridClasses.DataGridColumn;
-    import mx.core.Application;
+    import mx.core.FlexGlobals;
 
     public class YsDictPool extends YsInvisible implements YsControl
     {
@@ -16,7 +16,7 @@ package com.yspay.YsControls
         public function YsDictPool(parent:DisplayObjectContainer)
         {
             super();
-            _pool = Application.application._pool;
+            _pool = FlexGlobals.topLevelApplication._pool;
             _parent = parent;
         }
 

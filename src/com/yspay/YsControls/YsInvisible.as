@@ -20,6 +20,7 @@ package com.yspay.YsControls
 
         public function YsInvisible()
         {
+            id = 'YsInvisible';
         }
 
         public function Init(xml:XML):void
@@ -70,6 +71,11 @@ package com.yspay.YsControls
         public function Print(print_container:UIComponent, print_call_back:Function):UIComponent
         {
             return null;
+        }
+
+        public function GetId():String
+        {
+            return id;
         }
     }
 }

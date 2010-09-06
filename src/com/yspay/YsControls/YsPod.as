@@ -12,7 +12,7 @@ package com.yspay.YsControls
 
     import flash.display.DisplayObjectContainer;
 
-    import mx.core.Application;
+    import mx.core.FlexGlobals;
     import mx.core.UIComponent;
     import mx.managers.CursorManager;
     import mx.utils.object_proxy;
@@ -21,9 +21,10 @@ package com.yspay.YsControls
 
     public class YsPod extends Pod implements YsControl
     {
+        public var TITLE:String;
         public var D_data:PData;
         public var P_cont:int; //xingj
-        public var _M_data:MData = Application.application.M_data; //xingj
+        public var _M_data:MData = FlexGlobals.topLevelApplication.M_data; //xingj
         public var _parent:DisplayObjectContainer;
         public var main_bus:UserBus;
         protected var P_data:PData; // = new Object; //xingj
@@ -34,7 +35,7 @@ package com.yspay.YsControls
         public function YsPod(parent:DisplayObjectContainer)
         {
             super();
-            _pool = Application.application._pool;
+            _pool = FlexGlobals.topLevelApplication._pool;
             _parent = parent;
             this.addEventListener(EventPodShowXml.EVENT_NAME, OnShow);
             //this.addEventListener(EventCacheComplete.EVENT_NAME, OnEventCacheComplete);
@@ -48,6 +49,7 @@ package com.yspay.YsControls
             P_data = _M_data.TRAN.getPData(P_cont);
 
             D_data = P_data;
+            id = 'YsPod';
         }
 
 
@@ -183,7 +185,7 @@ package com.yspay.YsControls
         {
             _xml = xml;
             trace(_xml);
-            title = _xml.@title.toString();
+            UtilFunc.InitAttrbutes(YsMaps.pod_attrs, this, _xml);
 
             for each (var child:XML in _xml.elements())
             {
@@ -281,6 +283,11 @@ package com.yspay.YsControls
                     (o as UIComponent).invalidateSize();
                 }
             }
+        }
+
+        public function GetId():String
+        {
+            return id;
         }
     }
 }

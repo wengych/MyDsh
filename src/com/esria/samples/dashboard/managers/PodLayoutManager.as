@@ -17,7 +17,7 @@ package com.esria.samples.dashboard.managers
     import flash.geom.Rectangle;
 
     import mx.containers.Canvas;
-    import mx.core.Application;
+    import mx.core.FlexGlobals;
     import mx.effects.Move;
     import mx.effects.Parallel;
     import mx.effects.Resize;
@@ -30,7 +30,7 @@ package com.esria.samples.dashboard.managers
 
     public class PodLayoutManager extends EventDispatcher
     {
-        public var _M_data:Object = Application.application.M_data; //xingj
+        public var _M_data:Object = FlexGlobals.topLevelApplication.M_data; //xingj
         public var id:String;
         public var items:Array = new Array(); // Stores the pods which are not minimized.
         public var minimizedItems:Array = new Array(); // Stores the minimized pods.
@@ -278,12 +278,12 @@ package com.esria.samples.dashboard.managers
             }
 
             // Use the stage so we get mouse events outside of the browser window.
-            Application.application.stage.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
+            FlexGlobals.topLevelApplication.stage.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
         }
 
         private function onDragCompletePod(e:DragEvent):void
         {
-            Application.application.stage.removeEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
+            FlexGlobals.topLevelApplication.stage.removeEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
 
             if (currentVisibleHighlight != null)
                 currentVisibleHighlight.visible = false;
