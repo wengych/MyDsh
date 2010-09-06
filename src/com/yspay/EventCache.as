@@ -7,7 +7,7 @@ package com.yspay
     import flash.events.EventDispatcher;
 
     import mx.controls.Alert;
-    import mx.core.Application;
+    import mx.core.FlexGlobals;
 
     public class EventCache extends EventDispatcher
     {
@@ -25,7 +25,7 @@ package com.yspay
         {
             // super(target);
             _disp = disp;
-            _pool = Application.application._pool;
+            _pool = FlexGlobals.topLevelApplication._pool;
             cache_obj = new Object;
             dts_key_table = new Object;
             check_comp_flag = false;
@@ -183,7 +183,7 @@ package com.yspay
                 cache_type_map[link_key] == true)
             {
                 var enable_cache:Boolean =
-                    Application.application.enable_cache.selected;
+                    FlexGlobals.topLevelApplication.enable_cache.selected;
                 if (enable_cache == true)
                     _pool.dts_cache[dts_no] = _pool.dts[dts_no];
             }

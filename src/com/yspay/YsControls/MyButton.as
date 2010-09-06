@@ -117,15 +117,15 @@ package com.yspay.YsControls
 
         }
 
-        public function set label(value:String):void
-        {
-            this._label = value;
-            this.invalidateProperties();
-        }
+       public function set LABEL(value:String):void
+       {
+       this._label = value;
+       this.invalidateProperties();
+       }
 
-        public function get label():String
-        {
-            return this._label;
-        }
+       public function get LABEL():String
+       {
+       return this._label;
+       }
     }
 }

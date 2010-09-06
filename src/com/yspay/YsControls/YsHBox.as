@@ -8,7 +8,7 @@ package com.yspay.YsControls
 
     import mx.containers.HBox;
     import mx.controls.DataGrid;
-    import mx.core.Application;
+    import mx.core.FlexGlobals;
     import mx.core.IUIComponent;
     import mx.core.UIComponent;
 
@@ -23,8 +23,9 @@ package com.yspay.YsControls
         public function YsHBox(parent:DisplayObjectContainer)
         {
             super();
-            _pool = Application.application._pool;
+            _pool = FlexGlobals.topLevelApplication._pool;
             _parent = parent;
+            id = 'YsHBox';
         }
 
         protected override function measure():void
@@ -74,19 +75,10 @@ package com.yspay.YsControls
             {
                 _parent.addChild(this);
             }
+
             percentWidth = 100;
-            var child_name:String;
-            for each (var child:XML in _xml.elements())
-            {
-                child_name = child.name().toString().toLowerCase();
-
-                // 查表未发现匹配类型
-                if (!YsMaps.ys_type_map.hasOwnProperty(child_name))
-                    continue;
-
-                var child_ctrl:YsControl = new YsMaps.ys_type_map[child_name](this);
-                child_ctrl.Init(child);
-            }
+            UtilFunc.InitAttrbutes(YsMaps.vbox_attrs, this, _xml);
+            UtilFunc.InitChild(this, _xml);
         }
 
         public function Print(print_container:UIComponent, print_call_back:Function):UIComponent
@@ -109,6 +101,11 @@ package com.yspay.YsControls
 
             print_area.addChild(hbox);
             return print_area;
+        }
+
+        public function GetId():String
+        {
+            return id;
         }
     }
 }

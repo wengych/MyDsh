@@ -1,25 +1,29 @@
 package com.yspay.util
 {
+    import com.yspay.YsControls.YsControl;
     import com.yspay.YsControls.YsDataGrid;
+    import com.yspay.YsControls.YsMaps;
     import com.yspay.YsData.PData;
     import com.yspay.pool.DBTable;
     import com.yspay.pool.Pool;
-
+    
     import flash.display.DisplayObject;
     import flash.display.DisplayObjectContainer;
     import flash.events.Event;
     import flash.events.MouseEvent;
     import flash.net.SharedObject;
     import flash.system.Capabilities;
+    import flash.ui.Mouse;
+    import flash.ui.MouseCursor;
     import flash.utils.getDefinitionByName;
-
+    
     import mx.collections.ArrayCollection;
     import mx.containers.Panel;
     import mx.containers.TitleWindow;
     import mx.controls.Alert;
     import mx.controls.Button;
     import mx.controls.Label;
-    import mx.core.Application;
+    import mx.core.FlexGlobals;
     import mx.core.Container;
     import mx.core.UIComponent;
     import mx.managers.PopUpManager;
@@ -140,7 +144,7 @@ package com.yspay.util
         public static function FullXml(xml:XML):XML
         {
             var rtn:XML = new XML(xml);
-            var pool:Pool = Application.application._pool;
+            var pool:Pool = FlexGlobals.topLevelApplication._pool;
 
             var search_str:String = '://';
             var url:String = xml.text();
@@ -221,8 +225,9 @@ package com.yspay.util
         {
             for (var attr_name:String in attr_map)
             {
-                if (!(target.hasOwnProperty(attr_name)))
+                if (!target.hasOwnProperty(attr_name))
                 {
+                    Alert.show(attr_name + ' 属性不存在');
                     continue;
                 }
 
@@ -236,8 +241,13 @@ package com.yspay.util
                     var str_value:String  = xml.attribute(attr_name).toString();
                     var value:Object;
 
-                    var cls_info:Object = ObjectUtil.getClassInfo(target[attr_name]);
-                    var cls_name:String = cls_info.name;
+                    var cls_info:Object;
+                    var cls_name:String = '';
+					if (!(target[attr_name] is String))
+					{
+						cls_info = ObjectUtil.getClassInfo(target[attr_name]);
+						cls_name = cls_info.name;
+					}
 
                     if (cls_name == 'Boolean')
                     {
@@ -259,6 +269,22 @@ package com.yspay.util
 
                     target[attr_name] = value;
                 }
+            }
+        }
+
+        public static function InitChild(target:YsControl, xml:XML):void
+        {
+            var child_name:String;
+            for each (var child:XML in xml.elements())
+            {
+                child_name = child.name().toString().toLowerCase();
+
+                // 查表未发现匹配类型
+                if (!YsMaps.ys_type_map.hasOwnProperty(child_name))
+                    continue;
+
+                var child_ctrl:YsControl = new YsMaps.ys_type_map[child_name](target);
+                child_ctrl.Init(child);
             }
         }
     }

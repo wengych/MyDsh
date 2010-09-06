@@ -15,7 +15,7 @@ package com.yspay.event_handlers
     import flash.events.Event;
 
     import mx.controls.listClasses.ListBase;
-    import mx.core.Application;
+    import mx.core.FlexGlobals;
     import mx.core.UIComponent;
     import mx.events.DragEvent;
 
@@ -23,7 +23,7 @@ package com.yspay.event_handlers
     {
         var get_dts_func:Function = function(event:DBTableQueryEvent):void
             {
-                var dts:DBTable = Application.application._pool.dts as DBTable;
+                var dts:DBTable = FlexGlobals.topLevelApplication._pool.dts as DBTable;
                 if (--item_count <= 0)
                     ui_comp.removeEventListener(dts.select_event_name, get_dts_func);
 
@@ -37,7 +37,7 @@ package com.yspay.event_handlers
 
         var cache_xml_func:Function = function(event:EventCacheComplete):void
             {
-                var dts:DBTable = Application.application._pool.dts as DBTable;
+                var dts:DBTable = FlexGlobals.topLevelApplication._pool.dts as DBTable;
                 ui_comp.removeEventListener(EventCacheComplete.EVENT_NAME, cache_xml_func);
 
                 // var obj:Object = drag_object;
@@ -79,7 +79,7 @@ package com.yspay.event_handlers
 
         // var drag_object:Object = (drag_event.dragInitiator as ListBase).selectedItem;
         var drag_items:Array = (drag_event.dragInitiator as ListBase).selectedItems;
-        var dts:DBTable = Application.application._pool.dts as DBTable;
+        var dts:DBTable = FlexGlobals.topLevelApplication._pool.dts as DBTable;
         var drag_item:Object;
         var item_count:int = drag_items.length;
 

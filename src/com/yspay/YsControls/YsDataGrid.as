@@ -14,7 +14,7 @@
     import mx.controls.Alert;
     import mx.controls.DataGrid;
     import mx.controls.dataGridClasses.DataGridColumn;
-    import mx.core.Application;
+    import mx.core.FlexGlobals;
     import mx.core.UIComponent;
     import mx.events.CollectionEvent;
     import mx.events.CollectionEventKind;
@@ -227,7 +227,7 @@
                 var info_xml:XML = p_xml.object[0];
                 var tran_xml:XML = info_xml.object[0];
 
-                var _M_data:MData = Application.application.M_data;
+                var _M_data:MData = FlexGlobals.topLevelApplication.M_data;
 
                 if (_M_data[p_xml.text()] == null)
                     return;
@@ -467,6 +467,11 @@
             print_area.addChild(dg);
             dg.height = dg.measureHeightOfItems(0, dg.dataProvider.length) + dg.headerHeight + 22;
             return print_area;
+        }
+
+        public function GetId():String
+        {
+            return id;
         }
     }
 }

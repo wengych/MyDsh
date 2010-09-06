@@ -263,9 +263,9 @@ package com.yspay.YsControls
             var arr_col:ArrayCollection = combo_data;
             var filter_func:Function =
                 function(combo_item:Object):Boolean
-                {
-                    return filterFunction(combo_item, key, value);
-                }
+            {
+                return filterFunction(combo_item, key, value);
+            }
             if (value == "")
             {
                 prompt = "请选择...";
@@ -327,6 +327,11 @@ package com.yspay.YsControls
         public function Print(print_container:UIComponent, print_call_back:Function):UIComponent
         {
             return null;
+        }
+
+        public function GetId():String
+        {
+            return id;
         }
     }
 }

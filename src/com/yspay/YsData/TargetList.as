@@ -10,7 +10,7 @@ package com.yspay.YsData
     import com.yspay.pool.Pool;
     import com.yspay.util.UtilFunc;
 
-    import mx.core.Application;
+    import mx.core.FlexGlobals;
 
     public class TargetList
     {
@@ -103,7 +103,7 @@ package com.yspay.YsData
                 }
                 else if (item_text == 'pool')
                 {
-                    var pool:Pool = Application.application._pool;
+                    var pool:Pool = FlexGlobals.topLevelApplication._pool;
                     curr_pdata = pool.D_data;
                 }
                 else if (item_text == 'self')
@@ -205,7 +205,7 @@ package com.yspay.YsData
                 }
                 else if (item_text == 'pool')
                 {
-                    var pool:Pool = Application.application._pool;
+                    var pool:Pool = FlexGlobals.topLevelApplication._pool;
                     curr_pdata = pool.D_data;
                 }
                 else if (item_text == 'self')

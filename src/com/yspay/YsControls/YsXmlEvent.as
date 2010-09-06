@@ -26,36 +26,21 @@ package com.yspay.YsControls
             this.width = 0;
             this.visible = false;
 
-            if (_parent is DataGrid)
-                ;
-            else if (_parent is ComboBox)
+            /*if (_parent is DataGrid)
+               ;
+             else */
+            if (_parent is ComboBox)
                 _parent.addChild(this);
             else
                 _parent.addChild(this);
             _xml = xml;
 
-            UtilFunc.InitAttrbutes(YsMaps.event_attrs, this, this._xml);
-
             this.setStyle('fontWeight', 'normal');
-            this.label = _xml.@LABEL;
-            var child_name:String;
-            for each (var child:XML in _xml.elements())
-            {
-                child_name = child.name().toString().toLowerCase();
-                // 查表未发现匹配类型
-                if (!YsMaps.ys_type_map.hasOwnProperty(child_name))
-                    continue;
-                var child_ctrl:YsControl = new YsMaps.ys_type_map[child_name](this);
-                child_ctrl.Init(child);
-            }
+            UtilFunc.InitAttrbutes(YsMaps.event_attrs, this, _xml);
+            UtilFunc.InitChild(this, _xml);
 
-            // TODO: event描述存入dts表
-            //       event_name从xml属性"event_name"获取
-            var event_name:String = _xml.text().toString();
-            // 默认不显示
-            //this.visible = xml.@VISABLE;
-            this.label = event_name;
             need_save = false;
+            var event_name:String = _xml.text().toString();
 
             this._parent.addEventListener(event_name, EventActived); //fd.create(func, _parent));
         }

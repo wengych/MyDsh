@@ -12,7 +12,7 @@ package com.yspay.YsControls
 
     import mx.controls.DataGrid;
     import mx.controls.listClasses.IListItemRenderer;
-    import mx.core.Application;
+    import mx.core.FlexGlobals;
     import mx.core.UIComponent;
     import mx.utils.ObjectUtil;
 
@@ -21,7 +21,7 @@ package com.yspay.YsControls
         public function YsButton(parent:DisplayObjectContainer)
         {
             super();
-            _pool = Application.application._pool;
+            _pool = FlexGlobals.topLevelApplication._pool;
             _parent = parent;
 
             this.addEventListener(StackEvent.EVENT_NAME, DoActions);
@@ -42,7 +42,7 @@ package com.yspay.YsControls
 
         public function get data():Object
         {
-            return this.label;
+            return this._label;
         }
 
         public function set data(value:Object):void
@@ -52,11 +52,7 @@ package com.yspay.YsControls
 
         public function Init(xml:XML):void
         {
-            if (_parent is DataGrid)
-            {
-                ;
-            }
-            else
+            if (!(_parent is DataGrid))
             {
                 _parent.addChild(this);
             }
@@ -65,17 +61,9 @@ package com.yspay.YsControls
             UtilFunc.InitAttrbutes(YsMaps.button_attrs, this, this._xml);
 
             this.setStyle('fontWeight', 'normal');
-            this.label = _xml.@LABEL;
-            var child_name:String;
-            for each (var child:XML in _xml.elements())
-            {
-                child_name = child.name().toString().toLowerCase();
-                // 查表未发现匹配类型
-                if (!YsMaps.ys_type_map.hasOwnProperty(child_name))
-                    continue;
-                var child_ctrl:YsControl = new YsMaps.ys_type_map[child_name](this);
-                child_ctrl.Init(child);
-            }
+
+            UtilFunc.InitAttrbutes(YsMaps.button_attrs, this, _xml);
+            UtilFunc.InitChild(this, _xml);
 
             if (!this.hasEventListener(MouseEvent.CLICK))
             {
@@ -111,7 +99,7 @@ package com.yspay.YsControls
                 e.result == false)
             {
                 // 可中断的事件遇到前一次的action返回false
-                this.label = _xml.@LABEL;
+                this._label = _xml.@LABEL;
                 this.btn.enabled = true;
             }
             else
@@ -119,13 +107,13 @@ package com.yspay.YsControls
                 var curr_action:YsAction = e.NextEvent() as YsAction;
                 if (curr_action != null)
                 {
-                    this.label = action_list.length.toString();
+                    this._label = action_list.length.toString();
                     curr_action.Do(e, e.source);
                 }
                 else
                 {
                     // 全部事件执行完毕
-                    this.label = _xml.@LABEL;
+                    this._label = _xml.@LABEL;
                     this.btn.enabled = true;
                 }
             }
@@ -133,7 +121,7 @@ package com.yspay.YsControls
 
         protected function OnBtnClick(event:MouseEvent):void
         {
-            this.label = action_list.length.toString();
+            this._label = action_list.length.toString();
             this.btn.enabled = false;
 
             var stack_event:StackEvent = new StackEvent(action_list.concat());
@@ -160,8 +148,8 @@ package com.yspay.YsControls
             var label:XML =
                 <A KEY="LABEL" KEYNAME="LABEL"/>
                 ;
-            label.@VALUE = this.label;
-            rtn.@VALUE = this.label;
+            label.@VALUE = this._label;
+            rtn.@VALUE = this._label;
             rtn.@KEY = type;
             rtn.@KEYNAME = type;
             rtn.appendChild(label);
@@ -184,6 +172,11 @@ package com.yspay.YsControls
         public function Print(print_container:UIComponent, print_call_back:Function):UIComponent
         {
             return null;
+        }
+
+        public function GetId():String
+        {
+            return id;
         }
     }
 }

@@ -15,7 +15,7 @@ package com.yspay
     import flash.events.MouseEvent;
 
     import mx.controls.Alert;
-    import mx.core.Application;
+    import mx.core.FlexGlobals;
     import mx.events.FlexEvent;
 
     public class YsPodLayoutManager extends PodLayoutManager
@@ -128,7 +128,7 @@ package com.yspay
                     _cache.DoCache(pod_xml.toXMLString());
                 };
 
-            var pool:Pool = Application.application._pool;
+            var pool:Pool = FlexGlobals.topLevelApplication._pool;
             var pod_xml:XML = new XML('<pod></pod>');
             var pod_mng:YsPodLayoutManager = this;
             if (_pool.info.TRAN[tran_name] == null)
@@ -146,8 +146,8 @@ package com.yspay
             user_bus.Add('USERID', pool.D_data.data.USERID[0]);
             user_bus.Add('SERVICE', tran_name);
 
-            var ip:String = Application.application.GetServiceIp(scall_name);
-            var port:String = Application.application.GetServicePort(scall_name);
+            var ip:String = FlexGlobals.topLevelApplication.GetServiceIp(scall_name);
+            var port:String = FlexGlobals.topLevelApplication.GetServicePort(scall_name);
             service_call.Send(user_bus, ip, port, call_back);
         }
 

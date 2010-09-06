@@ -11,7 +11,7 @@ package com.yspay.YsControls
     import flash.events.Event;
 
     import mx.controls.Alert;
-    import mx.core.Application;
+    import mx.core.FlexGlobals;
 
     public class YsService extends YsAction
     {
@@ -22,7 +22,7 @@ package com.yspay.YsControls
         public function YsService(parent:DisplayObjectContainer)
         {
             super(parent);
-            _pool = Application.application._pool;
+            _pool = FlexGlobals.topLevelApplication._pool;
             main_bus = _pool.MAIN_BUS as UserBus;
         }
 
@@ -91,7 +91,7 @@ package com.yspay.YsControls
                 {
                     dict_name = dict_str.substr(dict_search.length);
                 }
-                var pool:Pool = Application.application._pool;
+                var pool:Pool = FlexGlobals.topLevelApplication._pool;
 
                 if (!pool.info.DICT.hasOwnProperty(dict_name))
                     continue;
@@ -161,8 +161,8 @@ package com.yspay.YsControls
                 bus.Add(var_name, ys_var);
             }
 
-            var ip:String = Application.application.GetServiceIp(scall_name);
-            var port:String = Application.application.GetServicePort(scall_name);
+            var ip:String = FlexGlobals.topLevelApplication.GetServiceIp(scall_name);
+            var port:String = FlexGlobals.topLevelApplication.GetServicePort(scall_name);
 
             var func:Function = function(new_bus:UserBus, error_event:ErrorEvent=null):void
                 {
@@ -197,7 +197,7 @@ package com.yspay.YsControls
             }
             else if (to_item_name == 'MAINBUS')
             {
-                return Application.application._pool.MAIN_BUS;
+                return FlexGlobals.topLevelApplication._pool.MAIN_BUS;
             }
             else if (to_item_name.search('parent') == 0)
             {
@@ -212,7 +212,7 @@ package com.yspay.YsControls
         protected function ServiceCallBack(bus:UserBus, event:StackEvent, error_event:ErrorEvent):void
         {
             var pod:YsPod = UtilFunc.YsGetParentByType(this._parent, YsPod) as YsPod;
-            var pool:Pool = Application.application._pool;
+            var pool:Pool = FlexGlobals.topLevelApplication._pool;
             if (bus == null)
             {
                 pool.SERVICE_RTN.SCALL_RTN = '服务调用出错';
