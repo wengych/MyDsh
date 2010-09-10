@@ -8,6 +8,7 @@ package com.yspay
     import com.yspay.events.EventCacheComplete;
     import com.yspay.events.EventNewPod;
     import com.yspay.pool.Pool;
+    import com.yspay.util.AdvanceArray;
     import com.yspay.util.UtilFunc;
 
     import flash.display.DisplayObject;
@@ -107,28 +108,29 @@ package com.yspay
 
         protected function CheckPurview(tran_name:String):void
         {
-            var call_back:Function = function(new_bus:UserBus, error_event:ErrorEvent=null):void
-                {
-                    /*
-                       if (new_bus == null ||
-                       error_event != null)
-                       {
-                       Alert.show('权限检查失败');
-                       return;
-                       }
+            /*
+               var call_back:Function = function(new_bus:UserBus, error_event:ErrorEvent=null):void
+               {
+               if (new_bus == null ||
+               error_event != null)
+               {
+               Alert.show('权限检查失败');
+               return;
+               }
 
-                       var user_rtn:int = new_bus.__DICT_USER_RTN.first;
-                       if (user_rtn != 0)
-                       {
-                       Alert.show('权限检查失败');
-                       return;
-                       }
-                     */
-                    _cache = new EventCache(pod_mng);
-                    _cache.DoCache(pod_xml.toXMLString());
-                };
+               var user_rtn:int = new_bus.__DICT_USER_RTN.first;
+               if (user_rtn != 0)
+               {
+               Alert.show('权限检查失败');
+               return;
+               }
+               _cache = new EventCache(pod_mng);
+               _cache.DoCache(pod_xml.toXMLString());
+               };
+             */
 
             var pool:Pool = FlexGlobals.topLevelApplication._pool;
+            var purview_ids:AdvanceArray = pool.D_data._data.PURVIEW_ID;
             var pod_xml:XML = new XML('<pod></pod>');
             var pod_mng:YsPodLayoutManager = this;
             if (_pool.info.TRAN[tran_name] == null)
@@ -138,17 +140,32 @@ package com.yspay
             }
             pod_xml.appendChild("tran://" + tran_name);
 
-            var service_call:ServiceCall = new ServiceCall;
-            var user_bus:UserBus = new UserBus;
-            var scall_name:String = 'YSUserPurViewCheck';
+            if (purview_ids != null)
+            {
+                var purview_idx:int = purview_ids.indexOf(tran_name);
+                if (purview_idx < 0)
+                {
+                    Alert.show('无权');
+                    return;
+                }
+            }
 
-            user_bus.Add(ServiceCall.SCALL_NAME, scall_name);
-            user_bus.Add('USERID', pool.D_data.data.USERID[0]);
-            user_bus.Add('SERVICE', tran_name);
+            _cache = new EventCache(pod_mng);
+            _cache.DoCache(pod_xml.toXMLString());
 
-            var ip:String = FlexGlobals.topLevelApplication.GetServiceIp(scall_name);
-            var port:String = FlexGlobals.topLevelApplication.GetServicePort(scall_name);
-            service_call.Send(user_bus, ip, port, call_back);
+        /*
+           var service_call:ServiceCall = new ServiceCall;
+           var user_bus:UserBus = new UserBus;
+           var scall_name:String = 'YSUserPurViewCheck';
+
+           user_bus.Add(ServiceCall.SCALL_NAME, scall_name);
+           user_bus.Add('USERID', pool.D_data.data.USERID[0]);
+           user_bus.Add('SERVICE', tran_name);
+
+           var ip:String = FlexGlobals.topLevelApplication.GetServiceIp(scall_name);
+           var port:String = FlexGlobals.topLevelApplication.GetServicePort(scall_name);
+           service_call.Send(user_bus, ip, port, call_back);
+         */
         }
 
         private function OnEventCacheComplete(event:EventCacheComplete):void

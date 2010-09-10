@@ -15,9 +15,10 @@ package com.yspay.YsControls
 
     public class YsService extends YsAction
     {
-        protected var _pool:Pool;
-        public var main_bus:UserBus;
         protected var scall:ServiceCall;
+        protected var _pool:Pool;
+        public var prepareEmptyDict:Boolean;
+        public var main_bus:UserBus;
 
         public function YsService(parent:DisplayObjectContainer)
         {
@@ -31,6 +32,9 @@ package com.yspay.YsControls
             super.Init(xml);
             _to.Init(this, xml.To);
             _from.Init(this, xml.From);
+
+            UtilFunc.InitAttrbutes(YsMaps.service_attrs, this, _xml);
+            UtilFunc.InitChild(this, _xml);
         }
 
         // 从_from中取得所有输入数据源，逐一查找对应key，找到后将值加入bus并返回true
@@ -78,7 +82,8 @@ package com.yspay.YsControls
             return false;
         }
 
-        protected function SetBusInArgs(dict_list:XMLList, names:Array, types:Array):void
+        // 取Service参数列表
+        protected function SetBusArgs(dict_list:XMLList, names:Array, types:Array):void
         {
             var dict_str:String;
             var dict_name:String;
@@ -122,9 +127,9 @@ package com.yspay.YsControls
             var bus_in_const_args:Array = new Array;
 
             var scall_name:String = _xml.SendPKG[0].HEAD[0].@active;
-            var dict_list:XMLList = _xml.SendPKG.BODY.DICT;
+            var dict_in_list:XMLList = _xml.SendPKG.BODY.DICT;
 
-            SetBusInArgs(dict_list, bus_in_name_args, bus_in_type_args);
+            SetBusArgs(dict_in_list, bus_in_name_args, bus_in_type_args);
 
 
             var bus:UserBus = new UserBus;
@@ -165,9 +170,9 @@ package com.yspay.YsControls
             var port:String = FlexGlobals.topLevelApplication.GetServicePort(scall_name);
 
             var func:Function = function(new_bus:UserBus, error_event:ErrorEvent=null):void
-                {
-                    ServiceCallBack(new_bus, stack_event, error_event);
-                }
+            {
+                ServiceCallBack(new_bus, stack_event, error_event);
+            }
             trace(bus.toString());
             scall.Send(bus, ip, port, func);
         }
@@ -213,6 +218,8 @@ package com.yspay.YsControls
         {
             var pod:YsPod = UtilFunc.YsGetParentByType(this._parent, YsPod) as YsPod;
             var pool:Pool = FlexGlobals.topLevelApplication._pool;
+
+            var bus_out_name_args:Array = GetBusArgs(_xml);
             if (bus == null)
             {
                 pool.SERVICE_RTN.SCALL_RTN = '服务调用出错';
@@ -240,23 +247,6 @@ package com.yspay.YsControls
             pool.SERVICE_RTN.USER_RTN = user_rtn;
             pool.SERVICE_RTN.USER_RTN_MSG = user_rtn_msg;
 
-            if (scall_rtn != 0)
-            {
-                event.result = false;
-                this._parent.dispatchEvent(event);
-                pod.enabled = true;
-                return;
-            }
-
-            if (user_rtn != 0)
-            {
-                trace('Service: USER_RTN: ', user_rtn.toString());
-                event.result = false;
-                this._parent.dispatchEvent(event);
-                pod.enabled = true;
-                return;
-            }
-
             // action_info
             //        <To>pod</To>
             //        <To>windows</To>
@@ -275,13 +265,41 @@ package com.yspay.YsControls
                     to_arr.push(to_obj);
             }
 
+            if (this.prepareEmptyDict == true)
+            {
+                for each (to_obj in to_arr)
+                {
+                    if (to_obj is PData)
+                    {
+                        for each (var dict_name:String in bus_out_name_args)
+                            to_obj.ClearDict(dict_name);
+                    }
+                }
+            }
+
+            if (scall_rtn != 0)
+            {
+                event.result = false;
+                this._parent.dispatchEvent(event);
+                pod.enabled = true;
+                return;
+            }
+
+            if (user_rtn != 0)
+            {
+                trace('Service: USER_RTN: ', user_rtn.toString());
+                event.result = false;
+                this._parent.dispatchEvent(event);
+                pod.enabled = true;
+                return;
+            }
+
             for each (to_obj in to_arr)
             {
                 if (to_obj is PData)
-                    to_obj.Update(bus);
+                    to_obj.Update(bus, bus_out_name_args);
                 else if (to_obj is UserBus)
                 {
-                    var bus_out_name_args:Array = GetBusArgs('dict://', _xml);
                     for each (var var_name:String in bus_out_name_args)
                     {
                         if (bus[var_name] == null)
@@ -299,8 +317,9 @@ package com.yspay.YsControls
         }
 
 
-        private function GetBusArgs(search_str:String, xml:XML):Array
+        private function GetBusArgs(xml:XML):Array
         {
+            var search_str:String = 'dict://';
             var dict_str:String;
             var arr:Array = new Array;
             var dict_search:String = search_str;
@@ -316,10 +335,12 @@ package com.yspay.YsControls
                     arr.push(dict_str.substr(dict_search.length));
                 }
             }
-            arr.push("__DICT_USER_RTNMSG");
-            arr.push("__DICT_USER_RTN");
-            arr.push("__YSAPP_SESSION_ATTRS");
-            arr.push("__YSAPP_SESSION_SID");
+            /*
+               arr.push("__DICT_USER_RTNMSG");
+               arr.push("__DICT_USER_RTN");
+               arr.push("__YSAPP_SESSION_ATTRS");
+               arr.push("__YSAPP_SESSION_SID");
+             */
             return arr;
         }
     }

@@ -11,6 +11,8 @@ package com.yspay.YsData
     import mx.events.PropertyChangeEvent;
     import mx.utils.object_proxy;
 
+    import org.osmf.layout.AbsoluteLayoutFacet;
+
     use namespace flash_proxy;
     use namespace object_proxy;
 
@@ -153,13 +155,18 @@ package com.yspay.YsData
             return this[index];
         }
 
-        public function Update(bus:UserBus):void
+        public function ClearDict(dict_key:String):void
+        {
+            (_data[dict_key] as AdvanceArray).RemoveItems(0);
+        }
+
+        public function Update(bus:UserBus, dict_key_arr:Array):void
         {
             var arr:Array;
             var new_item_count:int = 0;
             var idx:int = 0;
 
-            for each (var key_name:String in bus.GetKeyArray())
+            for each (var key_name:String in dict_key_arr)
             {
                 if (bus[key_name][0].value is String ||
                     bus[key_name][0].value is int)

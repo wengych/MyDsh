@@ -42,7 +42,8 @@
             debug="true"
             use-resource-bundle-metadata="true"
             optimize="false"
-            locale="en_US">
+            locale="en_US"
+            compiler.mxml.compatibility-version="3.0.0">
             <source-path path-element="${FLEX_HOME}/frameworks" />
             <source-path path-element="${src.loc}" />
             <library-path dir="${lib.loc}" append="true">
@@ -53,6 +54,11 @@
             <compiler.headless-server>true</compiler.headless-server>
             <compiler.accessible>true</compiler.accessible>
             <target-player>10.0.0</target-player>
+            <compiler.theme dir="${FLEX_HOME}/frameworks/themes">
+                <include name="Halo/halo.swc" />
+                <include name="Spark/spark.css" />
+            </compiler.theme>
+            <!-- arg value=" -compiler.theme=themes/Halo/halo.swc" / -->
         </mxmlc>
     </target>
 

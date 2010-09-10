@@ -88,12 +88,17 @@ package com.yspay.YsControls
                 'editable': {}
             };
 
-       public static var dict_attrs:Object =
-       {
-		   'id': {'default': 'dict'}
-		   , 'LABEL': {}
-       	   ,'InputType': {'default': 'TextInput'}
-       };
+        public static var dict_attrs:Object =
+            {
+                'id': {'default': 'dict'}
+                , 'LABEL': {}
+                , 'InputType': {'default': 'TextInput'}
+            };
+
+        public static var service_attrs:Object =
+            {
+                'prepareEmptyDict': {'default': false}
+            };
 
     }
 }

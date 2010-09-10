@@ -547,7 +547,7 @@
                 {
                     _pool.Add('D_data', PData);
                     var p_data:PData = _pool.D_data as PData;
-                    p_data.Update(bus);
+                    p_data.Update(bus, bus.GetKeyArray());
 
                     currentState = "select_dept";
                     var dept_arr_col:ArrayCollection = new ArrayCollection;
