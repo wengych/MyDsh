@@ -56,9 +56,24 @@
             <target-player>10.0.0</target-player>
             <compiler.theme dir="${FLEX_HOME}/frameworks/themes">
                 <include name="Halo/halo.swc" />
-                <include name="Spark/spark.css" />
+                <!--include name="Spark/spark.css" / -->
             </compiler.theme>
-            <!-- arg value=" -compiler.theme=themes/Halo/halo.swc" / -->
+            <arg value=" -compiler.fonts.managers=flash.fonts.JREFontManager flash.fonts.BatikFontManager flash.fonts.AFEFontManager flash.fonts.CFFFontManager" />
+
+            <runtime-shared-library-path path-element="${FLEX_HOME}/frameworks/libs/framework.swc">
+                <url rsl-url="osmf_flex.4.1.swf"/>
+            </runtime-shared-library-path>
+            <runtime-shared-library-path path-element="${FLEX_HOME}/frameworks/libs/textLayout.swc">
+                <url rsl-url="textLayout_1.0.swf"/>
+            </runtime-shared-library-path>
+            <runtime-shared-library-path path-element="${FLEX_HOME}/frameworks/libs/framework.swc">
+                <url rsl-url="framework_4.1.swf"/>
+            </runtime-shared-library-path>
+            <runtime-shared-library-path path-element="${FLEX_HOME}/frameworks/libs/rpc.swc">
+                <url rsl-url="rpc_4.1.swf"/>
+            </runtime-shared-library-path>
+            <static-link-runtime-shared-libraries>true</static-link-runtime-shared-libraries>
+            <arg value=" -compiler.fonts.local-fonts-snapsho=${FLEX_HOME}/frameworks/localFonts.ser" />
         </mxmlc>
     </target>
 

@@ -97,7 +97,7 @@ package com.yspay.YsControls
 
         public static var service_attrs:Object =
             {
-                'prepareEmptyDict': {'default': false}
+                'prepareEmptyDict': {'default': true}
             };
 
     }
