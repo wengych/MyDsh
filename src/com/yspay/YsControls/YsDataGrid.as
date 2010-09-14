@@ -61,7 +61,8 @@
                 if (count < 0)
                     count = arr.length - startPos;
                 while (--count >= 0)
-                    arr.removeItemAt(startPos + count);
+                    if (arr.length > startPos + count)
+                        arr.removeItemAt(startPos + count);
             }
         }
 
