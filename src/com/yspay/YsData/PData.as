@@ -157,7 +157,8 @@ package com.yspay.YsData
 
         public function ClearDict(dict_key:String):void
         {
-            (_data[dict_key] as AdvanceArray).RemoveItems(0);
+            if (_data.hasOwnProperty(dict_key))
+                (_data[dict_key] as AdvanceArray).RemoveItems(0);
         }
 
         public function Update(bus:UserBus, dict_key_arr:Array):void
