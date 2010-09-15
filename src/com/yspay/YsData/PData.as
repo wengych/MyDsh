@@ -169,6 +169,9 @@ package com.yspay.YsData
 
             for each (var key_name:String in dict_key_arr)
             {
+                if (!(bus.hasOwnProperty(key_name)))
+                    continue;
+
                 if (bus[key_name][0].value is String ||
                     bus[key_name][0].value is int)
                 {
