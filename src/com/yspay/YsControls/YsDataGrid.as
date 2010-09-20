@@ -212,7 +212,7 @@
 
             // 清空DataGridColumns
             columns = []; //.splice(0, columns.length);
-            this.sortableColumns = false;
+//            this.sortableColumns = false;
 
             if (xml.POOL != undefined)
             {
@@ -266,6 +266,7 @@
                     dgc = new DataGridColumn;
                     dgc.itemRenderer = new YsClassFactory(YsButton, this, del_btn_xml);
                     dgc.editable = false;
+                    dgc.sortable = false;
                     dgc.width = int(del_btn_xml.attribute('width'));
 
                     columns = columns.concat(dgc);
@@ -276,6 +277,7 @@
                     dgc = new DataGridColumn;
                     dgc.itemRenderer = new YsClassFactory(YsButton, this, ins_btn_xml);
                     dgc.editable = false;
+                    dgc.sortable = false;
                     dgc.width = int(ins_btn_xml.attribute('width'));
 
                     columns = columns.concat(dgc);
@@ -286,6 +288,7 @@
                     dgc = new DataGridColumn;
                     dgc.itemRenderer = new YsClassFactory(YsButton, this, add_btn_xml);
                     dgc.editable = false;
+                    dgc.sortable = false;
                     dgc.width = int(add_btn_xml.attribute('width'));
 
                     columns = columns.concat(dgc);
@@ -404,9 +407,37 @@
             }
         }
 
+        protected function OnCollectionMove(event:CollectionEvent):void
+        {
+            trace('YsDataGrid::OnCollectionMove: oldLocation:'
+                  , event.oldLocation
+                  , ', location:'
+                  , event.location);
+        }
+
         protected function OnCollectionRefresh(event:CollectionEvent):void
         {
             trace('YsDataGrid::OnCollectionRefresh');
+
+            for each (var dgc:DataGridColumn in columns)
+            {
+                var item_key:String = dgc.dataField;
+                if (item_key == null)
+                    continue;
+                for each (var to_data:PData in toDataObject[item_key].GetAllTarget())
+                {
+                    if (!to_data.data.hasOwnProperty(item_key))
+                    {
+                        to_data.data[item_key] = new AdvanceArray;
+                        to_data.data[item_key].AddEmptyItems(this.dataProvider.length);
+                    }
+
+                    for (var idx:int = 0; idx < this.dataProvider.length; ++idx)
+                    {
+                        to_data.data[item_key][idx] = this.dataProvider[idx][item_key];
+                    }
+                }
+            }
         }
 
         protected function OnCollectionRemove(event:CollectionEvent):void
@@ -435,6 +466,10 @@
                 else if (ceEvent.kind == CollectionEventKind.UPDATE)
                 {
                     OnCollectionUpdate(ceEvent);
+                }
+                else if (ceEvent.kind == CollectionEventKind.MOVE)
+                {
+                    OnCollectionMove(ceEvent);
                 }
                 else if (ceEvent.kind == CollectionEventKind.REMOVE)
                 {

@@ -191,11 +191,12 @@ package com.yspay.YsControls
             var dg:YsDataGrid = _parent as YsDataGrid;
             var data:ArrayCollection = dg.dataProvider as ArrayCollection;
             var dgc:DataGridColumn =  new DataGridColumn;
-            this.editable = dg.editable;
+            // this.editable = dg.editable;
 
             UtilFunc.InitAttrbutes(YsMaps.dict_dg_attrs, this, _xml);
 
-            dgc.editable = this.editable;
+            // dgc.sortable = false;
+            dgc.editable = dg.editable;
             dgc.headerText = this.LABEL;
             dgc.dataField = dict.name;
             if (_xml.display.TEXTINPUT.list != undefined)
@@ -426,12 +427,14 @@ package com.yspay.YsControls
                 if (event.function_name == 'Insert')
                 {
                     trace('dict.Insert( ' + event.args[0] + ', ' + event.args[1]);
-                    p_data.data[dict.name].Insert(event.args[0], event.args[1]);
+                    if (p_data.data[dict.name].length < dict.data.length)
+                        p_data.data[dict.name].Insert(event.args[0], event.args[1]);
                 }
                 else if (event.function_name == 'RemoveItems')
                 {
                     trace('dict.RemoveItems ' + event.args[0] + ', ' + event.args[1]);
-                    p_data.data[dict.name].RemoveItems(event.args[0], event.args[1]);
+                    if (p_data.data[dict.name].length > dict.data.length)
+                        p_data.data[dict.name].RemoveItems(event.args[0], event.args[1]);
                 }
             }
         }

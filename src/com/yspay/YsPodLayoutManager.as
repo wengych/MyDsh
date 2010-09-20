@@ -145,7 +145,7 @@ package com.yspay
                 var purview_idx:int = purview_ids.indexOf(tran_name);
                 if (purview_idx < 0)
                 {
-                    Alert.show('无权');
+                    Alert.show('无此交易权限');
                     return;
                 }
             }

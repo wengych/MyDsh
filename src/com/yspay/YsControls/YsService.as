@@ -240,7 +240,7 @@ package com.yspay.YsControls
             if (bus.hasOwnProperty('__DICT_USER_RTN'))
             {
                 user_rtn = bus.__DICT_USER_RTN[0].value;
-                user_rtn_msg = bus.__DICT_USER_RTNMSG[0].value;
+                user_rtn_msg = bus.__DICT_USER_RTNMSG[0].value + ' (' + bus[ServiceCall.SCALL_NAME][0] + ')';
             }
 
             pool.SERVICE_RTN.SCALL_RTN = scall_rtn;
