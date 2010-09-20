@@ -11,6 +11,7 @@
     import flash.events.Event;
 
     import mx.collections.ArrayCollection;
+    import mx.collections.ListCollectionView;
     import mx.controls.Alert;
     import mx.controls.DataGrid;
     import mx.controls.dataGridClasses.DataGridColumn;
@@ -49,6 +50,18 @@
             percentHeight = 100;
         }
 
+        protected function RemoveSort():void
+        {
+            trace('YsDataGrid::RemoveSort()');
+            var arr:ArrayCollection = this.dataProvider as ArrayCollection;
+            if (arr.sort != null)
+            {
+                arr.sort.fields = [];
+                arr.sort = null;
+            }
+        }
+
+
         protected function OnRemoveItems(p_data:PData,
                                          dict_name:String,
                                          startPos:int,
@@ -56,13 +69,19 @@
         {
             trace('YsDataGrid::OnRemoveItems');
             var arr:ArrayCollection = dataProvider as ArrayCollection;
+            RemoveSort();
+
             if (arr.length > p_data.data[dict_name].length)
             {
+
                 if (count < 0)
-                    count = arr.length - startPos;
-                while (--count >= 0)
-                    if (arr.length > startPos + count)
-                        arr.removeItemAt(startPos + count);
+                    dataProvider = arr = new ArrayCollection;
+                else
+                    for (var idx:int = startPos; idx < count; ++idx)
+                    {
+                        if (arr.length > idx && arr.list.length > idx)
+                            arr.removeItemAt(idx);
+                    }
             }
         }
 
@@ -71,7 +90,9 @@
                                            count:int):void
         {
             trace('YsDataGrid::OnAddEmptyItems');
+
             var arr:ArrayCollection = dataProvider as ArrayCollection;
+            RemoveSort();
 
             if (arr.length < p_data.data[dict_name].length)
             {
