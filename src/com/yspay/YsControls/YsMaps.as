@@ -35,14 +35,14 @@ package com.yspay.YsControls
 
         public static var pod_attrs:Object =
             {
-                'TITLE': {'default': 'POD'}
+                'title': {'default': 'POD'}
                 , 'id': {'default': 'YsPod'}
             };
 
         // Windows支持的属性列表
         public static var windows_attrs:Object =
             {
-                'TITLE': {'default': 'windows'}
+                'title': {'default': 'windows'}
                 , 'showCloseButton': {'default': false}
             };
 
