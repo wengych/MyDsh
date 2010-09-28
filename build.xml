@@ -35,45 +35,27 @@
     <target name="compile" depends="init">
         <!-- Compile main0.mxml as a SWF -->
         <mxmlc file="${src.loc}/MyDsh.mxml"
-            output="${output.loc}/MyDsh.swf"
-            keep-generated-actionscript="true"
-            actionscript-file-encoding="utf-8"
-            incremental="false"
-            debug="true"
-            use-resource-bundle-metadata="true"
-            optimize="false"
-            locale="en_US"
-            compiler.mxml.compatibility-version="3.0.0">
-            <source-path path-element="${FLEX_HOME}/frameworks" />
+            output="${output.loc}/MyDsh.swf">
+            <compiler.mxml.compatibility-version>3.0</compiler.mxml.compatibility-version>
             <source-path path-element="${src.loc}" />
             <library-path dir="${lib.loc}" append="true">
                 <include name="*.swc" />
             </library-path>
-            <define name="CONFIG::useFlexClasses" value="${build.useFlex}" />
-            <compiler.verbose-stacktraces>true</compiler.verbose-stacktraces>
-            <compiler.headless-server>true</compiler.headless-server>
-            <compiler.accessible>true</compiler.accessible>
-            <target-player>10.0.0</target-player>
-            <compiler.theme dir="${FLEX_HOME}/frameworks/themes">
-                <include name="Halo/halo.swc" />
-                <!--include name="Spark/spark.css" / -->
-            </compiler.theme>
-            <arg value=" -compiler.fonts.managers=flash.fonts.JREFontManager flash.fonts.BatikFontManager flash.fonts.AFEFontManager flash.fonts.CFFFontManager" />
-
-            <runtime-shared-library-path path-element="${FLEX_HOME}/frameworks/libs/framework.swc">
-                <url rsl-url="osmf_flex.4.1.swf"/>
-            </runtime-shared-library-path>
-            <runtime-shared-library-path path-element="${FLEX_HOME}/frameworks/libs/textLayout.swc">
-                <url rsl-url="textLayout_1.0.swf"/>
-            </runtime-shared-library-path>
-            <runtime-shared-library-path path-element="${FLEX_HOME}/frameworks/libs/framework.swc">
-                <url rsl-url="framework_4.1.swf"/>
-            </runtime-shared-library-path>
-            <runtime-shared-library-path path-element="${FLEX_HOME}/frameworks/libs/rpc.swc">
-                <url rsl-url="rpc_4.1.swf"/>
-            </runtime-shared-library-path>
-            <static-link-runtime-shared-libraries>true</static-link-runtime-shared-libraries>
-            <arg value=" -compiler.fonts.local-fonts-snapsho=${FLEX_HOME}/frameworks/localFonts.ser" />
+        	<library-path dir="${FLEX_HOME}/frameworks/locale/en_US" append="true">
+        		<include name="*.swc" />
+        	</library-path>
+        	<library-path dir="${FLEX_HOME}/frameworks/libs" append="true">
+        		<include name="player\10.0\playerglobal.swc" />
+        		<include name="flex.swc" />
+        		<include name="textLayout.swc" />
+        		<include name="framework.swc" />
+        		<include name="rpc.swc" />
+        		<include name="spark.swc" />
+        		<include name="sparkskins.swc" />
+        		<include name="utilities.swc" />
+        		<include name="datavisualization.swc" />
+        	</library-path>
+            <target-player>10.0</target-player>
         </mxmlc>
     </target>
 
