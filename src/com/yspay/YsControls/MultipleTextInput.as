@@ -152,10 +152,16 @@ package com.yspay.YsControls
             ba.writeBytes(fr.data);
             ba.position = 0;
             var str:String = transEncodingText(ba);
-            var arr:Array = str.split("\n");
+            var arr:ArrayCollection = new ArrayCollection(str.split("\n"));
             for (var i:int = 0; i < arr.length; i++)
+                // for each (var item:Object in arr)
             {
                 arr[i] = StringUtil.trim(arr[i]);
+                if (arr[i].length == 0)
+                {
+                    arr.removeItemAt(i);
+                    --i;
+                }
             }
 
             for (var idx:int = 0; idx < arr.length; ++idx)
@@ -207,15 +213,14 @@ package com.yspay.YsControls
             }
             if (_backList.editedItemPosition == null)
                 return;
-            var temp:int = _backList.editedItemPosition.rowIndex;
+            var index:int = _backList.editedItemPosition.rowIndex;
             //up
             if (event.keyCode == 38)
             {
-                if (temp > 0)
+                if (index > 0)
                 {
-
                     _backList.editedItemPosition = {columnIndex: 0,
-                            rowIndex: temp - 1};
+                            rowIndex: index - 1};
                 }
                 else
                 {
@@ -227,10 +232,10 @@ package com.yspay.YsControls
             //dowm
             if (event.keyCode == 40)
             {
-                if (temp < _listDp.length - 1)
+                if (index < _listDp.length - 1)
                 {
                     _backList.editedItemPosition = {columnIndex: 0,
-                            rowIndex: temp + 1};
+                            rowIndex: index + 1};
                 }
                 else
                 {
@@ -242,16 +247,16 @@ package com.yspay.YsControls
             //delete
             if (event.keyCode == 46 && event.ctrlKey && deleteable)
             {
-                if (temp == 0)
+                if (index == 0)
                     return;
-                if (temp < _listDp.length)
+                if (index < _listDp.length)
                 {
                     removePopList();
-                    _listDp.removeItemAt(temp);
-                    if (_listDp.length > temp)
-                        _index = temp;
+                    _listDp.removeItemAt(index);
+                    if (_listDp.length > index)
+                        _index = index;
                     else
-                        _index = temp - 1;
+                        _index = index - 1;
                     popUpList();
                 }
 
@@ -261,9 +266,9 @@ package com.yspay.YsControls
             if (event.keyCode == 45 && event.ctrlKey && _append)
             {
                 removePopList();
-                _listDp.addItemAt("", temp + 1);
+                _listDp.addItemAt("", index + 1);
                 popUpList();
-                _backList.editedItemPosition = {columnIndex: 0, rowIndex: temp + 1};
+                _backList.editedItemPosition = {columnIndex: 0, rowIndex: index + 1};
             }
         }
 
