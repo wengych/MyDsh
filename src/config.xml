@@ -6,6 +6,10 @@
         <server name="124-75" ip="124.207.197.178" port="6804" />
         <server name="102" ip="192.168.0.102" port="16920" />
     </target>
+    <users>
+        <user name="admin" password="admin" />
+        <user name="001" password="001" />
+    </users>
     <target name="product" default="123">
         <server name="123" ip="123.124.158.70" port="16920" />
     </target>

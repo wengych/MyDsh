@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Application xmlns:mx="http://www.adobe.com/2006/mxml"
+                xmlns:s="library://ns.adobe.com/flex/spark"
                 xmlns:ys="com.yspay"
                 verticalAlign="middle"
                 horizontalAlign="center"
@@ -94,26 +95,32 @@
                 http_service.send();
             }
 
+            protected function SetDebugLogin():void
+            {
+                var interval:int = 30;
+                login_panel.height += interval * 2;
+
+                this.label_ip.y += interval;
+                this.label_ip.visible = true;
+                this.ipChoose.y += interval;
+                this.ipChoose.visible = true;
+
+                this.label_scall.y += interval * 2;
+                this.label_scall.visible = true;
+                this.s_ipChoose.y += interval * 2;
+                this.s_ipChoose.visible = true;
+
+                this.enable_cache.y += interval * 3;
+                this.enable_cache.visible = true;
+            }
+
             protected function onHttpServiceResult(event:ResultEvent):void
             {
                 var config:Object = event.result.config;
-                var interval:int = 30;
                 var targets:Object = new Object;
 
                 if (config.default != 'product')
-                {
-                    login_panel.height += interval * 2;
-
-                    this.label_ip.y += interval;
-                    this.label_ip.visible = true;
-                    this.ipChoose.y += interval;
-                    this.ipChoose.visible = true;
-
-                    this.label_scall.y += interval * 2;
-                    this.label_scall.visible = true;
-                    this.s_ipChoose.y += interval * 2;
-                    this.s_ipChoose.visible = true;
-                }
+                    SetDebugLogin();
 
                 for each (var target:Object in config.target)
                 {
@@ -324,7 +331,40 @@
                 Alert.show("Unable to load data/pods.xml.");
             }
 
-            private function onResultHttpService():void //e:ResultEvent):void
+            protected function onDeptChange(event:FlexEvent):void
+            {
+                measureDeptWidth();
+            }
+
+            protected function measureDeptWidth():void
+            {
+                var tlm:TextLineMetrics = this.DEPTNAME.measureText(this.DEPTNAME.text);
+                while (tlm.width > this.DEPTNAME.width)
+                {
+                    var txt:String = this.DEPTNAME.text;
+                    if (txt.indexOf('/') < 0)
+                        break;
+
+                    txt = txt.substring(txt.indexOf('/') + 1);
+                    this.DEPTNAME.text = txt;
+
+                    tlm = this.DEPTNAME.measureText(txt);
+                }
+            }
+
+            protected function onUserChange(event:FlexEvent):void
+            {
+                measureUserWidth();
+            }
+
+            protected function measureUserWidth():void
+            {
+                var tlm:TextLineMetrics = this.USERID.measureText(this.USERID.text);
+                if (tlm.width > this.USERID.width)
+                    this.USERID.width = tlm.width;
+            }
+
+            private function onResultHttpService():void
             {
                 var viewXMLList:XMLList = pod_xml.view; //e.result.view;
                 var len:Number = viewXMLList.length();
@@ -352,8 +392,13 @@
                     var manager:YsPodLayoutManager = new YsPodLayoutManager(this._pool);
                     manager.container = mainCanvas;
                     manager.id = viewXMLList[i].@id;
-                    // podLayoutManagers.push(manager);
                     this.podManager = manager;
+
+                    measureDeptWidth();
+                    this.DEPTNAME.addEventListener(FlexEvent.DATA_CHANGE, onDeptChange);
+
+                    measureUserWidth();
+                    this.DEPTNAME.addEventListener(FlexEvent.DATA_CHANGE, onUserChange);
                     break;
                 }
             }
@@ -399,14 +444,14 @@
                                fontSize="14"
                                paddingTop="1"
                                paddingBottom="0">
-                    <mx:Label text="机构"/>
-                    <mx:Label id="DEPTNAME"
-                              color="blue"
-                              width="200"/>
                     <mx:Label text="用户名"/>
                     <mx:Label id="USERID"
                               color="blue"
-                              width="100"/>
+                              width="200"/>
+                    <mx:Label text="机构"/>
+                    <mx:Label id="DEPTNAME"
+                              color="blue"
+                              width="150"/>
                     <mx:Label text="服务返回码"/>
                     <mx:Label color="blue"
                               id="SCALL_RTN"
@@ -418,7 +463,7 @@
                     <mx:Label text="用户返回信息"/>
                     <mx:Label color="blue"
                               id="USER_RTN_MSG"
-                              width="100"/>
+                              right="10"/>
                 </mx:ControlBar>
             </mx:AddChild>
         </mx:State>
@@ -493,68 +538,9 @@
             [Bindable]
             private var ipDP:ArrayCollection =
                 new ArrayCollection;
-            /*(
-               [
-               {
-               ip: "123.124.158.70",
-               port: "16920"},
-               {
-               ip: "192.168.0.77",
-               port: "16920"
-               },
-               {
-               ip: "192.168.0.75",
-               port: "16920"
-               },
-               {
-               ip: "192.168.88.84",
-               port: "16920"
-               },
-               {
-               ip: "192.168.0.216",
-               port: "16920"
-               },
-               {
-               ip: "124.207.197.178",
-               port: "6802"
-               },
-               {
-               ip: "124.207.197.178",
-               port: "6804"
-               }
-             ]);*/
             [Bindable]
             private var users:ArrayCollection =
-                new ArrayCollection(
-                [{
-                     user: "admin",
-                     pwd: "admin"
-                 },
-                 {
-                     user: "001",
-                     pwd: "001"
-                 },
-                 {
-                     user: "002",
-                     pwd: "002"
-                 },
-                 {
-                     user: "003",
-                     pwd: "003"
-                 },
-                 {
-                     user: "004",
-                     pwd: "004"
-                 },
-                 {
-                     user: "005",
-                     pwd: "005"
-                 },
-                 {
-                     user: "006",
-                     pwd: "006"
-                 }
-                ]);
+                new ArrayCollection;
             [Bindable]
             private var ver_prvd:ArrayCollection = new ArrayCollection(
                 [{text: '开发版本'},
@@ -803,20 +789,6 @@
                    fontFamily="Georgia"
                    fontSize="11"
                    visible="false"/>
-        <!-- "校验码"输入框
-             <mx:Label x="39.5"
-             y="123"
-             text="校验码"/>
-             "校验码"输入框 -->
-        <!--<mx:TextInput x="96.5"
-             y="121"
-             id="txtCheckCode"
-             width="61"
-             maxChars="4"/>-->
-        <!-- mx:CheckBox x="96"
-             y="251"
-             label="记住密码"
-             id="rember"/ -->
         <mx:ComboBox x="96"
                      y="135"
                      width="182"
@@ -864,12 +836,5 @@
                      id="enable_cache"
                      visible="false"/>
     </mx:Panel>
-    <!-- mx:Style>
-         @font-face {
-         src:url('assets/cour.ttf');
-         src:url('assets/simsun.ttc');
-         fontFamily: myFont;
-         }
-         </mx:Style -->
 </mx:Application>
 
