@@ -32,7 +32,8 @@ package com.yspay.event_handlers
                                    , close_pod
                                    , get_current_datetime
                                    , show_date_chooser
-                                   , print];
+                                   , print
+                                   , save_file];
 
         /*
            clean_text(null, null);
